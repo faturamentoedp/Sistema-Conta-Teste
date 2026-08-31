@@ -1,0 +1,43 @@
+Regras e premissas a serem adotadas no projeto 
+
+ 
+
+Regras resoluções 
+
+Clientes residenciais com consumo de até 90 kWh para ES e 50 kWh para SP e aplicar a isenção do ICMS. 
+
+Rurais Irrigantes possuem base reduzida de ICMS (12% no formulário e 4% no cálculo) 
+
+Calcular o mínimo da fase de acordo com a fase (mono, bi, tri) 
+
+Tarifa Branca e rural se atentar aos postos tarifários – ponta, fora ponta e intermediário 
+
+Se atentar que o Baixa Renda ou Tarifa Social engloba as tarifas: B1BRN/B1BPC/B1BRQ/B1BRI 
+
+Imputs  
+
+Categoria de tarifa 
+
+Data Leitura anterior 
+
+Data Leitura Atual  
+
+Consumo em kwh 
+
+Tipo de Fase (Mono, Bi, Tri) 
+
+Premissas para o cálculo 
+
+Pelo imput das datas de  leitura, verificar a data da tarifa vigente, verificar os períodos das bandeiras vigentes; 
+
+Para o cálculo do mínimo colocar uma condição ex: Bifásico – consumo do imput: 20 kwh à como é bifásico, o consumo a ser considerado no cálculo é 50 kwh 
+
+ 
+
+ 
+
+Consultas:  
+
+https://www.edp.com.br/tarifas-vigentes/ 
+
+ 

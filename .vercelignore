@@ -1,0 +1,29 @@
+# Nada aqui deve subir para a Vercel.
+
+# Credenciais e certificados
+.env.local
+.env*
+certs
+
+# Bases e planilhas internas
+Planilhas
+*.db
+*.csv
+*.xlsm
+*.xlsx
+
+# Scripts de manutenção que só rodam na máquina (usam banco/rede corporativa)
+scripts/exportar-tarifas.mjs
+scripts/capturar-referencia.mjs
+scripts/share.mjs
+scripts/rede.mjs
+scripts/inspecao
+check_db.js
+check_sqlite.js
+inspect_db.js
+get_all_tarifas.js
+insert_sp_tarifas.js
+test_faturas.js
+
+# Documentação de trabalho
+Documentacao_Simulador.tex

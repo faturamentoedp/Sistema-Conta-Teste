@@ -1,0 +1,236 @@
+SCRIPT DE APRESENTAÇÃO — SIMULADOR DE FATURAS EDP
+Público-alvo: pessoas de negócio (não técnicas) que vão USAR a ferramenta.
+Duração estimada: 12-15 minutos de fala + perguntas.
+
+===================================================================
+1. ABERTURA (1 min)
+===================================================================
+
+Boa tarde, pessoal!
+
+Hoje eu vou apresentar o Simulador de Faturas EDP — uma ferramenta que
+criamos para reproduzir, passo a passo, o cálculo de uma fatura de energia
+da EDP, tanto no Espírito Santo quanto em São Paulo.
+
+Antes de entrar na tela, eu quero explicar o problema que isso resolve.
+
+
+===================================================================
+2. O PROBLEMA QUE A FERRAMENTA RESOLVE (2 min)
+===================================================================
+
+Hoje, quando surge uma dúvida sobre uma fatura — "por que esse valor deu
+diferente?", "por que veio essa cobrança extra?", "essa retenção está
+certa?" — a resposta normalmente depende de abrir o sistema interno (SAP),
+cruzar tarifas, alíquotas de imposto, bandeira tarifária do mês, e refazer
+a conta manualmente. Isso é lento e exige alguém que conheça o cálculo por
+dentro.
+
+O Simulador resolve isso: você preenche os dados básicos da conta
+(categoria do cliente, consumo, datas de leitura, bandeira tarifária) e ele
+devolve a fatura já calculada — com todos os impostos, encargos e regras
+aplicadas exatamente como a EDP aplica na conta real.
+
+Ou seja: em vez de recalcular tudo na mão, você simula e compara.
+
+
+===================================================================
+3. PARA QUEM É E ONDE ACESSAR (1 min)
+===================================================================
+
+A ferramenta está publicada num link fixo, acessível de qualquer lugar
+(de dentro da rede EDP ou de casa), sem precisar instalar nada — é só
+abrir no navegador.
+
+[Falar o link aqui / mostrar a tela de abertura]
+
+Ela serve para qualquer pessoa que precise conferir ou explicar uma conta:
+atendimento, retaguarda, quem responde reclamação de cliente, quem audita
+fatura. Não precisa entender de programação — só precisa entender a conta
+de luz.
+
+
+===================================================================
+4. COMO FUNCIONA — VISÃO GERAL (1 min)
+===================================================================
+
+O uso tem só dois passos:
+
+  1. Preencher o formulário à esquerda, com os dados da instalação e do
+     período de leitura.
+  2. Clicar em "Calcular Fatura".
+
+O sistema devolve, à direita, a fatura detalhada: cada item que compõe o
+valor, os impostos, e o total a pagar — igual ao que o cliente veria na
+conta impressa.
+
+Vamos ver a tela.
+
+[MOSTRAR A TELA DO SIMULADOR]
+
+
+===================================================================
+5. TOUR PELO FORMULÁRIO DE ENTRADA (3-4 min)
+===================================================================
+
+Do lado esquerdo temos os "Parâmetros de Entrada". Vou explicar cada bloco:
+
+- "Geografia": aqui você escolhe a distribuidora — EDP Espírito Santo ou
+  EDP São Paulo. As regras de imposto e tarifa mudam de um estado pro
+  outro, então isso é o primeiro campo a preencher.
+
+- "Tarifas" (categoria): é o tipo de cliente/contrato. Residencial comum,
+  Tarifa Branca, Baixa Renda, comercial, rural, irrigante, Poder Público
+  (federal, estadual), iluminação pública, e por aí vai. Cada categoria
+  tem sua própria regra de tarifa e, às vezes, regras extras — vou falar
+  disso mais adiante.
+
+- "Fase": monofásico, bifásico ou trifásico — isso define o consumo
+  mínimo que entra na conta mesmo que o cliente tenha consumido menos.
+
+- "Bandeira Mês 1" e "Bandeira Mês 2": a bandeira tarifária (verde,
+  amarela, vermelha, escassez hídrica) é um adicional cobrado por kWh que
+  o governo define mês a mês. Como o período de leitura pode cruzar dois
+  meses com bandeiras diferentes, o simulador pede as duas e faz o rateio
+  proporcional aos dias de cada uma.
+
+- "Leitura Anterior" e "Leitura Atual": as datas do ciclo de faturamento.
+  É a partir delas que o sistema calcula quantos dias caem em cada
+  bandeira e, se o período cruzar uma mudança de tarifa da ANEEL, quantos
+  dias ficam na tarifa antiga e quantos na nova.
+
+- "Consumo Ativo (kWh)": quanto o cliente consumiu no período.
+
+- "Geração Distribuída (MMGD)": se o cliente tem placa solar (ou recebe
+  energia de uma), você ativa essa opção e informa quanto foi gerado e
+  injetado na rede — o sistema desconta isso da conta seguindo a regra
+  de compensação vigente.
+
+- "CIP": a Contribuição de Iluminação Pública cobrada pelo município.
+
+- "Tributação de ICMS": normalmente deixamos em "Automático", que já
+  aplica a alíquota certa pela categoria e faixa de consumo. Mas dá pra
+  forçar uma alíquota manual se for um caso especial.
+
+- "Ajustes / Outros Valores": multas, juros, devoluções, retenção de
+  imposto de renda avulsa — qualquer valor extra que precise entrar na
+  conta manualmente.
+
+Depois de preencher, é só clicar em "Calcular Fatura".
+
+
+===================================================================
+6. TOUR PELO RESULTADO (3-4 min)
+===================================================================
+
+Assim que calcula, aparecem primeiro uns cartões de resumo no topo:
+
+- Total Energia, PIS/COFINS, ICMS: os grandes totais da conta.
+
+- "Fio B (Informativo)" e "Escassez Hídrica (Informativo)": esses dois
+  são importantes eu explicar bem, porque geram dúvida. Eles NÃO somam no
+  valor final da fatura — são informações que a EDP é obrigada a divulgar
+  para o cliente, mas que já estão embutidas dentro da tarifa normal. O
+  "Fio B" mostra quanto do valor pago corresponde ao uso da rede de
+  distribuição (importante pra quem tem energia solar, porque é a parte
+  que não é compensada). O "Escassez Hídrica" é um encargo relacionado à
+  crise hídrica, também só informativo.
+
+- "Total Fatura": o valor final, o que o cliente efetivamente paga.
+
+Logo abaixo tem a tabela "Detalhamento NFe" — linha por linha, exatamente
+como sai na nota fiscal: consumo de TUSD, consumo de TE, adicional de
+bandeira, CIP, e assim por diante, cada um com quantidade, preço unitário,
+valor total, PIS/COFINS e ICMS daquela linha específica.
+
+Em seguida, o "Resumo de Tributos" mostra a base de cálculo, a alíquota e
+o valor de PIS e de COFINS separados — útil quando alguém pergunta
+especificamente sobre imposto.
+
+E por fim, tem o botão "Baixar Tabela (CSV / Excel)", pra quem precisar
+levar esses números pra uma planilha, anexar num processo, ou mandar para
+outra área.
+
+
+===================================================================
+7. REGRAS DE NEGÓCIO QUE VALE A PENA DESTACAR (2-3 min)
+===================================================================
+
+Algumas coisas que a ferramenta já trata automaticamente, e que seriam
+fáceis de esquecer numa conta manual:
+
+- Mudança de tarifa no meio do ciclo: quando a leitura cruza a data em
+  que uma nova resolução da ANEEL entra em vigor, o sistema faz o rateio
+  proporcional aos dias — não é preciso fazer essa conta na mão.
+
+- Tarifa Branca: separa automaticamente o consumo em Ponta, Fora Ponta e
+  Intermediário, cada um com sua tarifa.
+
+- Baixa Renda / Desconto Social: aplica a isenção e o desconto na faixa
+  de consumo que a lei garante.
+
+- Órgãos públicos: contas de Poder Público Federal e Estadual têm uma
+  regra própria de retenção de imposto na fonte — o simulador já aplica
+  isso automaticamente, incluindo iluminação pública em São Paulo.
+
+- Geração Distribuída (energia solar): o abatimento da energia injetada
+  segue a regra de transição da lei do MMGD, que muda ano a ano.
+
+Esses pontos, no cálculo manual, são justamente onde mais aparece erro —
+e aqui já vêm certos por padrão.
+
+
+===================================================================
+8. CUIDADOS E LIMITAÇÕES (1 min) — SEJA TRANSPARENTE AQUI
+===================================================================
+
+Vale eu ser transparente com vocês: o simulador é validado com base em
+faturas reais que fomos recebendo e conferindo, item por item. Ele cobre
+muito bem os casos mais comuns — residencial, comercial, Tarifa Branca,
+Baixa Renda, Poder Público.
+
+Onde ainda temos menos certeza são cálculos muito recentes ou muito
+específicos, tipo esse encargo de "Escassez Hídrica" que apareceu
+agora — a gente aplicou a mesma regra pra todas as categorias, mas ainda
+não confirmamos com fatura real fora do caso residencial. Então, se
+alguém notar um valor estranho, o caminho é sempre o mesmo: me mandem a
+fatura real pra eu conferir e ajustar. Cada ajuste desses deixa a
+ferramenta mais precisa pra todo mundo.
+
+
+===================================================================
+9. ENCERRAMENTO (1 min)
+===================================================================
+
+Resumindo: o Simulador de Faturas EDP existe pra tirar a complexidade do
+cálculo de conta de luz das nossas mãos — vocês preenchem os dados que já
+conhecem do dia a dia, e o sistema devolve a fatura certa, do jeito que
+o cliente recebe.
+
+Ele está pronto pra uso agora, no link que mostrei. Qualquer dúvida no
+uso, ou se aparecer algum valor que não bate com uma fatura real, é só
+me chamar.
+
+Obrigado(a), e vamos para as perguntas!
+
+
+===================================================================
+ANOTAÇÕES RÁPIDAS PARA PERGUNTAS FREQUENTES
+===================================================================
+
+P: "O simulador substitui o SAP?"
+R: Não. Ele é uma ferramenta de conferência/explicação, não emite fatura
+   oficial nem altera nada no sistema da empresa.
+
+P: "Por que o Fio B e a Escassez Hídrica não entram no total?"
+R: Porque já estão embutidos dentro do valor de TUSD/TE que o cliente já
+   paga. Eles são só uma exigência de transparência — mostrar pro cliente
+   quanto daquele valor corresponde a cada componente.
+
+P: "Ele funciona sem internet/direto do computador da EDP?"
+R: Funciona de qualquer lugar com navegador e internet, pelo link fixo.
+
+P: "Posso confiar 100% no valor calculado?"
+R: Para os casos já validados (a maioria do dia a dia), sim. Para casos
+   muito atípicos, o ideal é confirmar com a fatura real antes de usar o
+   número numa resposta oficial ao cliente.

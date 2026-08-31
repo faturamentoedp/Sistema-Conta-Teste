@@ -1,0 +1,167 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese]{babel}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\geometry{a4paper, margin=2.5cm}
+
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegray},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+\title{Documentação Técnica Completa: Simulador de Faturas de Energia EDP}
+\author{Equipe de Desenvolvimento de TI}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento detalha o funcionamento, a arquitetura, as lógicas de cálculo tributário, a integração do Fio B informativo, bem como todos os módulos desenvolvidos de Geração Distribuída (GD1, GD2 e GD3), diretrizes de instalação e execução em ambientes de rede local do Simulador de Energia EDP.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introdução: Para que serve o Sistema?}
+O \textbf{Simulador de Faturas de Energia EDP} foi concebido com o propósito primário de permitir a auditagem precisa e a simulação de faturamento dos clientes baseada no consumo (em kWh) e na categoria tarifária da instalação elétrica. 
+
+Anteriormente, o processo dependia de grandes planilhas Excel suscetíveis a quebras e limitações de escalabilidade. A atual plataforma web consolida toda a base matemática e tributária brasileira do setor elétrico, entregando as seguintes soluções:
+\begin{itemize}
+    \item \textbf{Cálculo Tributário Fiel ("Imposto por dentro"):} Reprodutibilidade exata de como a concessionária EDP apura ICMS, PIS e COFINS no faturamento mensal.
+    \item \textbf{Gestão de Consumo Variado e Tarifas Brancas:} Suporte ao consumo de Tarifas Brancas (Ponta, Fora Ponta e Intermediário) e distinção entre Consumo Ativo e Consumo Reservado para a categoria de Irrigantes.
+    \item \textbf{Módulos de Geração Distribuída (GDs):} Suporte nativo a modalidades GD1, GD2 e GD3 para B1C, Baixa Renda GD (exclusivo GD1), Tarifa Branca GD (exclusivo GD1) e Irrigante GD.
+    \item \textbf{Item Informativo Fio B:} Cálculo e exibição dedicada da parcela TUSD Fio B sem impacto financeiro no total final da fatura simulada.
+    \item \textbf{Dinâmica de Bandeiras Tarifárias:} Proporcionalidade exata por fração de dias no caso de virada de bandeiras tarifárias durante o mês.
+    \item \textbf{Camada de Ajustes Manuais:} Flexibilidade para somar juros, multas ou devoluções de artigos da ANEEL em tempo real à simulação.
+\end{itemize}
+
+\section{Como o Sistema e a Aplicação Funcionam}
+A aplicação foi desenvolvida sob o paradigma \textit{Client-Server} utilizando a biblioteca React juntamente com o ecossistema e \textit{framework} \textbf{Next.js}. A arquitetura flui da seguinte maneira:
+
+\subsection{A Interface do Usuário (Frontend)}
+Localizada em \texttt{src/app/page.tsx}, a interface web foi desenhada para ser limpa e de rápido preenchimento. O fluxo de interação ocorre da seguinte maneira:
+\begin{enumerate}
+    \item \textbf{Seleção de Parâmetros Base:} O usuário escolhe a Distribuidora (ex: EDP ES), Categoria (ex: B2RUIRRG Irrigante) e o tipo de Fase (Monofásico, Bifásico ou Trifásico).
+    \item \textbf{Leituras e Proporção de Tempo:} A inserção das datas de leitura anterior e atual é exigida. Isso serve exclusivamente para que o motor calcule quantos dias de consumo recaem sob a "Bandeira do Mês 1" e quantos recaem sob a "Bandeira do Mês 2".
+    \item \textbf{Inserção de Consumos e Ajustes:} O usuário preenche o seu consumo na tela. Se a Categoria escolhida não for "Tarifa Branca", os campos de Ponta/Fora Ponta permanecem ocultos, exigindo apenas o Consumo Ativo e, opcionalmente, o Consumo Reservado.
+    \item \textbf{Tratamento Mobile e de Caracteres:} As caixas de inserção numérica e de valores flexíveis (Adicionar Ajustes) foram construídas como \texttt{type="text"} com \texttt{inputMode="decimal"}. Isso impede erros crônicos em celulares onde teclados enviam vírgulas (`,`) incompatíveis com HTML nativo numérico. O sistema intercepta o \textit{input} e efetua a conversão subjacente para ponto (`.`).
+    \item \textbf{Submissão:} Ao clicar em "Calcular Fatura", o Next.js empacota todos os parâmetros num arquivo JSON e o despacha de forma segura e \textit{server-side} para a rota da API (backend).
+\end{enumerate}
+
+\subsection{O Motor de Cálculo e o Banco de Dados (Backend)}
+O processamento central ocorre invisivelmente dentro de \texttt{src/app/api/calcular/route.ts}. O algoritmo obedece o seguinte trajeto:
+\begin{enumerate}
+    \item \textbf{Acesso Seguro ao DB:} A aplicação resgata a string de conexão (usuário, senha e servidor) da nuvem Azure SQL inseridas no arquivo oculto \texttt{.env.local} para não expor senhas.
+    \item \textbf{Query Dinâmica:} Um \textit{script} SQL requisita as colunas de \texttt{Valor\_TUSD} e \texttt{Valor\_TE} diretamente da tabela \texttt{ContaTeste\_Dim\_Tarifas}, utilizando como filtros a Distribuidora e a Categoria enviadas pelo Frontend.
+    \item \textbf{Matemática Tributária:} Aplicação da legislação e montagem de uma tabela de desdobramento (semelhante ao \textit{Detalhamento NFe} impresso da conta) devolvendo ao frontend o cálculo total de PIS, COFINS, Fio B Informativo e faturamento bruto final.
+\end{enumerate}
+
+\section{Módulos de Geração Distribuída (GD) & Fio B Informativo}
+
+\subsection{Geração Distribuída Desenvolvida}
+O sistema contempla as diretrizes da Lei nº 14.300/2022 e Resolução Normativa ANEEL nº 1.000/2021 para as seguintes categorias:
+\begin{itemize}
+    \item \textbf{B1C (GD1, GD2 e GD3):} Suporte a compensação integral no GD1 (Direito Adquirido) e valoração da transição do Fio B (60\% em 2026) para GD2/GD3.
+    \item \textbf{Baixa Renda GD (Exclusivo GD1):} Valoração de Geração Distribuída no enquadramento social B1BR mantendo as faixas de isenção.
+    \item \textbf{Tarifa Branca GD (Exclusivo GD1):} Compensação multihorária nos postos Ponta, Intermediário e Fora Ponta na modalidade GD1.
+    \item \textbf{Irrigante GD:} Aplicação cruzada do desconto de 60\% no consumo reservado em conjunto com a valoração de injeção GD.
+\end{itemize}
+
+\subsection{Item Informativo Fio B}
+Para atender demandas de auditoria gerencial, o motor calcula a parcela TUSD Fio B correspondente ao consumo da unidade faturada. A precificação é exibida tanto no \textit{Detalhamento NFe} quanto nos cards de topo em tom roxo destacado:
+\begin{equation}
+\text{Tarifa Fio B Com Tributos} = \frac{\text{TUSD Base} \times 0.45}{\text{Divisor}}
+\end{equation}
+\begin{equation}
+\text{Valor Fio B Informativo} = \text{Consumo Faturado} \times \text{Tarifa Fio B Com Tributos}
+\end{equation}
+\textit{Nota Importante:} A linha de Fio B Informativo é isolada e não é somada no \texttt{Total Fatura} ou no \texttt{Total Geral} da tabela, mantendo a exatidão financeira da cobrança real.
+
+\section{Resiliência de Dados e Lógica de Tratamentos}
+
+\subsection{Normalização de Importações (Erro dos Múltiplos 100 Mil)}
+Bancos de dados herdados de relatórios do Excel frequentemente sofrem supressão do separador de casas decimais em virtude da diferença de localidade (\textit{locale}) em inglês para português. No caso em questão, tarifas brutas de \texttt{0,50596} (reais) haviam sido ingeridas no Azure SQL como \texttt{50.596} (cinquenta mil reais), o que causou nos primeiros testes simulações de fatura astronômicas avaliadas em centenas de milhões de reais.
+
+Para garantir estabilidade máxima e mitigar manipulações externas de banco, a API inclui uma "vacina" matemática. Como o valor de uma tarifa residencial no Brasil jamais excede a casa das dezenas, o backend aplica:
+\begin{lstlisting}[language=JavaScript]
+dbRows = result.recordset.map(r => {
+    let parsedTusd = r.tusd > 10 ? r.tusd / 100000 : r.tusd;
+    let parsedTe = r.te > 10 ? r.te / 100000 : r.te;
+    ...
+});
+\end{lstlisting}
+Esta rotina assegura que tanto bancos legados com formatação falha quanto futuras tabelas íntegras resultem na leitura perfeitamente formatada.
+
+\subsection{Mecanismo de "Fallback" (Contingência)}
+Em cenários onde os identificadores das categorias preenchidas no sistema (\texttt{B2RUIRRG}) possuam grafias divergentes no cadastro oficial do SQL (\texttt{B2 RURAL}), a pesquisa retornará vazia. Para não impedir o cálculo e a emissão do usuário final, o backend executa imediatamente o método de contingência: as tarifas de segurança atualizadas ficam codificadas em \textit{hardcode} e substituem os valores ausentes de forma transparente.
+
+\section{Fórmulas de Cálculo Tributário Aplicadas}
+No Brasil, o recolhimento das faturas de energia adota o mecanismo de impostos "por dentro", significando que o ICMS e o PIS/COFINS integram e incidem sobre a própria base de cálculo, criando uma matriz de bitributação permitida por lei.
+
+O algoritmo deste Simulador descobre a tarifa preenchida de impostos retroativamente a partir do seguinte divisor:
+\begin{equation}
+\text{Divisor} = 1 - \text{ICMS} - ((1 - \text{ICMS}) \times (\text{PIS} + \text{COFINS}))
+\end{equation}
+Tendo alcançado o divisor mensal atrelado à categoria de energia, calcula-se o Faturamento Líquido e a Base de Cálculo:
+\begin{equation}
+\text{Faturamento} = \frac{(\text{Consumo Medido} \times \text{Tarifa TUSD/TE})}{\text{Divisor}}
+\end{equation}
+
+Toda alíquota tributária (ex: $PIS=0,63\%$, $COFINS=2,89\%$, $ICMS=4\%$ para Irrigante) é injetada na equação de forma automática de acordo com o estado do fornecedor.
+
+\section{Guia de Execução Segura e Modos do Servidor}
+
+A plataforma baseada em \textbf{Next.js} comporta dois modos distintos de execução. O manuseio errôneo do ambiente em casos de acesso compartilhado em redes locais via aparelhos móveis (telefones, tablets, segundo computador em rede LAN) causa interrupções de script crônicas (\textit{Hydration/Turbopack Mismatch}). Siga o protocolo recomendado:
+
+\subsection{Modo de Desenvolvimento Rápido}
+Recomendado estritamente para modificação de código no mesmo terminal e mesmo navegador visualizador (\texttt{localhost:3000}).
+\begin{lstlisting}[language=bash]
+cmd /c "npm run dev"
+\end{lstlisting}
+\textit{Nota Adversa:} Ao utilizar \texttt{npm run dev}, o Next.js ativa o \textbf{Turbopack} e a rotina de HMR (Hot Module Replacement) ancorada em \textit{WebSockets} restritos ao IP da máquina. Abri-lo em um telefone celular conectado ao Wi-Fi congelará todos os botões e inputs interativos.
+
+\subsection{Modo de Produção Local (Recomendado para Redes Estáveis)}
+A opção ideal, segura e obrigatória caso outros membros da sua equipe na mesma rede (LAN) precisem abrir o site simultaneamente. Esse modo compila todos os componentes React, estanca as conexões de WebSockets do Turbopack e disponibiliza os arquivos HTML e Javascript finalizados.
+\begin{lstlisting}[language=bash]
+cmd /c "npm run build && npm start"
+\end{lstlisting}
+
+\subsection{Primeira Implantação em Novas Máquinas}
+Ao transacionar o código-fonte para um novo dispositivo que possua a plataforma \texttt{Node.js} recém instalada, deve-se obedecer a ordem:
+\begin{enumerate}
+    \item Adicionar e garantir a presença do arquivo de credenciais \texttt{.env.local} dentro da raiz do projeto para que a comunicação Azure SQL ocorra.
+    \item No terminal corporativo (dando preferência ao \textbf{Prompt de Comando - CMD} ao invés do PowerShell, cujo histórico apresenta restrições de \textit{ExecutionPolicy} perante a infraestrutura de TI corporativa), baixar os pacotes necessários digitando:
+    \begin{lstlisting}[language=bash]
+    cmd /c "npm install"
+    \end{lstlisting}
+    \item Executar a aplicação via Modo de Produção (\texttt{npm run build \&\& npm start}).
+\end{enumerate}
+
+\end{document}

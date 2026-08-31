@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  --bg-color: #ffffff;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: #333333;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  min-height: 100vh;
+}
+
+.modern-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.modern-table th {
+  background-color: #2f364b;
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.70rem;
+  text-transform: uppercase;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.modern-table tbody tr {
+  background-color: rgba(0, 0, 0, 0.04); /* cinza puramente neutro transparente */
+  color: #1e293b; 
+  border-bottom: 1px solid #d1d5db; /* borda cinza neutra */
+}
+
+.modern-table td {
+  padding: 0.75rem 1rem;
+  font-size: 0.8rem;
+}
+
+.currency {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select {
+  background-color: #ffffff;
+  color: #2f364b;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  padding: 0.5rem;
+}
+
+input:focus,
+select:focus {
+  border-color: #2f364b;
+  outline: none;
+}
