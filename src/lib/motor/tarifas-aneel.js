@@ -209,3 +209,28 @@ export const FIO_B_TUSD = {
         ]
     }
 };
+
+/**
+ * Redutor tarifário SUDENE (recursos da repactuação UBP homologados pela ANEEL para EDP ES).
+ *
+ * Aplica-se aos municípios do Espírito Santo pertencentes à área de atuação da SUDENE.
+ * O desconto base aprovado para baixa tensão (Grupo B) é de R$ 7,81/MWh (R$ 0,00781/kWh).
+ * Vigência oficial homologada com início em 30/08/2026.
+ *
+ * Fonte: Planilhas/Grupo B/EDP ES_Modelo_NFe_Grupo B SUDENE Atualizado 1.xlsm
+ *
+ * ⚠️ CONSTANTES NÃO CONFERIDAS NA FONTE. Essa planilha está criptografada com
+ * DRM corporativo (o container OLE2 traz DRMEncryptedDataSpace e
+ * EncryptedPackage, sem stream de workbook), e não foi possível abri-la para
+ * validar. A matemática do redutor foi auditada e é consistente com o resto do
+ * motor, mas a TARIFA (R$ 7,81/MWh) e a DATA DE INÍCIO (30/08/2026) vieram do
+ * plano de implementação, não da planilha. Conferir contra uma fatura real com
+ * SUDENE antes de tratar como validado.
+ */
+export const SUDENE_CONFIG = {
+    ES: {
+        tarifa_base_mwh: 7.81,
+        tarifa_base_kwh: 0.00781,
+        inicio_vigencia: '2026-08-30'
+    }
+};

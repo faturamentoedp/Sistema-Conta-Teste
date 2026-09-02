@@ -26,6 +26,7 @@ export default function Home() {
     icms_opcao: 'auto',
   });
   const [descontoBT, setDescontoBT] = useState(false);
+  const [sudeneAtivo, setSudeneAtivo] = useState(false);
   const [ajustes, setAjustes] = useState<{nome: string, valor: string}[]>([{nome: '', valor: ''}]);
 
   // Geração Distribuída: a unidade pode ser geradora ou receptora, e uma
@@ -52,7 +53,7 @@ export default function Home() {
     }
     setResultado(null);
     setError(null);
-  }, [form, ajustes, gdAtivo, gdPapel, geradoras, descontoBT]);
+  }, [form, ajustes, gdAtivo, gdPapel, geradoras, descontoBT, sudeneAtivo]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -92,6 +93,7 @@ export default function Home() {
         inj_intermediario: parseFloat(String(form.inj_intermediario || '').replace(',', '.')) || 0,
         valor_cip: parseFloat(String(form.valor_cip).replace(',', '.')) || 0,
         ajustes: ajustes.filter(a => a.valor !== '').map(a => ({ nome: a.nome || 'Ajustes / Outros Valores', valor: parseFloat(a.valor.replace(',', '.')) || 0 })),
+        sudene: sudeneAtivo,
         gd_ativo: gdAtivo,
         gd_papel: gdPapel,
         geradoras: gdAtivo && gdPapel === 'receptor'
@@ -136,6 +138,7 @@ export default function Home() {
     csv += `Período de Leitura;${form.data_leitura_anterior} a ${form.data_leitura_atual}\n`;
     csv += `Tributação de ICMS;${form.icms_opcao || 'auto'}\n`;
     csv += `Desconto BT (-1.5% kWh);${descontoBT ? 'SIM (Ativado)' : 'NÃO'}\n`;
+    csv += `Redutor SUDENE (-R$ 7,81/MWh);${sudeneAtivo ? 'SIM (Ativado)' : 'NÃO'}\n`;
     csv += `TOTAL FATURA;${formatBRL(resultado.resumo.total_fatura)}\n\n`;
 
     csv += "=== RESUMO DE TOTAIS ===\n";
@@ -474,6 +477,38 @@ export default function Home() {
               </div>
             )}
 
+            {/* Toggle do redutor SUDENE. Fica logo abaixo do Desconto BT, no
+                mesmo padrão visual. Ao contrário do BT, vale também para
+                Tarifa Branca, por isso está fora daquela condição. */}
+            {form.distribuidora === 'ES' && (
+              <div className="flex items-center justify-between py-2 border-b border-slate-100">
+                <div className="flex flex-col">
+                  <span className="text-xs font-bold text-slate-800">Redutor SUDENE (-R$ 7,81/MWh)</span>
+                  <span className="text-[11px] text-slate-500 font-medium">
+                    {sudeneAtivo
+                      ? '✓ Aplicado: abate proporcional aos dias a partir de 30/08/2026'
+                      : 'Repactuação UBP/SUDENE para municípios da área no ES'}
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={sudeneAtivo}
+                  onClick={() => setSudeneAtivo(!sudeneAtivo)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                    sudeneAtivo ? 'bg-[#2f364b]' : 'bg-slate-300'
+                  }`}
+                >
+                  <span
+                    aria-hidden="true"
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                      sudeneAtivo ? 'translate-x-5' : 'translate-x-0'
+                    }`}
+                  />
+                </button>
+              </div>
+            )}
 
 
             <div className="grid grid-cols-2 gap-4">

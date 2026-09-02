@@ -5,6 +5,39 @@
  */
 export const CENARIOS = [
     // ---------------------------------------------------------------------
+    // Redutor SUDENE. Sem âncora de fatura real ainda - a planilha oficial
+    // está criptografada e não pôde ser conferida. Estes cenários travam o
+    // comportamento atual para detectar mudanças acidentais.
+    // ---------------------------------------------------------------------
+    {
+        nome: 'SUDENE cruzando a vigencia (21/08 a 22/09/2026, 130 kWh)',
+        params: {
+            distribuidora: 'ES', categoria: 'B1C', fase: 'monofasico',
+            data_leitura_anterior: '2026-08-21', data_leitura_atual: '2026-09-22',
+            consumo_kwh: 130, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            valor_cip: 0, ajustes: [], sudene: true
+        }
+    },
+    {
+        nome: 'SUDENE em irrigante: linha de ativo e de reservado a 40%',
+        params: {
+            distribuidora: 'ES', categoria: 'B2RUIRRG', fase: 'trifasico',
+            data_leitura_anterior: '2026-09-01', data_leitura_atual: '2026-10-01',
+            consumo_kwh: 500, consumo_reservado: 300,
+            bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            valor_cip: 0, ajustes: [], sudene: true
+        }
+    },
+    {
+        nome: 'SUDENE antes da vigencia nao gera linha',
+        params: {
+            distribuidora: 'ES', categoria: 'B1C', fase: 'monofasico',
+            data_leitura_anterior: '2026-07-01', data_leitura_atual: '2026-07-31',
+            consumo_kwh: 200, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            valor_cip: 0, ajustes: [], sudene: true
+        }
+    },
+    // ---------------------------------------------------------------------
     // Casos ancorados em faturas reais conferidas na validação. O campo
     // fatura_real é o total impresso na conta: se o motor sair disso, é erro.
     // ---------------------------------------------------------------------

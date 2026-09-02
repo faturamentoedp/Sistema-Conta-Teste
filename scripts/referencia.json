@@ -1,5 +1,316 @@
 [
   {
+    "nome": "SUDENE cruzando a vigencia (21/08 a 22/09/2026, 130 kWh)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "TUSD - Consumo",
+          "unidade": "kWh",
+          "quantidade": 130,
+          "tarifa_base": 0.50632,
+          "preco_unit": 0.6323076923076923,
+          "valor_total": 82.2,
+          "base_pis_cofins": 68.23,
+          "valor_pis_cofins": 2.4,
+          "base_icms": 82.2,
+          "aliquota_icms": 17,
+          "valor_icms": 13.97
+        },
+        {
+          "nome": "TE - Consumo",
+          "unidade": "kWh",
+          "quantidade": 130,
+          "tarifa_base": 0.33739,
+          "preco_unit": 0.4213076923076923,
+          "valor_total": 54.77,
+          "base_pis_cofins": 45.46,
+          "valor_pis_cofins": 1.6,
+          "base_icms": 54.77,
+          "aliquota_icms": 17,
+          "valor_icms": 9.31
+        },
+        {
+          "nome": "Red. SUDENE Cons. ativo",
+          "unidade": "kWh",
+          "quantidade": 130,
+          "tarifa_base": 0.0056134375,
+          "preco_unit": 0.007009927146396532,
+          "valor_total": -0.91,
+          "base_pis_cofins": -0.76,
+          "valor_pis_cofins": -0.03,
+          "base_icms": -0.91,
+          "aliquota_icms": 17,
+          "valor_icms": -0.15,
+          "is_sudene": true
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 130,
+          "tarifa_base": 0.209512,
+          "preco_unit": 0.209512,
+          "valor_total": 27.24,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 130,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.31,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 136.06,
+        "total_pis_cofins": 3.97,
+        "total_base_pis_cofins": 112.93,
+        "total_pis": 0.71,
+        "total_cofins": 3.26,
+        "total_icms": 23.130000000000003,
+        "total_fatura": 136.06,
+        "valor_cip": 0,
+        "valor_fio_b": 27.24,
+        "tarifa_fio_b_unit": 0.209512,
+        "valor_escassez": -0.31,
+        "tarifa_escassez_unit": -0.0024104300000000003
+      },
+      "parametros_usados": {
+        "consumo_faturado": 130,
+        "aliquota_pis_aplicada": 0.0063,
+        "aliquota_cofins_aplicada": 0.0289,
+        "aliquota_icms_aplicada": 0.17
+      }
+    }
+  },
+  {
+    "nome": "SUDENE em irrigante: linha de ativo e de reservado a 40%",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "TUSD - Consumo Ativo",
+          "unidade": "kWh",
+          "quantidade": 500,
+          "tarifa_base": 0.50632,
+          "preco_unit": 0.5466599999999999,
+          "valor_total": 273.33,
+          "base_pis_cofins": 262.4,
+          "valor_pis_cofins": 9.23,
+          "base_icms": 91.11,
+          "aliquota_icms": 12,
+          "valor_icms": 10.93
+        },
+        {
+          "nome": "TE - Consumo Ativo",
+          "unidade": "kWh",
+          "quantidade": 500,
+          "tarifa_base": 0.33739,
+          "preco_unit": 0.36428,
+          "valor_total": 182.14,
+          "base_pis_cofins": 174.85,
+          "valor_pis_cofins": 6.15,
+          "base_icms": 60.71,
+          "aliquota_icms": 12,
+          "valor_icms": 7.29
+        },
+        {
+          "nome": "TUSD - Consumo Reservado",
+          "unidade": "kWh",
+          "quantidade": 300,
+          "tarifa_base": 0.202528,
+          "preco_unit": 0.21866666666666665,
+          "valor_total": 65.6,
+          "base_pis_cofins": 62.98,
+          "valor_pis_cofins": 2.22,
+          "base_icms": 21.87,
+          "aliquota_icms": 12,
+          "valor_icms": 2.62
+        },
+        {
+          "nome": "TE - Consumo Reservado",
+          "unidade": "kWh",
+          "quantidade": 300,
+          "tarifa_base": 0.13495600000000002,
+          "preco_unit": 0.1457,
+          "valor_total": 43.71,
+          "base_pis_cofins": 41.96,
+          "valor_pis_cofins": 1.47,
+          "base_icms": 14.57,
+          "aliquota_icms": 12,
+          "valor_icms": 1.75
+        },
+        {
+          "nome": "Red. SUDENE Cons. ativo",
+          "unidade": "kWh",
+          "quantidade": 500,
+          "tarifa_base": 0.00781,
+          "preco_unit": 0.008432231205085683,
+          "valor_total": -4.22,
+          "base_pis_cofins": -4.05,
+          "valor_pis_cofins": -0.14,
+          "base_icms": -1.41,
+          "aliquota_icms": 12,
+          "valor_icms": -0.17,
+          "is_sudene": true
+        },
+        {
+          "nome": "Red. SUDENE Cons. Reserv",
+          "unidade": "kWh",
+          "quantidade": 300,
+          "tarifa_base": 0.003124,
+          "preco_unit": 0.0033728924820342733,
+          "valor_total": -1.01,
+          "base_pis_cofins": -0.97,
+          "valor_pis_cofins": -0.03,
+          "base_icms": -0.34,
+          "aliquota_icms": 12,
+          "valor_icms": -0.04,
+          "is_sudene": true
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 500,
+          "tarifa_base": 0.227844,
+          "preco_unit": 0.24599657960199006,
+          "valor_total": 123,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 500,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -1.21,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 559.55,
+        "total_pis_cofins": 18.9,
+        "total_base_pis_cofins": 537.17,
+        "total_pis": 3.38,
+        "total_cofins": 15.52,
+        "total_icms": 22.38,
+        "total_fatura": 559.55,
+        "valor_cip": 0,
+        "valor_fio_b": 123,
+        "tarifa_fio_b_unit": 0.24599657960199006,
+        "valor_escassez": -1.21,
+        "tarifa_escassez_unit": -0.0024104300000000003
+      },
+      "parametros_usados": {
+        "consumo_faturado": 500,
+        "aliquota_pis_aplicada": 0.0063,
+        "aliquota_cofins_aplicada": 0.0289,
+        "aliquota_icms_aplicada": 0.04
+      }
+    }
+  },
+  {
+    "nome": "SUDENE antes da vigencia nao gera linha",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "TUSD - Consumo",
+          "unidade": "kWh",
+          "quantidade": 200,
+          "tarifa_base": 0.46863,
+          "preco_unit": 0.6015,
+          "valor_total": 120.3,
+          "base_pis_cofins": 99.85,
+          "valor_pis_cofins": 6.12,
+          "base_icms": 120.3,
+          "aliquota_icms": 17,
+          "valor_icms": 20.45
+        },
+        {
+          "nome": "TE - Consumo",
+          "unidade": "kWh",
+          "quantidade": 200,
+          "tarifa_base": 0.32068,
+          "preco_unit": 0.41159999999999997,
+          "valor_total": 82.32,
+          "base_pis_cofins": 68.33,
+          "valor_pis_cofins": 4.18,
+          "base_icms": 82.32,
+          "aliquota_icms": 17,
+          "valor_icms": 13.99
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 200,
+          "tarifa_base": 0.203831,
+          "preco_unit": 0.203831,
+          "valor_total": 40.77,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 200,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.48,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 202.62,
+        "total_pis_cofins": 10.3,
+        "total_base_pis_cofins": 168.18,
+        "total_pis": 1.83,
+        "total_cofins": 8.48,
+        "total_icms": 34.44,
+        "total_fatura": 202.62,
+        "valor_cip": 0,
+        "valor_fio_b": 40.77,
+        "tarifa_fio_b_unit": 0.203831,
+        "valor_escassez": -0.48,
+        "tarifa_escassez_unit": -0.0024104300000000003
+      },
+      "parametros_usados": {
+        "consumo_faturado": 200,
+        "aliquota_pis_aplicada": 0.0109,
+        "aliquota_cofins_aplicada": 0.0504,
+        "aliquota_icms_aplicada": 0.17
+      }
+    }
+  },
+  {
     "nome": "FATURA REAL B1CDE Doc 265002360732 (desconto social, faixa de 120 kWh)",
     "resultado": {
       "detalhes": [
@@ -77,6 +388,22 @@
           "valor_total": 29.49,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 154,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.37,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -91,7 +418,9 @@
         "total_fatura": 159.01,
         "valor_cip": 26.22,
         "valor_fio_b": 29.49,
-        "tarifa_fio_b_unit": 0.1914870862186287
+        "tarifa_fio_b_unit": 0.1914870862186287,
+        "valor_escassez": -0.37,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 154,
@@ -114,6 +443,8 @@
           "valor_total": 61.08,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 64.35,
+          "aliquota_icms": 17,
           "valor_icms": 10.94
         },
         {
@@ -125,6 +456,8 @@
           "valor_total": -50.14,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
@@ -214,6 +547,22 @@
           "valor_total": 18.8,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 100,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.24,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -228,7 +577,9 @@
         "total_fatura": 35.54,
         "valor_cip": 8.51,
         "valor_fio_b": 18.8,
-        "tarifa_fio_b_unit": 0.18795989326433252
+        "tarifa_fio_b_unit": 0.18795989326433252,
+        "valor_escassez": -0.24,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 100,
@@ -290,6 +641,8 @@
           "valor_total": 2.68,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
@@ -301,6 +654,8 @@
           "valor_total": 0.83,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
@@ -312,6 +667,8 @@
           "valor_total": -11.71,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
@@ -323,17 +680,35 @@
           "valor_total": 7,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
           "nome": "TUSD - Fio B (Item Informativo)",
           "unidade": "kWh",
           "quantidade": 121,
-          "tarifa_base": 0.2187984,
-          "preco_unit": 0.28094695739153996,
-          "valor_total": 33.99,
+          "tarifa_base": 0.20648213333333335,
+          "preco_unit": 0.20648213333333335,
+          "valor_total": 24.98,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 121,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.29,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -347,8 +722,10 @@
         "total_icms": 22.02,
         "total_fatura": 141.68,
         "valor_cip": 13.37,
-        "valor_fio_b": 33.99,
-        "tarifa_fio_b_unit": 0.28094695739153996
+        "valor_fio_b": 24.98,
+        "tarifa_fio_b_unit": 0.20648213333333335,
+        "valor_escassez": -0.29,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 121,
@@ -410,6 +787,8 @@
           "valor_total": 3.37,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
@@ -421,6 +800,8 @@
           "valor_total": 39.08,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -435,7 +816,9 @@
         "total_fatura": 172.83,
         "valor_cip": 16.26,
         "valor_fio_b": 39.08,
-        "tarifa_fio_b_unit": 0.24735137360256523
+        "tarifa_fio_b_unit": 0.24735137360256523,
+        "valor_escassez": 0,
+        "tarifa_escassez_unit": 0
       },
       "parametros_usados": {
         "consumo_faturado": 158,
@@ -497,6 +880,8 @@
           "valor_total": 2.39,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
@@ -508,6 +893,8 @@
           "valor_total": 13.05,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -522,7 +909,9 @@
         "total_fatura": 52.86,
         "valor_cip": 0,
         "valor_fio_b": 13.05,
-        "tarifa_fio_b_unit": 0.2609721809495508
+        "tarifa_fio_b_unit": 0.2609721809495508,
+        "valor_escassez": 0,
+        "tarifa_escassez_unit": 0
       },
       "parametros_usados": {
         "consumo_faturado": 50,
@@ -636,6 +1025,8 @@
           "valor_total": 125.39,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -650,7 +1041,9 @@
         "total_fatura": 613.51,
         "valor_cip": 0,
         "valor_fio_b": 125.39,
-        "tarifa_fio_b_unit": 0.19085880174640546
+        "tarifa_fio_b_unit": 0.19085880174640546,
+        "valor_escassez": 0,
+        "tarifa_escassez_unit": 0
       },
       "parametros_usados": {
         "consumo_faturado": 657,
@@ -712,6 +1105,8 @@
           "valor_total": -143.38,
           "base_pis_cofins": -143.38,
           "valor_pis_cofins": -8.85,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_injetada": true
         },
@@ -724,6 +1119,8 @@
           "valor_total": -116.31,
           "base_pis_cofins": -96.54,
           "valor_pis_cofins": -5.96,
+          "base_icms": 116.31,
+          "aliquota_icms": 17,
           "valor_icms": -19.77,
           "is_injetada": true
         },
@@ -736,6 +1133,8 @@
           "valor_total": -6.63,
           "base_pis_cofins": -5.5,
           "valor_pis_cofins": -0.34,
+          "base_icms": 6.63,
+          "aliquota_icms": 17,
           "valor_icms": -1.13,
           "is_injetada": true
         },
@@ -748,17 +1147,35 @@
           "valor_total": -8.29,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
           "nome": "TUSD - Fio B (Item Informativo)",
           "unidade": "kWh",
           "quantidade": 324,
-          "tarifa_base": 0.220953796875,
-          "preco_unit": 0.2837145836356189,
-          "valor_total": 91.92,
+          "tarifa_base": 0.20720409375,
+          "preco_unit": 0.20720409375,
+          "valor_total": 67.13,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 324,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.78,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -772,8 +1189,10 @@
         "total_icms": 38.54,
         "total_fatura": 121.41,
         "valor_cip": 46.36,
-        "valor_fio_b": 91.92,
-        "tarifa_fio_b_unit": 0.2837145836356189
+        "valor_fio_b": 67.13,
+        "tarifa_fio_b_unit": 0.20720409375,
+        "valor_escassez": -0.78,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 324,
@@ -835,6 +1254,8 @@
           "valor_total": -22.47,
           "base_pis_cofins": -22.47,
           "valor_pis_cofins": -1.39,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_injetada": true
         },
@@ -847,6 +1268,8 @@
           "valor_total": -24.41,
           "base_pis_cofins": -20.26,
           "valor_pis_cofins": -1.25,
+          "base_icms": 24.41,
+          "aliquota_icms": 17,
           "valor_icms": -4.15,
           "is_injetada": true
         },
@@ -859,6 +1282,8 @@
           "valor_total": -1.39,
           "base_pis_cofins": -1.15,
           "valor_pis_cofins": -0.07,
+          "base_icms": 1.39,
+          "aliquota_icms": 17,
           "valor_icms": -0.24,
           "is_injetada": true
         },
@@ -871,17 +1296,35 @@
           "valor_total": -7.07,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
           "nome": "TUSD - Fio B (Item Informativo)",
           "unidade": "kWh",
           "quantidade": 149,
-          "tarifa_base": 0.220953796875,
-          "preco_unit": 0.2837145836356189,
-          "valor_total": 42.27,
+          "tarifa_base": 0.20720409375,
+          "preco_unit": 0.20720409375,
+          "valor_total": 30.87,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 149,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.36,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -895,8 +1338,10 @@
         "total_icms": 22.94,
         "total_fatura": 145.83,
         "valor_cip": 40.37,
-        "valor_fio_b": 42.27,
-        "tarifa_fio_b_unit": 0.2837145836356189
+        "valor_fio_b": 30.87,
+        "tarifa_fio_b_unit": 0.20720409375,
+        "valor_escassez": -0.36,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 149,
@@ -958,6 +1403,8 @@
           "valor_total": -91.41,
           "base_pis_cofins": -91.41,
           "valor_pis_cofins": -5.64,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_injetada": true
         },
@@ -970,6 +1417,8 @@
           "valor_total": -84.9,
           "base_pis_cofins": -70.47,
           "valor_pis_cofins": -4.35,
+          "base_icms": 84.9,
+          "aliquota_icms": 17,
           "valor_icms": -14.43,
           "is_injetada": true
         },
@@ -982,6 +1431,8 @@
           "valor_total": -3.78,
           "base_pis_cofins": -3.14,
           "valor_pis_cofins": -0.19,
+          "base_icms": 3.78,
+          "aliquota_icms": 17,
           "valor_icms": -0.64,
           "is_injetada": true
         },
@@ -989,11 +1440,27 @@
           "nome": "TUSD - Fio B (Item Informativo)",
           "unidade": "kWh",
           "quantidade": 300,
-          "tarifa_base": 0.220953796875,
-          "preco_unit": 0.2837145836356189,
-          "valor_total": 85.11,
+          "tarifa_base": 0.20720409375,
+          "preco_unit": 0.20720409375,
+          "valor_total": 62.16,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 300,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.72,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -1007,8 +1474,10 @@
         "total_icms": 39.699999999999996,
         "total_fatura": 162.08,
         "valor_cip": 20,
-        "valor_fio_b": 85.11,
-        "tarifa_fio_b_unit": 0.2837145836356189
+        "valor_fio_b": 62.16,
+        "tarifa_fio_b_unit": 0.20720409375,
+        "valor_escassez": -0.72,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 300,
@@ -1031,6 +1500,8 @@
           "valor_total": 64.92,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 68.43,
+          "aliquota_icms": 17,
           "valor_icms": 11.63
         },
         {
@@ -1042,6 +1513,8 @@
           "valor_total": -53.29,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
@@ -1131,6 +1604,8 @@
           "valor_total": -36.17,
           "base_pis_cofins": -36.17,
           "valor_pis_cofins": -2.23,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_injetada": true
         },
@@ -1143,6 +1618,8 @@
           "valor_total": -39.54,
           "base_pis_cofins": -32.82,
           "valor_pis_cofins": -2.02,
+          "base_icms": 39.54,
+          "aliquota_icms": 17,
           "valor_icms": -6.72,
           "is_injetada": true
         },
@@ -1155,6 +1632,8 @@
           "valor_total": -2.42,
           "base_pis_cofins": -2.01,
           "valor_pis_cofins": -0.12,
+          "base_icms": 2.42,
+          "aliquota_icms": 17,
           "valor_icms": -0.41,
           "is_injetada": true
         },
@@ -1167,6 +1646,22 @@
           "valor_total": 39.22,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 200,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.48,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -1181,7 +1676,9 @@
         "total_fatura": 41.14,
         "valor_cip": 5,
         "valor_fio_b": 39.22,
-        "tarifa_fio_b_unit": 0.19610927992049196
+        "tarifa_fio_b_unit": 0.19610927992049196,
+        "valor_escassez": -0.48,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 200,
@@ -1238,11 +1735,27 @@
           "nome": "TUSD - Fio B (Item Informativo)",
           "unidade": "kWh",
           "quantidade": 250,
-          "tarifa_base": 0.2108835,
-          "preco_unit": 0.2637837479486051,
-          "valor_total": 65.95,
+          "tarifa_base": 0.203831,
+          "preco_unit": 0.203831,
+          "valor_total": 50.96,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 250,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.6,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -1256,8 +1769,10 @@
         "total_icms": 42.28,
         "total_fatura": 261.23,
         "valor_cip": 12.5,
-        "valor_fio_b": 65.95,
-        "tarifa_fio_b_unit": 0.2637837479486051
+        "valor_fio_b": 50.96,
+        "tarifa_fio_b_unit": 0.203831,
+        "valor_escassez": -0.6,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 250,
@@ -1301,11 +1816,27 @@
           "nome": "TUSD - Fio B (Item Informativo)",
           "unidade": "kWh",
           "quantidade": 80,
-          "tarifa_base": 0.2108835,
-          "preco_unit": 0.22465484180249282,
-          "valor_total": 17.97,
+          "tarifa_base": 0.203831,
+          "preco_unit": 0.203831,
+          "valor_total": 16.31,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 80,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.19,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -1319,8 +1850,10 @@
         "total_icms": 0,
         "total_fatura": 67.27,
         "valor_cip": 0,
-        "valor_fio_b": 17.97,
-        "tarifa_fio_b_unit": 0.22465484180249282
+        "valor_fio_b": 16.31,
+        "tarifa_fio_b_unit": 0.203831,
+        "valor_escassez": -0.19,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 80,
@@ -1364,11 +1897,27 @@
           "nome": "TUSD - Fio B (Item Informativo)",
           "unidade": "kWh",
           "quantidade": 30,
-          "tarifa_base": 0.2108835,
-          "preco_unit": 0.2189405107973422,
-          "valor_total": 6.57,
+          "tarifa_base": 0.203831,
+          "preco_unit": 0.203831,
+          "valor_total": 6.11,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 30,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.07,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -1382,8 +1931,10 @@
         "total_icms": 0,
         "total_fatura": 29.58,
         "valor_cip": 5,
-        "valor_fio_b": 6.57,
-        "tarifa_fio_b_unit": 0.2189405107973422
+        "valor_fio_b": 6.11,
+        "tarifa_fio_b_unit": 0.203831,
+        "valor_escassez": -0.07,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 30,
@@ -1510,6 +2061,22 @@
           "valor_total": 82.17,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 400,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.96,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -1524,7 +2091,9 @@
         "total_fatura": 441.99,
         "valor_cip": 20,
         "valor_fio_b": 82.17,
-        "tarifa_fio_b_unit": 0.2054296921906897
+        "tarifa_fio_b_unit": 0.2054296921906897,
+        "valor_escassez": -0.96,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 400,
@@ -1573,6 +2142,22 @@
           "valor_total": 20.54,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 100,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.24,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -1587,7 +2172,9 @@
         "total_fatura": 119.72,
         "valor_cip": 0,
         "valor_fio_b": 20.54,
-        "tarifa_fio_b_unit": 0.2054296921906897
+        "tarifa_fio_b_unit": 0.2054296921906897,
+        "valor_escassez": -0.24,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 100,
@@ -1610,6 +2197,8 @@
           "valor_total": 60.8,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 62.72,
+          "aliquota_icms": 17,
           "valor_icms": 10.66
         },
         {
@@ -1621,6 +2210,8 @@
           "valor_total": -50.14,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
@@ -1710,6 +2301,22 @@
           "valor_total": 27.48,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 150,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.36,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -1724,7 +2331,9 @@
         "total_fatura": 68.74,
         "valor_cip": 3.2,
         "valor_fio_b": 27.48,
-        "tarifa_fio_b_unit": 0.18317893667694032
+        "tarifa_fio_b_unit": 0.18317893667694032,
+        "valor_escassez": -0.36,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 150,
@@ -1786,6 +2395,8 @@
           "valor_total": 5.57,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
@@ -1797,6 +2408,22 @@
           "valor_total": 228.09,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 939,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -2.26,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -1811,7 +2438,9 @@
         "total_fatura": 874.5,
         "valor_cip": 0,
         "valor_fio_b": 228.09,
-        "tarifa_fio_b_unit": 0.24290205691143557
+        "tarifa_fio_b_unit": 0.24290205691143557,
+        "valor_escassez": -2.26,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 939,
@@ -1873,6 +2502,22 @@
           "valor_total": 91.23,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 400,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.96,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -1887,7 +2532,9 @@
         "total_fatura": 343.43,
         "valor_cip": 0,
         "valor_fio_b": 91.23,
-        "tarifa_fio_b_unit": 0.2280630320805648
+        "tarifa_fio_b_unit": 0.2280630320805648,
+        "valor_escassez": -0.96,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 400,
@@ -1988,6 +2635,22 @@
           "valor_total": 114.03,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 500,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -1.21,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -2002,7 +2665,9 @@
         "total_fatura": 766.26,
         "valor_cip": 15,
         "valor_fio_b": 114.03,
-        "tarifa_fio_b_unit": 0.2280630320805648
+        "tarifa_fio_b_unit": 0.2280630320805648,
+        "valor_escassez": -1.21,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 500,
@@ -2142,6 +2807,22 @@
           "valor_total": 53.1,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 280,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.67,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -2156,7 +2837,9 @@
         "total_fatura": 406.25,
         "valor_cip": 15,
         "valor_fio_b": 53.1,
-        "tarifa_fio_b_unit": 0.18962670006229237
+        "tarifa_fio_b_unit": 0.18962670006229237,
+        "valor_escassez": -0.67,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 280,
@@ -2218,6 +2901,22 @@
           "valor_total": 263.78,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 1000,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -2.41,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -2232,7 +2931,9 @@
         "total_fatura": 1210.83,
         "valor_cip": 45.9,
         "valor_fio_b": 263.78,
-        "tarifa_fio_b_unit": 0.2637837479486051
+        "tarifa_fio_b_unit": 0.2637837479486051,
+        "valor_escassez": -2.41,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 1000,
@@ -2281,6 +2982,22 @@
           "valor_total": 362.71,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 2500,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -6.03,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -2295,7 +3012,9 @@
         "total_fatura": 1357.58,
         "valor_cip": 0,
         "valor_fio_b": 362.71,
-        "tarifa_fio_b_unit": 0.14508303146139376
+        "tarifa_fio_b_unit": 0.14508303146139376,
+        "valor_escassez": -6.03,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 2500,
@@ -2357,6 +3076,8 @@
           "valor_total": 15.75,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
@@ -2368,17 +3089,35 @@
           "valor_total": -42.3,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0
         },
         {
           "nome": "TUSD - Fio B (Item Informativo)",
           "unidade": "kWh",
           "quantidade": 320,
-          "tarifa_base": 0.2108835,
-          "preco_unit": 0.2637837479486051,
-          "valor_total": 84.41,
+          "tarifa_base": 0.203831,
+          "preco_unit": 0.203831,
+          "valor_total": 65.23,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 320,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.77,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -2392,8 +3131,10 @@
         "total_icms": 54.58,
         "total_fatura": 302.5,
         "valor_cip": 8,
-        "valor_fio_b": 84.41,
-        "tarifa_fio_b_unit": 0.2637837479486051
+        "valor_fio_b": 65.23,
+        "tarifa_fio_b_unit": 0.203831,
+        "valor_escassez": -0.77,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 320,
@@ -2455,6 +3196,22 @@
           "valor_total": 79.14,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 300,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.72,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -2469,7 +3226,9 @@
         "total_fatura": 308.47,
         "valor_cip": 10,
         "valor_fio_b": 79.14,
-        "tarifa_fio_b_unit": 0.2637837479486051
+        "tarifa_fio_b_unit": 0.2637837479486051,
+        "valor_escassez": -0.72,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 300,
@@ -2531,6 +3290,8 @@
           "valor_total": 65.22,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -2545,7 +3306,9 @@
         "total_fatura": 264.09,
         "valor_cip": 12.5,
         "valor_fio_b": 65.22,
-        "tarifa_fio_b_unit": 0.2608635217714725
+        "tarifa_fio_b_unit": 0.2608635217714725,
+        "valor_escassez": 0,
+        "tarifa_escassez_unit": 0
       },
       "parametros_usados": {
         "consumo_faturado": 250,
@@ -2602,11 +3365,27 @@
           "nome": "TUSD - Fio B (Item Informativo)",
           "unidade": "kWh",
           "quantidade": 300,
-          "tarifa_base": 0.21854308064516126,
-          "preco_unit": 0.2806191158903904,
-          "valor_total": 84.19,
+          "tarifa_base": 0.2063966129032258,
+          "preco_unit": 0.2063966129032258,
+          "valor_total": 61.92,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 300,
+          "tarifa_base": -0.00241043,
+          "preco_unit": -0.00241043,
+          "valor_total": -0.72,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -2620,8 +3399,10 @@
         "total_icms": 54.089999999999996,
         "total_fatura": 328.2,
         "valor_cip": 10,
-        "valor_fio_b": 84.19,
-        "tarifa_fio_b_unit": 0.2806191158903904
+        "valor_fio_b": 61.92,
+        "tarifa_fio_b_unit": 0.2063966129032258,
+        "valor_escassez": -0.72,
+        "tarifa_escassez_unit": -0.00241043
       },
       "parametros_usados": {
         "consumo_faturado": 300,
@@ -2665,11 +3446,27 @@
           "nome": "TUSD - Fio B (Item Informativo)",
           "unidade": "kWh",
           "quantidade": 300,
-          "tarifa_base": 0.227844,
-          "preco_unit": 0.28452616435892825,
-          "valor_total": 85.36,
+          "tarifa_base": 0.209512,
+          "preco_unit": 0.209512,
+          "valor_total": 62.85,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 300,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.72,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -2683,8 +3480,10 @@
         "total_icms": 53.739999999999995,
         "total_fatura": 326.08,
         "valor_cip": 10,
-        "valor_fio_b": 85.36,
-        "tarifa_fio_b_unit": 0.28452616435892825
+        "valor_fio_b": 62.85,
+        "tarifa_fio_b_unit": 0.209512,
+        "valor_escassez": -0.72,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 300,
@@ -2798,6 +3597,22 @@
           "valor_total": 227.3,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 1010,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -2.43,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
           "valor_icms": 0,
           "is_informativo": true
         }
@@ -2812,7 +3627,9 @@
         "total_fatura": 1199.3,
         "valor_cip": 60,
         "valor_fio_b": 227.3,
-        "tarifa_fio_b_unit": 0.22505169286927193
+        "tarifa_fio_b_unit": 0.22505169286927193,
+        "valor_escassez": -2.43,
+        "tarifa_escassez_unit": -0.0024104300000000003
       },
       "parametros_usados": {
         "consumo_faturado": 1010,

@@ -28,7 +28,8 @@ import {
     SEMPRE_GD1,
     ICMS_FAIXAS_RESIDENCIAL,
     ENCARGO_ESCASSEZ_HIDRICA,
-    FIO_B_TUSD
+    FIO_B_TUSD,
+    SUDENE_CONFIG
 } from './tarifas-aneel.js';
 import { VIGENCIAS } from './vigencias.js';
 import { TRIBUTOS_MENSAIS, TRIBUTOS_PADRAO, ICMS_PADRAO } from './tributos.js';
@@ -888,6 +889,81 @@ export function calcular_fatura(params, dbRows) {
                     ? ((parseFloat(params.inj_ponta) || 0) + (parseFloat(params.inj_intermediario) || 0) + (parseFloat(params.inj_fora_ponta) || 0))
                     : injetada;
                 injetar("Adic.Band. inj", total_inj_kwh, tarifa_bandeira_efetiva, true);
+            }
+        }
+    }
+
+    // ---- Redutor tarifário SUDENE ----
+    // Recursos da repactuação UBP/SUDENE: uma linha negativa que abate a conta.
+    // A tarifa é rateada pelos dias do período que caem depois do início da
+    // vigência, e sofre o mesmo gross-up tributário da energia - por isso usa o
+    // mesmo `divisor`. Ver SUDENE_CONFIG em tarifas-aneel.js.
+    if (params.sudene) {
+        const cfg = SUDENE_CONFIG[distribuidora];
+        if (cfg) {
+            const MS = 1000 * 60 * 60 * 24;
+            const inicio = new Date(cfg.inicio_vigencia + 'T00:00:00Z');
+            const dias_totais = Math.round((data_atual.getTime() - data_anterior.getTime()) / MS);
+
+            let dias_sudene = 0;
+            if (data_atual > inicio) {
+                dias_sudene = data_anterior >= inicio
+                    ? dias_totais
+                    : Math.round((data_atual.getTime() - inicio.getTime()) / MS);
+            }
+
+            if (dias_totais > 0 && dias_sudene > 0) {
+                const tarifa_sudene = (cfg.tarifa_base_kwh / dias_totais) * dias_sudene;
+
+                const reduzir = (nome, qtd, tarifa_base) => {
+                    if (qtd <= 0 || tarifa_base <= 0) return;
+                    const preco_unit = tarifa_base / divisor;
+                    const valor_total = -Math.round((qtd * preco_unit) * 100) / 100;
+                    const icms_linha = Math.round((valor_total * icms) * 100) / 100;
+                    const base_pis_cofins = Math.round((valor_total - icms_linha) * 100) / 100;
+
+                    // Mesma apresentação das linhas de energia: no irrigante a
+                    // fatura imprime alíquota de 12% sobre base reduzida a 1/3,
+                    // o que dá a carga efetiva de 4%.
+                    let base_icms_linha = 0;
+                    let aliquota_icms_pct = 0;
+                    if (icms_linha !== 0) {
+                        if (icms === 0.04) {
+                            aliquota_icms_pct = 12.0;
+                            base_icms_linha = Math.round((valor_total / 3) * 100) / 100;
+                        } else {
+                            aliquota_icms_pct = Math.round(icms * 100 * 1000) / 1000;
+                            base_icms_linha = valor_total;
+                        }
+                    }
+
+                    linhas.push({
+                        nome,
+                        unidade: "kWh",
+                        quantidade: qtd,
+                        tarifa_base,
+                        preco_unit,
+                        valor_total,
+                        base_pis_cofins,
+                        valor_pis_cofins: Math.round((base_pis_cofins * (pis + cofins)) * 100) / 100,
+                        base_icms: base_icms_linha,
+                        aliquota_icms: aliquota_icms_pct,
+                        valor_icms: icms_linha,
+                        is_sudene: true
+                    });
+                };
+
+                if (is_tb) {
+                    reduzir("Red. SUDENE Cons. Tar. Branca", consumo_faturado_total, tarifa_sudene);
+                } else if (is_irrigante) {
+                    reduzir("Red. SUDENE Cons. ativo", consumo_faturado_total, tarifa_sudene);
+                    // O horário reservado tem desconto regulatório de 60%, então
+                    // o redutor incide sobre 40% da tarifa - mesma proporção já
+                    // usada nas linhas de Consumo Reservado.
+                    reduzir("Red. SUDENE Cons. Reserv", consumo_reservado, tarifa_sudene * 0.4);
+                } else {
+                    reduzir("Red. SUDENE Cons. ativo", consumo_faturado_total, tarifa_sudene);
+                }
             }
         }
     }
