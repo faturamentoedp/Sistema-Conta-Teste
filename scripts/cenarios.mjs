@@ -110,6 +110,38 @@ export const CENARIOS = [
         }
     },
     // ---------------------------------------------------------------------
+    // Categorias com GD além de B1C, conferidas em 09/09/2026 contra os
+    // modelos oficiais "Grupo B/EDP_ES_RTA_2026_Modelo_Grupo B_MMGD_*.xlsx"
+    // (GD1, GD1_TB, GD1_GERAR, GD2). Conclusão da análise: o motor já
+    // implementava corretamente a divisão por faixa do B1CDE e o rateio
+    // ativo/reservado do Irrigante - estes cenários só formalizam a
+    // validação como regressão permanente, sem mudar nenhuma regra.
+    // ---------------------------------------------------------------------
+    {
+        nome: 'MODELO GD1 - B1CDE, faixas até/acima 120 kWh com injeção nas duas',
+        modelo_oficial: 144.26,
+        params: {
+            distribuidora: 'ES', categoria: 'B1CDE', fase: 'monofasico',
+            data_leitura_anterior: '2026-07-21', data_leitura_atual: '2026-08-20',
+            consumo_kwh: 724, bandeira_mes1: 'AMARELA', bandeira_mes2: 'AMARELA',
+            valor_cip: 0, ajustes: [{ nome: 'Bônus/Descontos', valor: -8.97 }],
+            gd_ativo: true, gd_papel: 'receptor', gd_modalidade: 'GD1',
+            geradoras: [{ consumo: 624, percentual: 100, modalidade: 'GD1' }]
+        }
+    },
+    {
+        nome: 'MODELO GD1 - Baixa Renda MP1300, injeção compensa só a faixa acima de 80 kWh',
+        modelo_oficial: 32.3852,
+        params: {
+            distribuidora: 'ES', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', fase: 'monofasico',
+            data_leitura_anterior: '2026-07-21', data_leitura_atual: '2026-08-20',
+            consumo_kwh: 444, bandeira_mes1: 'AMARELA', bandeira_mes2: 'AMARELA',
+            valor_cip: 0, ajustes: [{ nome: 'Multas', valor: -5.83 }],
+            gd_ativo: true, gd_papel: 'receptor', gd_modalidade: 'GD1',
+            geradoras: [{ consumo: 364, percentual: 100, modalidade: 'GD1' }]
+        }
+    },
+    // ---------------------------------------------------------------------
     // Geração Distribuída, ancorada nos modelos oficiais em "Grupo B/".
     // A tolerância é maior porque o Excel bruteia linha a linha e o motor
     // distribui proporcionalmente - dá 2 centavos de diferença. A distribuição
