@@ -50,7 +50,11 @@ export const TRIBUTOS_MENSAIS = {
         '2026-01': { pis: 0.0092, cofins: 0.0422 }, '2026-02': { pis: 0.0126, cofins: 0.0581 },
         '2026-03': { pis: 0.0114, cofins: 0.0526 }, '2026-04': { pis: 0.0094, cofins: 0.0432 },
         '2026-05': { pis: 0.0063, cofins: 0.0289 }, '2026-06': { pis: 0.0066, cofins: 0.0302 },
-        '2026-07': { pis: 0.0109, cofins: 0.0504 }, '2026-08': { pis: 0.0110, cofins: 0.0507 }
+        '2026-07': { pis: 0.0109, cofins: 0.0504 }, '2026-08': { pis: 0.0110, cofins: 0.0507 },
+        // Setembro/2026 estava faltando e o simulador caía na alíquota
+        // genérica (0,630/2,890), o que a área identificou em 14/09/2026 numa
+        // simulação do ES. Valores confirmados pela chefia.
+        '2026-09': { pis: 0.0128, cofins: 0.0587 }
     },
 
     // Tabela oficial de SP (exercício/período K4/MM.AAAA).

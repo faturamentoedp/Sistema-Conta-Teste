@@ -10,7 +10,12 @@ export const CENARIOS = [
     // comportamento atual para detectar mudanças acidentais.
     // ---------------------------------------------------------------------
     {
-        nome: 'SUDENE cruzando a vigencia (21/08 a 22/09/2026, 130 kWh)',
+        // Com o PIS/COFINS de setembro/2026 do ES cadastrado (1,280/5,870),
+        // este caso passou a reproduzir EXATAMENTE o exemplo do plano oficial
+        // do SUDENE: tarifa 0,00561344, preco unit 0,00728398 e total -R$ 0,95.
+        // Antes batia -0,91, porque o mes caia na aliquota generica.
+        nome: 'SUDENE cruzando a vigencia (21/08 a 22/09/2026, 130 kWh) - bate o plano oficial',
+        modelo_oficial_linha_sudene: -0.95,
         params: {
             distribuidora: 'ES', categoria: 'B1C', fase: 'monofasico',
             data_leitura_anterior: '2026-08-21', data_leitura_atual: '2026-09-22',

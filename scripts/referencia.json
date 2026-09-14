@@ -1,6 +1,6 @@
 [
   {
-    "nome": "SUDENE cruzando a vigencia (21/08 a 22/09/2026, 130 kWh)",
+    "nome": "SUDENE cruzando a vigencia (21/08 a 22/09/2026, 130 kWh) - bate o plano oficial",
     "resultado": {
       "detalhes": [
         {
@@ -8,39 +8,39 @@
           "unidade": "kWh",
           "quantidade": 130,
           "tarifa_base": 0.50632,
-          "preco_unit": 0.6323076923076923,
-          "valor_total": 82.2,
-          "base_pis_cofins": 68.23,
-          "valor_pis_cofins": 2.4,
-          "base_icms": 82.2,
+          "preco_unit": 0.657,
+          "valor_total": 85.41,
+          "base_pis_cofins": 70.89,
+          "valor_pis_cofins": 5.07,
+          "base_icms": 85.41,
           "aliquota_icms": 17,
-          "valor_icms": 13.97
+          "valor_icms": 14.52
         },
         {
           "nome": "TE - Consumo",
           "unidade": "kWh",
           "quantidade": 130,
           "tarifa_base": 0.33739,
-          "preco_unit": 0.4213076923076923,
-          "valor_total": 54.77,
-          "base_pis_cofins": 45.46,
-          "valor_pis_cofins": 1.6,
-          "base_icms": 54.77,
+          "preco_unit": 0.43776923076923074,
+          "valor_total": 56.91,
+          "base_pis_cofins": 47.24,
+          "valor_pis_cofins": 3.37,
+          "base_icms": 56.91,
           "aliquota_icms": 17,
-          "valor_icms": 9.31
+          "valor_icms": 9.67
         },
         {
           "nome": "Red. SUDENE Cons. ativo",
           "unidade": "kWh",
           "quantidade": 130,
           "tarifa_base": 0.0056134375,
-          "preco_unit": 0.007009927146396532,
-          "valor_total": -0.91,
-          "base_pis_cofins": -0.76,
-          "valor_pis_cofins": -0.03,
-          "base_icms": -0.91,
+          "preco_unit": 0.007283982456481824,
+          "valor_total": -0.95,
+          "base_pis_cofins": -0.79,
+          "valor_pis_cofins": -0.06,
+          "base_icms": -0.95,
           "aliquota_icms": 17,
-          "valor_icms": -0.15,
+          "valor_icms": -0.16,
           "is_sudene": true
         },
         {
@@ -73,13 +73,13 @@
         }
       ],
       "resumo": {
-        "total_energia": 136.06,
-        "total_pis_cofins": 3.97,
-        "total_base_pis_cofins": 112.93,
-        "total_pis": 0.71,
-        "total_cofins": 3.26,
-        "total_icms": 23.130000000000003,
-        "total_fatura": 136.06,
+        "total_energia": 141.37,
+        "total_pis_cofins": 8.38,
+        "total_base_pis_cofins": 117.34,
+        "total_pis": 1.5,
+        "total_cofins": 6.89,
+        "total_icms": 24.029999999999998,
+        "total_fatura": 141.37,
         "valor_cip": 0,
         "valor_fio_b": 27.24,
         "tarifa_fio_b_unit": 0.209512,
@@ -88,8 +88,8 @@
       },
       "parametros_usados": {
         "consumo_faturado": 130,
-        "aliquota_pis_aplicada": 0.0063,
-        "aliquota_cofins_aplicada": 0.0289,
+        "aliquota_pis_aplicada": 0.0128,
+        "aliquota_cofins_aplicada": 0.0587,
         "aliquota_icms_aplicada": 0.17
       }
     }
