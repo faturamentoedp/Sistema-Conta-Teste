@@ -22,7 +22,7 @@ export default function Home() {
     inj_intermediario: '',
     bandeira_mes1: 'VERDE',
     bandeira_mes2: 'AMARELA',
-    bandeira_mes3: 'VERDE',
+    bandeira_mes3: '',
     valor_cip: '0.00',
     icms_opcao: 'auto',
   });
@@ -151,7 +151,7 @@ export default function Home() {
     csv += `Fase;${form.fase}\n`;
     csv += `Período de Leitura;${form.data_leitura_anterior} a ${form.data_leitura_atual}\n`;
     csv += `Tributação de ICMS;${form.icms_opcao || 'auto'}\n`;
-    csv += `Bandeiras (mês 1 / 2 / 3);${form.bandeira_mes1} / ${form.bandeira_mes2} / ${form.bandeira_mes3}\n`;
+    csv += `Bandeiras (mês 1 / 2 / 3);${form.bandeira_mes1} / ${form.bandeira_mes2} / ${form.bandeira_mes3 || 'Nenhum'}\n`;
     csv += `Desconto BT (-1.5% kWh);${descontoBT ? 'SIM (Ativado)' : 'NÃO'}\n`;
     csv += `Redutor SUDENE (-R$ 7,81/MWh);${sudeneAtivo ? 'SIM (Ativado)' : 'NÃO'}\n`;
     csv += `TOTAL FATURA;${formatBRL(resultado.resumo.total_fatura)}\n\n`;
@@ -304,6 +304,9 @@ export default function Home() {
               <div>
                 <label className="block text-xs font-semibold text-black mb-1">Bandeira Mês 3</label>
                 <select name="bandeira_mes3" value={form.bandeira_mes3} onChange={handleChange} className="w-full">
+                  {/* Padrão: fatura com três bandeiras é rara, então o campo
+                      nasce desligado e só entra no cálculo se for escolhido. */}
+                  <option value="">Nenhum</option>
                   <option value="VERDE">Verde</option>
                   <option value="AMARELA">Amarela</option>
                   <option value="VERMELHA_P1">Vermelha P1</option>
@@ -316,9 +319,18 @@ export default function Home() {
             {/* A bandeira do mês 3 só tem efeito quando o período de leitura
                 cruza três meses-calendário. Sem esse aviso, quem preenchesse o
                 campo num ciclo normal acharia que o sistema ignorou. */}
-            {mesesNoPeriodo > 0 && mesesNoPeriodo < 3 && (
+            {mesesNoPeriodo > 0 && mesesNoPeriodo < 3 && form.bandeira_mes3 !== '' && (
               <p className="text-[11px] text-slate-500 -mt-2">
                 O período informado cruza {mesesNoPeriodo === 1 ? 'apenas 1 mês' : '2 meses'} — a Bandeira Mês 3 não será aplicada.
+              </p>
+            )}
+
+            {/* O contrário também precisa de aviso: se o ciclo cruza três meses
+                e a bandeira 3 ficou em "Nenhum", os dias do terceiro mês saem
+                sem bandeira nenhuma e a conta fica menor que a real. */}
+            {mesesNoPeriodo >= 3 && form.bandeira_mes3 === '' && (
+              <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 -mt-2">
+                Este período cruza {mesesNoPeriodo} meses. Com a Bandeira Mês 3 em &quot;Nenhum&quot;, os dias do último mês ficam sem bandeira.
               </p>
             )}
 

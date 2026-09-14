@@ -581,10 +581,10 @@ export function calcular_fatura(params, dbRows) {
 
     const band_mes1 = (params.bandeira_mes1 || "VERDE").toUpperCase();
     const band_mes2 = (params.bandeira_mes2 || "VERDE").toUpperCase();
-    // A bandeira do mês 3 só entra quando o período de leitura cruza três
-    // meses-calendário; nos ciclos normais dias_mes3 é zero e o valor aqui
-    // não tem efeito nenhum.
-    const band_mes3 = (params.bandeira_mes3 || "VERDE").toUpperCase();
+    // A bandeira do mês 3 é opcional: fatura com três bandeiras é rara, então
+    // o campo vem vazio por padrão e, vazio, não entra no cálculo. Também
+    // continua desligado para quem chama a API sem mandar o campo.
+    const band_mes3 = (params.bandeira_mes3 || "").toUpperCase();
     const { dias_mes1, dias_mes2, dias_mes3, dias_totais } = calcular_proporcionalidade_dias(data_anterior, data_atual);
 
     const consumo_faturado_liquido = bases.filter((b) => b.nome.startsWith("TUSD - Consumo") && !b.nome.includes("Reservado") && b.tarifa > 0).reduce((acc, b) => acc + b.qtd, 0);
