@@ -22,6 +22,7 @@ export default function Home() {
     inj_intermediario: '',
     bandeira_mes1: 'VERDE',
     bandeira_mes2: 'AMARELA',
+    bandeira_mes3: 'VERDE',
     valor_cip: '0.00',
     icms_opcao: 'auto',
   });
@@ -39,6 +40,19 @@ export default function Home() {
   );
 
   const brOuTb = form.categoria.startsWith('B1BR') || form.categoria.endsWith('_TB');
+
+  // Quantos meses-calendário o período de leitura cruza. Usado só para avisar
+  // quando a Bandeira Mês 3 não vai ter efeito - a conta de verdade é feita
+  // por calcular_proporcionalidade_dias no motor.
+  const mesesNoPeriodo = (() => {
+    if (!form.data_leitura_anterior || !form.data_leitura_atual) return 0;
+    const ant = new Date(form.data_leitura_anterior + 'T00:00:00Z');
+    const atu = new Date(form.data_leitura_atual + 'T00:00:00Z');
+    if (isNaN(ant.getTime()) || isNaN(atu.getTime()) || atu <= ant) return 0;
+    const inicio = new Date(ant.getTime() + 86400000);
+    return (atu.getUTCFullYear() - inicio.getUTCFullYear()) * 12
+      + (atu.getUTCMonth() - inicio.getUTCMonth()) + 1;
+  })();
 
   const [loading, setLoading] = useState(false);
   const [resultado, setResultado] = useState<any>(null);
@@ -137,6 +151,7 @@ export default function Home() {
     csv += `Fase;${form.fase}\n`;
     csv += `Período de Leitura;${form.data_leitura_anterior} a ${form.data_leitura_atual}\n`;
     csv += `Tributação de ICMS;${form.icms_opcao || 'auto'}\n`;
+    csv += `Bandeiras (mês 1 / 2 / 3);${form.bandeira_mes1} / ${form.bandeira_mes2} / ${form.bandeira_mes3}\n`;
     csv += `Desconto BT (-1.5% kWh);${descontoBT ? 'SIM (Ativado)' : 'NÃO'}\n`;
     csv += `Redutor SUDENE (-R$ 7,81/MWh);${sudeneAtivo ? 'SIM (Ativado)' : 'NÃO'}\n`;
     csv += `TOTAL FATURA;${formatBRL(resultado.resumo.total_fatura)}\n\n`;
@@ -265,7 +280,7 @@ export default function Home() {
             </div>
 
             {/* Bandeiras Tarifárias (embaixo de Fase) */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-3">
               <div>
                 <label className="block text-xs font-semibold text-black mb-1">Bandeira Mês 1</label>
                 <select name="bandeira_mes1" value={form.bandeira_mes1} onChange={handleChange} className="w-full">
@@ -286,7 +301,26 @@ export default function Home() {
                   <option value="ESCASSEZ">Escassez</option>
                 </select>
               </div>
+              <div>
+                <label className="block text-xs font-semibold text-black mb-1">Bandeira Mês 3</label>
+                <select name="bandeira_mes3" value={form.bandeira_mes3} onChange={handleChange} className="w-full">
+                  <option value="VERDE">Verde</option>
+                  <option value="AMARELA">Amarela</option>
+                  <option value="VERMELHA_P1">Vermelha P1</option>
+                  <option value="VERMELHA_P2">Vermelha P2</option>
+                  <option value="ESCASSEZ">Escassez</option>
+                </select>
+              </div>
             </div>
+
+            {/* A bandeira do mês 3 só tem efeito quando o período de leitura
+                cruza três meses-calendário. Sem esse aviso, quem preenchesse o
+                campo num ciclo normal acharia que o sistema ignorou. */}
+            {mesesNoPeriodo > 0 && mesesNoPeriodo < 3 && (
+              <p className="text-[11px] text-slate-500 -mt-2">
+                O período informado cruza {mesesNoPeriodo === 1 ? 'apenas 1 mês' : '2 meses'} — a Bandeira Mês 3 não será aplicada.
+              </p>
+            )}
 
             {/* Datas de Leitura */}
             <div className="grid grid-cols-2 gap-4">

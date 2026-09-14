@@ -269,20 +269,54 @@ export function buscar_tributos_mensais(distribuidora, data_atual) {
     return { ...TRIBUTOS_PADRAO, icms_padrao };
 }
 
+/**
+ * Reparte os dias do período de leitura entre os meses-calendário que ele
+ * cruza, que é como a bandeira tarifária é rateada: cada mês tem a sua
+ * bandeira e paga proporcionalmente aos dias que caem nele.
+ *
+ * O dia da leitura anterior não conta e o da leitura atual conta - mesma
+ * convenção do rateio de vigência de tarifa.
+ *
+ * Devolve até três meses. A maioria das contas cruza dois (ex.: 13/04 a 13/05
+ * dá 17 dias em abril e 13 em maio), mas ciclos longos chegam a cruzar três -
+ * e aí a fatura vem com três bandeiras. Até 14/09/2026 esta função só sabia
+ * repartir em dois: num período de 25/04 a 02/06 ela somava abril e maio num
+ * bloco único de 36 dias, cobrando os dois com a bandeira do mês 1. Agora a
+ * repartição é por mês de verdade (5 + 31 + 2).
+ *
+ * Se o período cruzar mais de três meses, o excedente é somado ao mês 3 - não
+ * existe bandeira 4 no formulário, e um ciclo desses seria anômalo.
+ */
 export function calcular_proporcionalidade_dias(data_anterior, data_atual) {
-    const data_divisao = new Date(Date.UTC(data_atual.getUTCFullYear(), data_atual.getUTCMonth(), 1));
+    const MS_PER_DAY = 1000 * 60 * 60 * 24;
     const time_ant = data_anterior.getTime();
     const time_atu = data_atual.getTime();
-    const time_div = data_divisao.getTime();
-    const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
+    // Leitura dentro do mesmo mês: tudo vai para a bandeira do mês 2.
     if (data_anterior.getUTCMonth() === data_atual.getUTCMonth() && data_anterior.getUTCFullYear() === data_atual.getUTCFullYear()) {
         const dias = Math.floor(Math.abs(time_atu - time_ant) / MS_PER_DAY);
-        return { dias_mes1: 0, dias_mes2: dias, dias_totais: Math.max(dias, 1) };
+        return { dias_mes1: 0, dias_mes2: dias, dias_mes3: 0, dias_totais: Math.max(dias, 1) };
     }
-    const dias_mes1 = Math.max(Math.floor((time_div - time_ant) / MS_PER_DAY) - 1, 0);
-    const dias_mes2 = Math.floor((time_atu - time_div) / MS_PER_DAY) + 1;
-    return { dias_mes1, dias_mes2, dias_totais: Math.max(dias_mes1 + dias_mes2, 1) };
+
+    const primeiro_dia = time_ant + MS_PER_DAY;
+    const inicio = new Date(primeiro_dia);
+    const por_mes = [];
+    let cursor = Date.UTC(inicio.getUTCFullYear(), inicio.getUTCMonth(), 1);
+
+    while (cursor <= time_atu) {
+        const cursor_data = new Date(cursor);
+        const proximo_mes = Date.UTC(cursor_data.getUTCFullYear(), cursor_data.getUTCMonth() + 1, 1);
+        const ini = Math.max(cursor, primeiro_dia);
+        const fim = Math.min(proximo_mes - MS_PER_DAY, time_atu);
+        if (fim >= ini) por_mes.push(Math.round((fim - ini) / MS_PER_DAY) + 1);
+        cursor = proximo_mes;
+    }
+
+    const dias_mes1 = por_mes[0] || 0;
+    const dias_mes2 = por_mes[1] || 0;
+    const dias_mes3 = por_mes.slice(2).reduce((acc, d) => acc + d, 0);
+
+    return { dias_mes1, dias_mes2, dias_mes3, dias_totais: Math.max(dias_mes1 + dias_mes2 + dias_mes3, 1) };
 }
 
 /**
@@ -547,7 +581,11 @@ export function calcular_fatura(params, dbRows) {
 
     const band_mes1 = (params.bandeira_mes1 || "VERDE").toUpperCase();
     const band_mes2 = (params.bandeira_mes2 || "VERDE").toUpperCase();
-    const { dias_mes1, dias_mes2, dias_totais } = calcular_proporcionalidade_dias(data_anterior, data_atual);
+    // A bandeira do mês 3 só entra quando o período de leitura cruza três
+    // meses-calendário; nos ciclos normais dias_mes3 é zero e o valor aqui
+    // não tem efeito nenhum.
+    const band_mes3 = (params.bandeira_mes3 || "VERDE").toUpperCase();
+    const { dias_mes1, dias_mes2, dias_mes3, dias_totais } = calcular_proporcionalidade_dias(data_anterior, data_atual);
 
     const consumo_faturado_liquido = bases.filter((b) => b.nome.startsWith("TUSD - Consumo") && !b.nome.includes("Reservado") && b.tarifa > 0).reduce((acc, b) => acc + b.qtd, 0);
     const consumo_total_bandeira = consumo_faturado_liquido + consumo_reservado + consumo_br_total;
@@ -568,6 +606,7 @@ export function calcular_fatura(params, dbRows) {
         let fator_mes = 0;
         if (band_mes1 === nome) fator_mes += (dias_mes1 / dias_totais);
         if (band_mes2 === nome) fator_mes += (dias_mes2 / dias_totais);
+        if (band_mes3 === nome) fator_mes += (dias_mes3 / dias_totais);
 
         if (fator_mes > 0) {
             tarifa_bandeira_efetiva += tarifa_padrao * fator_mes;

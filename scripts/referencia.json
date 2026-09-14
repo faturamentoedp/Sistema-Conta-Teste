@@ -2200,7 +2200,7 @@
     }
   },
   {
-    "nome": "B1C 80 kWh (isencao de ICMS ate 90 no ES)",
+    "nome": "B1C ES 80 kWh (acima da isencao de 50 kWh -> ICMS 17%)",
     "resultado": {
       "detalhes": [
         {
@@ -2208,26 +2208,26 @@
           "unidade": "kWh",
           "quantidade": 80,
           "tarifa_base": 0.46863,
-          "preco_unit": 0.49924999999999997,
-          "valor_total": 39.94,
+          "preco_unit": 0.6014999999999999,
+          "valor_total": 48.12,
           "base_pis_cofins": 39.94,
           "valor_pis_cofins": 2.45,
-          "base_icms": 0,
-          "aliquota_icms": 0,
-          "valor_icms": 0
+          "base_icms": 48.12,
+          "aliquota_icms": 17,
+          "valor_icms": 8.18
         },
         {
           "nome": "TE - Consumo",
           "unidade": "kWh",
           "quantidade": 80,
           "tarifa_base": 0.32068,
-          "preco_unit": 0.34162499999999996,
-          "valor_total": 27.33,
+          "preco_unit": 0.411625,
+          "valor_total": 32.93,
           "base_pis_cofins": 27.33,
           "valor_pis_cofins": 1.68,
-          "base_icms": 0,
-          "aliquota_icms": 0,
-          "valor_icms": 0
+          "base_icms": 32.93,
+          "aliquota_icms": 17,
+          "valor_icms": 5.6
         },
         {
           "nome": "TUSD - Fio B (Item Informativo)",
@@ -2259,13 +2259,13 @@
         }
       ],
       "resumo": {
-        "total_energia": 67.27,
+        "total_energia": 81.05,
         "total_pis_cofins": 4.13,
         "total_base_pis_cofins": 67.27,
         "total_pis": 0.73,
         "total_cofins": 3.39,
-        "total_icms": 0,
-        "total_fatura": 67.27,
+        "total_icms": 13.78,
+        "total_fatura": 81.05,
         "valor_cip": 0,
         "valor_fio_b": 16.31,
         "tarifa_fio_b_unit": 0.203831,
@@ -2276,6 +2276,354 @@
         "consumo_faturado": 80,
         "aliquota_pis_aplicada": 0.0109,
         "aliquota_cofins_aplicada": 0.0504,
+        "aliquota_icms_aplicada": 0.17
+      }
+    }
+  },
+  {
+    "nome": "Tres bandeiras: periodo cruza 3 meses (25/04 a 02/06, 5/31/2 dias)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "TUSD - Consumo",
+          "unidade": "kWh",
+          "quantidade": 380,
+          "tarifa_base": 0.46863,
+          "preco_unit": 0.5861842105263158,
+          "valor_total": 222.75,
+          "base_pis_cofins": 184.88,
+          "valor_pis_cofins": 6.8,
+          "base_icms": 222.75,
+          "aliquota_icms": 17,
+          "valor_icms": 37.87
+        },
+        {
+          "nome": "TE - Consumo",
+          "unidade": "kWh",
+          "quantidade": 380,
+          "tarifa_base": 0.32068,
+          "preco_unit": 0.40113157894736845,
+          "valor_total": 152.43,
+          "base_pis_cofins": 126.52,
+          "valor_pis_cofins": 4.66,
+          "base_icms": 152.43,
+          "aliquota_icms": 17,
+          "valor_icms": 25.91
+        },
+        {
+          "nome": "Adic.Band. Amarela",
+          "unidade": "kWh",
+          "quantidade": 310,
+          "tarifa_base": 0.01885,
+          "preco_unit": 0.023580645161290322,
+          "valor_total": 7.31,
+          "base_pis_cofins": 6.07,
+          "valor_pis_cofins": 0.22,
+          "base_icms": 7.31,
+          "aliquota_icms": 17,
+          "valor_icms": 1.24
+        },
+        {
+          "nome": "Adic.Band. Vermelha P1",
+          "unidade": "kWh",
+          "quantidade": 20,
+          "tarifa_base": 0.04463,
+          "preco_unit": 0.05550000000000001,
+          "valor_total": 1.11,
+          "base_pis_cofins": 0.92,
+          "valor_pis_cofins": 0.04,
+          "base_icms": 1.11,
+          "aliquota_icms": 17,
+          "valor_icms": 0.19
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 380,
+          "tarifa_base": 0.203831,
+          "preco_unit": 0.203831,
+          "valor_total": 77.46,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 380,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.92,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 383.6,
+        "total_pis_cofins": 11.72,
+        "total_base_pis_cofins": 318.39,
+        "total_pis": 2.1,
+        "total_cofins": 9.62,
+        "total_icms": 65.21,
+        "total_fatura": 383.6,
+        "valor_cip": 0,
+        "valor_fio_b": 77.46,
+        "tarifa_fio_b_unit": 0.203831,
+        "valor_escassez": -0.92,
+        "tarifa_escassez_unit": -0.0024104300000000003
+      },
+      "parametros_usados": {
+        "consumo_faturado": 380,
+        "aliquota_pis_aplicada": 0.0066,
+        "aliquota_cofins_aplicada": 0.0302,
+        "aliquota_icms_aplicada": 0.17
+      }
+    }
+  },
+  {
+    "nome": "B1C ES 40 kWh (dentro da isencao de 50 kWh -> ICMS zero)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "TUSD - Consumo",
+          "unidade": "kWh",
+          "quantidade": 40,
+          "tarifa_base": 0.46863,
+          "preco_unit": 0.49924999999999997,
+          "valor_total": 19.97,
+          "base_pis_cofins": 19.97,
+          "valor_pis_cofins": 1.23,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TE - Consumo",
+          "unidade": "kWh",
+          "quantidade": 40,
+          "tarifa_base": 0.32068,
+          "preco_unit": 0.3415,
+          "valor_total": 13.66,
+          "base_pis_cofins": 13.66,
+          "valor_pis_cofins": 0.84,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 40,
+          "tarifa_base": 0.203831,
+          "preco_unit": 0.203831,
+          "valor_total": 8.15,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 40,
+          "tarifa_base": -0.0024104300000000003,
+          "preco_unit": -0.0024104300000000003,
+          "valor_total": -0.1,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 33.629999999999995,
+        "total_pis_cofins": 2.07,
+        "total_base_pis_cofins": 33.63,
+        "total_pis": 0.37,
+        "total_cofins": 1.69,
+        "total_icms": 0,
+        "total_fatura": 33.63,
+        "valor_cip": 0,
+        "valor_fio_b": 8.15,
+        "tarifa_fio_b_unit": 0.203831,
+        "valor_escassez": -0.1,
+        "tarifa_escassez_unit": -0.0024104300000000003
+      },
+      "parametros_usados": {
+        "consumo_faturado": 40,
+        "aliquota_pis_aplicada": 0.0109,
+        "aliquota_cofins_aplicada": 0.0504,
+        "aliquota_icms_aplicada": 0
+      }
+    }
+  },
+  {
+    "nome": "SP B1C 70 kWh (dentro da isencao de 90 kWh -> ICMS zero)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "TUSD - Consumo",
+          "unidade": "kWh",
+          "quantidade": 70,
+          "tarifa_base": 0.45667,
+          "preco_unit": 0.4837142857142857,
+          "valor_total": 33.86,
+          "base_pis_cofins": 33.86,
+          "valor_pis_cofins": 1.89,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TE - Consumo",
+          "unidade": "kWh",
+          "quantidade": 70,
+          "tarifa_base": 0.33003,
+          "preco_unit": 0.34957142857142853,
+          "valor_total": 24.47,
+          "base_pis_cofins": 24.47,
+          "valor_pis_cofins": 1.36,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 70,
+          "tarifa_base": 0.2055015,
+          "preco_unit": 0.21766920877025742,
+          "valor_total": 15.24,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 58.33,
+        "total_pis_cofins": 3.25,
+        "total_base_pis_cofins": 58.33,
+        "total_pis": 0.58,
+        "total_cofins": 2.68,
+        "total_icms": 0,
+        "total_fatura": 58.33,
+        "valor_cip": 0,
+        "valor_fio_b": 15.24,
+        "tarifa_fio_b_unit": 0.21766920877025742,
+        "valor_escassez": 0,
+        "tarifa_escassez_unit": 0
+      },
+      "parametros_usados": {
+        "consumo_faturado": 70,
+        "aliquota_pis_aplicada": 0.01,
+        "aliquota_cofins_aplicada": 0.0459,
+        "aliquota_icms_aplicada": 0
+      }
+    }
+  },
+  {
+    "nome": "SP Baixa Renda 70 kWh (mesmas faixas do residencial -> ICMS zero)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "Subvenção Tarifária",
+          "unidade": "",
+          "quantidade": 41.398,
+          "tarifa_base": 0,
+          "preco_unit": 1.0000483115126333,
+          "valor_total": 41.4,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "Crédito Subvenção Tarifária",
+          "unidade": "",
+          "quantidade": -41.398,
+          "tarifa_base": 1,
+          "preco_unit": 1,
+          "valor_total": -41.4,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD-Consumo MP1300",
+          "unidade": "kWh",
+          "quantidade": 70,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TE - Consumo MP 1300",
+          "unidade": "kWh",
+          "quantidade": 70,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 70,
+          "tarifa_base": 0.13536,
+          "preco_unit": 0.14337464251668258,
+          "valor_total": 10.04,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 0,
+        "total_pis_cofins": 0,
+        "total_base_pis_cofins": 0,
+        "total_pis": 0,
+        "total_cofins": 0,
+        "total_icms": 0,
+        "total_fatura": 0,
+        "valor_cip": 0,
+        "valor_fio_b": 10.04,
+        "tarifa_fio_b_unit": 0.14337464251668258,
+        "valor_escassez": 0,
+        "tarifa_escassez_unit": 0
+      },
+      "parametros_usados": {
+        "consumo_faturado": 70,
+        "aliquota_pis_aplicada": 0.01,
+        "aliquota_cofins_aplicada": 0.0459,
         "aliquota_icms_aplicada": 0
       }
     }
@@ -3656,7 +4004,7 @@
     }
   },
   {
-    "nome": "SP B1C 250 kWh (isencao de ICMS ate 50)",
+    "nome": "SP B1C 250 kWh (acima de 200 kWh -> ICMS 18%)",
     "resultado": {
       "detalhes": [
         {

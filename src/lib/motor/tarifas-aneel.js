@@ -82,8 +82,19 @@ export const PERC_REDUCAO_GD = {
  *   SP 291 kWh -> 18%  (fatura de SP da Subvenção Tarifária)
  *   ES 154 kWh -> 17%  (fatura Doc 265002360732)
  *
- * A faixa de isenção vem das regras internas do projeto: até 90 kWh no ES e
- * até 50 kWh em SP.
+ * A faixa de isenção vem da planilha "Regra de tributação 1.xlsx", validada
+ * pelo Tributário e confirmada pela área em 10/09/2026:
+ *   ES - Residencial isento até 50 kWh, 17% acima.
+ *   SP - Residencial isento de 0 a 90 kWh, 12% de 91 a 200, 18% acima de 200.
+ *   SP - Baixa Renda segue exatamente as mesmas faixas do Residencial.
+ *
+ * ⚠️ ATENÇÃO AO HISTÓRICO: o documento antigo "Regras e Premissas.txt" dizia o
+ * contrário - "até 90 kWh para ES e 50 kWh para SP" - e foi essa versão
+ * trocada que o motor usou até 10/09/2026. Nenhuma fatura real validada cai na
+ * faixa de 50 a 90 kWh, então o erro nunca apareceu nos testes: todas as
+ * contas conferidas estão acima dos dois limites e dão o mesmo resultado nas
+ * duas regras. Se alguém reabrir essa discussão, a fonte boa é a planilha do
+ * Tributário, não o premissas.
  *
  * ⚠️ O limite de 200 kWh entre 12% e 18% em SP é o valor clássico da
  * legislação paulista, mas não foi comprovado por fatura: os pontos que temos
@@ -96,11 +107,11 @@ export const PERC_REDUCAO_GD = {
  */
 export const ICMS_FAIXAS_RESIDENCIAL = {
     ES: [
-        { ate: 90, aliquota: 0 },
+        { ate: 50, aliquota: 0 },
         { ate: Infinity, aliquota: 0.17 }
     ],
     SP: [
-        { ate: 50, aliquota: 0 },
+        { ate: 90, aliquota: 0 },
         { ate: 200, aliquota: 0.12 },
         { ate: Infinity, aliquota: 0.18 }
     ]

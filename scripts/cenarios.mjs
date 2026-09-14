@@ -208,11 +208,61 @@ export const CENARIOS = [
         }
     },
     {
-        nome: 'B1C 80 kWh (isencao de ICMS ate 90 no ES)',
+        // Antes de 10/09/2026 este cenário se chamava "isencao de ICMS ate 90
+        // no ES" e saía isento, porque o motor usava o limite trocado do
+        // documento antigo de premissas. A planilha do Tributário fixou o
+        // limite do ES em 50 kWh, então 80 kWh passa a pagar 17%.
+        nome: 'B1C ES 80 kWh (acima da isencao de 50 kWh -> ICMS 17%)',
         params: {
             distribuidora: 'ES', categoria: 'B1C', fase: 'monofasico',
             data_leitura_anterior: '2026-06-05', data_leitura_atual: '2026-07-05',
             consumo_kwh: 80, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            valor_cip: 0, ajustes: []
+        }
+    },
+    // ---------------------------------------------------------------------
+    // Faixa de 50 a 90 kWh: é a única em que o limite antigo (trocado) e o da
+    // planilha do Tributário divergem. Nenhuma fatura real cai aqui, por isso
+    // o erro passou despercebido - estes três cenários travam a regra nova.
+    // ---------------------------------------------------------------------
+    {
+        // Ciclo longo que cruza abril, maio e junho (5 + 31 + 2 = 38 dias).
+        // Até 14/09/2026 o motor somava abril e maio num bloco só e cobrava os
+        // dois com a bandeira do mês 1; agora cada mês paga a sua.
+        nome: 'Tres bandeiras: periodo cruza 3 meses (25/04 a 02/06, 5/31/2 dias)',
+        params: {
+            distribuidora: 'ES', categoria: 'B1C', fase: 'monofasico',
+            data_leitura_anterior: '2026-04-25', data_leitura_atual: '2026-06-02',
+            consumo_kwh: 380,
+            bandeira_mes1: 'VERDE', bandeira_mes2: 'AMARELA', bandeira_mes3: 'VERMELHA_P1',
+            valor_cip: 0, ajustes: []
+        }
+    },
+    {
+        nome: 'B1C ES 40 kWh (dentro da isencao de 50 kWh -> ICMS zero)',
+        params: {
+            distribuidora: 'ES', categoria: 'B1C', fase: 'monofasico',
+            data_leitura_anterior: '2026-06-05', data_leitura_atual: '2026-07-05',
+            consumo_kwh: 40, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            valor_cip: 0, ajustes: []
+        }
+    },
+    {
+        nome: 'SP B1C 70 kWh (dentro da isencao de 90 kWh -> ICMS zero)',
+        params: {
+            distribuidora: 'SP', categoria: 'B1C', fase: 'monofasico',
+            data_leitura_anterior: '2026-06-05', data_leitura_atual: '2026-07-05',
+            consumo_kwh: 70, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            valor_cip: 0, ajustes: []
+        }
+    },
+    {
+        // A Cristiane confirmou em 10/09/2026: "baixa renda segue o mesmo para SP".
+        nome: 'SP Baixa Renda 70 kWh (mesmas faixas do residencial -> ICMS zero)',
+        params: {
+            distribuidora: 'SP', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', fase: 'monofasico',
+            data_leitura_anterior: '2026-06-05', data_leitura_atual: '2026-07-05',
+            consumo_kwh: 70, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
             valor_cip: 0, ajustes: []
         }
     },
@@ -332,7 +382,7 @@ export const CENARIOS = [
         }
     },
     {
-        nome: 'SP B1C 250 kWh (isencao de ICMS ate 50)',
+        nome: 'SP B1C 250 kWh (acima de 200 kWh -> ICMS 18%)',
         params: {
             distribuidora: 'SP', categoria: 'B1C', fase: 'monofasico',
             data_leitura_anterior: '2026-05-10', data_leitura_atual: '2026-06-10',
