@@ -736,6 +736,164 @@
     }
   },
   {
+    "nome": "FATURA REAL SP Baixa Renda Inst. 151389514 (perda de 1,5% no ramal)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "Subvenção Tarifária",
+          "unidade": "",
+          "quantidade": 47.312,
+          "tarifa_base": 0,
+          "preco_unit": 1.21956374704092,
+          "valor_total": 57.7,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 57.7,
+          "aliquota_icms": 18,
+          "valor_icms": 10.39
+        },
+        {
+          "nome": "Crédito Subvenção Tarifária",
+          "unidade": "",
+          "quantidade": -47.312,
+          "tarifa_base": 1,
+          "preco_unit": 1,
+          "valor_total": -47.31,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD-Consumo MP1300",
+          "unidade": "kWh",
+          "quantidade": 80,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TE - Consumo MP 1300",
+          "unidade": "kWh",
+          "quantidade": 80,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Consumo MP1300",
+          "unidade": "kWh",
+          "quantidade": 308,
+          "tarifa_base": 0.3008,
+          "preco_unit": 0.3936038961038961,
+          "valor_total": 121.23,
+          "base_pis_cofins": 99.41,
+          "valor_pis_cofins": 6.76,
+          "base_icms": 121.23,
+          "aliquota_icms": 18,
+          "valor_icms": 21.82
+        },
+        {
+          "nome": "TE - Consumo MP1300",
+          "unidade": "kWh",
+          "quantidade": 308,
+          "tarifa_base": 0.2906,
+          "preco_unit": 0.3802597402597403,
+          "valor_total": 117.12,
+          "base_pis_cofins": 96.04,
+          "valor_pis_cofins": 6.53,
+          "base_icms": 117.12,
+          "aliquota_icms": 18,
+          "valor_icms": 21.08
+        },
+        {
+          "nome": "Adic.Band. Amarela MP1300",
+          "unidade": "kWh",
+          "quantidade": 80,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "Adic.Band. Amarela MP1300",
+          "unidade": "kWh",
+          "quantidade": 308,
+          "tarifa_base": 0.01885,
+          "preco_unit": 0.024642857142857143,
+          "valor_total": 7.59,
+          "base_pis_cofins": 6.22,
+          "valor_pis_cofins": 0.43,
+          "base_icms": 7.59,
+          "aliquota_icms": 18,
+          "valor_icms": 1.37
+        },
+        {
+          "nome": "C. Todos - 0800 283 8916",
+          "unidade": "",
+          "quantidade": 1,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 33.4,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 388,
+          "tarifa_base": 0.13536,
+          "preco_unit": 0.17711713597822673,
+          "valor_total": 68.72,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 256.33,
+        "total_pis_cofins": 13.72,
+        "total_base_pis_cofins": 201.67,
+        "total_pis": 2.44,
+        "total_cofins": 11.27,
+        "total_icms": 54.66,
+        "total_fatura": 289.73,
+        "valor_cip": 0,
+        "valor_fio_b": 68.72,
+        "tarifa_fio_b_unit": 0.17711713597822673,
+        "valor_escassez": 0,
+        "tarifa_escassez_unit": 0
+      },
+      "parametros_usados": {
+        "consumo_faturado": 388,
+        "aliquota_pis_aplicada": 0.0121,
+        "aliquota_cofins_aplicada": 0.0559,
+        "aliquota_icms_aplicada": 0.18
+      }
+    }
+  },
+  {
     "nome": "FATURA REAL SP B1C 158 kWh (ICMS de 12% pela faixa de consumo)",
     "resultado": {
       "detalhes": [

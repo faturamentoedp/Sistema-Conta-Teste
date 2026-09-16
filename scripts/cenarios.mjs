@@ -83,6 +83,24 @@ export const CENARIOS = [
         }
     },
     {
+        // Baixa Renda de SP com a perda de 1,5% do ramal ("Desconto BT").
+        // O consumo medido foi 394 kWh; a perda derruba para 388,09, que a
+        // conta fatura arredondado para 388 - daí 388 - 80 isentos = 308,0000.
+        // ATENÇÃO: o arredondamento acontece no formulário (page.tsx), não no
+        // motor. Aqui o consumo já entra com a perda aplicada, então este
+        // cenário cobre só a metade do motor; a regra do arredondamento em si
+        // não tem cobertura automática.
+        nome: 'FATURA REAL SP Baixa Renda Inst. 151389514 (perda de 1,5% no ramal)',
+        fatura_real: 289.74,
+        params: {
+            distribuidora: 'SP', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', fase: 'monofasico',
+            data_leitura_anterior: '2026-08-13', data_leitura_atual: '2026-09-15',
+            consumo_kwh: 388, bandeira_mes1: 'AMARELA', bandeira_mes2: 'AMARELA',
+            valor_cip: 0,
+            ajustes: [{ nome: 'C. Todos - 0800 283 8916', valor: 33.40 }]
+        }
+    },
+    {
         nome: 'FATURA REAL SP B1C 158 kWh (ICMS de 12% pela faixa de consumo)',
         fatura_real: 172.82,
         params: {

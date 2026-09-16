@@ -89,6 +89,17 @@ export default function Home() {
     try {
       const fatorBT = descontoBT ? 0.985 : 1.0;
 
+      // A perda de 1,5% do ramal incide sobre o consumo medido e o resultado é
+      // arredondado para kWh INTEIRO antes de qualquer outra regra. Conferido
+      // na fatura da Inst. 151389514 (SP, Baixa Renda): 394 x 0,985 = 388,09,
+      // que a conta fatura como 388 - daí 388 - 80 isentos = 308,0000. Sem o
+      // arredondamento o simulador levava 308,0900 adiante e fechava R$ 0,06
+      // acima da fatura.
+      //
+      // Só arredonda quando o desconto está ligado: com ele desligado, um
+      // consumo com decimais informado à mão continua passando como está.
+      const aplicaBT = (valor: number) => descontoBT ? Math.round(valor * fatorBT) : valor;
+
       const rawKwh = parseFloat(String(form.consumo_kwh).replace(',', '.')) || 0;
       const rawReservado = parseFloat(String(form.consumo_reservado).replace(',', '.')) || 0;
       const rawPonta = parseFloat(String(form.consumo_ponta).replace(',', '.')) || 0;
@@ -97,11 +108,11 @@ export default function Home() {
 
       const payload = {
         ...form,
-        consumo_kwh: rawKwh * fatorBT,
-        consumo_reservado: rawReservado * fatorBT,
-        consumo_ponta: rawPonta * fatorBT,
-        consumo_fora_ponta: rawForaPonta * fatorBT,
-        consumo_intermediario: rawInterm * fatorBT,
+        consumo_kwh: aplicaBT(rawKwh),
+        consumo_reservado: aplicaBT(rawReservado),
+        consumo_ponta: aplicaBT(rawPonta),
+        consumo_fora_ponta: aplicaBT(rawForaPonta),
+        consumo_intermediario: aplicaBT(rawInterm),
         inj_ponta: parseFloat(String(form.inj_ponta || '').replace(',', '.')) || 0,
         inj_fora_ponta: parseFloat(String(form.inj_fora_ponta || '').replace(',', '.')) || 0,
         inj_intermediario: parseFloat(String(form.inj_intermediario || '').replace(',', '.')) || 0,
@@ -114,7 +125,7 @@ export default function Home() {
           ? geradoras
               .filter(g => g.consumo !== '')
               .map(g => ({
-                consumo: (parseFloat(String(g.consumo).replace(',', '.')) || 0) * fatorBT,
+                consumo: aplicaBT(parseFloat(String(g.consumo).replace(',', '.')) || 0),
                 percentual: parseFloat(String(g.percentual).replace(',', '.')) || 0,
                 modalidade: brOuTb ? 'GD1' : g.modalidade,
               }))
@@ -499,7 +510,7 @@ export default function Home() {
                   <span className="text-xs font-bold text-slate-800">Desconto BT (-1,5% kWh)</span>
                   <span className="text-[11px] text-slate-500 font-medium">
                     {descontoBT
-                      ? `✓ Aplicado: ${(parseFloat(form.consumo_kwh || '0') * 0.985).toFixed(2)} kWh`
+                      ? `✓ Aplicado: ${Math.round((parseFloat(form.consumo_kwh || '0') || 0) * 0.985)} kWh`
                       : 'Reduz a quantidade de kWh faturada em 1,5%'}
                   </span>
                 </div>
