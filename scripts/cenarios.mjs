@@ -101,6 +101,24 @@ export const CENARIOS = [
         }
     },
     {
+        // Confirma que a perda de 1,5% do ramal ("Desconto BT") não é
+        // exclusiva do Baixa Renda: o B1CDE (Desconto Social Lei 15.235,
+        // faixa de 120 kWh) também sofre. O medidor registrou 313 kWh
+        // (leitura 10.294 - 9.981), mas a fatura cobra 308 (120 até + 188
+        // acima) - exatamente round(313 x 0,985) = round(308,305) = 308.
+        // Reportado pela Debora (SP) em 22/09/2026, NF-e 027.725.044.
+        // Mesma ressalva do cenário anterior: o arredondamento é feito no
+        // formulário (page.tsx), aqui o consumo já entra pós-perda.
+        nome: 'FATURA REAL SP B1CDE NF-e 027.725.044 (Desconto Social, perda de 1,5% no ramal: 313 medido -> 308 faturado)',
+        fatura_real: 308.97,
+        params: {
+            distribuidora: 'SP', categoria: 'B1CDE', fase: 'bifasico',
+            data_leitura_anterior: '2026-08-19', data_leitura_atual: '2026-09-21',
+            consumo_kwh: 308, bandeira_mes1: 'AMARELA', bandeira_mes2: 'AMARELA',
+            valor_cip: 10.31, ajustes: []
+        }
+    },
+    {
         nome: 'FATURA REAL SP B1C 158 kWh (ICMS de 12% pela faixa de consumo)',
         fatura_real: 172.82,
         params: {

@@ -894,6 +894,112 @@
     }
   },
   {
+    "nome": "FATURA REAL SP B1CDE NF-e 027.725.044 (Desconto Social, perda de 1,5% no ramal: 313 medido -> 308 faturado)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "TUSD - Consumo até 120 KWh",
+          "unidade": "kWh",
+          "quantidade": 120,
+          "tarifa_base": 0.31629,
+          "preco_unit": 0.41383333333333333,
+          "valor_total": 49.66,
+          "base_pis_cofins": 40.72,
+          "valor_pis_cofins": 2.77,
+          "base_icms": 49.66,
+          "aliquota_icms": 18,
+          "valor_icms": 8.94
+        },
+        {
+          "nome": "TE - Consumo até 120 KWh",
+          "unidade": "kWh",
+          "quantidade": 120,
+          "tarifa_base": 0.30475,
+          "preco_unit": 0.39875,
+          "valor_total": 47.85,
+          "base_pis_cofins": 39.24,
+          "valor_pis_cofins": 2.66,
+          "base_icms": 47.85,
+          "aliquota_icms": 18,
+          "valor_icms": 8.61
+        },
+        {
+          "nome": "TUSD - Consumo acima de 120 KWh",
+          "unidade": "kWh",
+          "quantidade": 188,
+          "tarifa_base": 0.45667,
+          "preco_unit": 0.5975531914893617,
+          "valor_total": 112.34,
+          "base_pis_cofins": 92.12,
+          "valor_pis_cofins": 6.26,
+          "base_icms": 112.34,
+          "aliquota_icms": 18,
+          "valor_icms": 20.22
+        },
+        {
+          "nome": "TE - Consumo acima de 120 KWh",
+          "unidade": "kWh",
+          "quantidade": 188,
+          "tarifa_base": 0.33003,
+          "preco_unit": 0.43186170212765956,
+          "valor_total": 81.19,
+          "base_pis_cofins": 66.58,
+          "valor_pis_cofins": 4.53,
+          "base_icms": 81.19,
+          "aliquota_icms": 18,
+          "valor_icms": 14.61
+        },
+        {
+          "nome": "Adic.Band. Amarela",
+          "unidade": "kWh",
+          "quantidade": 308,
+          "tarifa_base": 0.01885,
+          "preco_unit": 0.024675324675324673,
+          "valor_total": 7.6,
+          "base_pis_cofins": 6.23,
+          "valor_pis_cofins": 0.43,
+          "base_icms": 7.6,
+          "aliquota_icms": 18,
+          "valor_icms": 1.37
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 308,
+          "tarifa_base": 0.1423305,
+          "preco_unit": 0.18623796189678635,
+          "valor_total": 57.36,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 298.64,
+        "total_pis_cofins": 16.65,
+        "total_base_pis_cofins": 244.89,
+        "total_pis": 2.96,
+        "total_cofins": 13.69,
+        "total_icms": 53.74999999999999,
+        "total_fatura": 308.95,
+        "valor_cip": 10.31,
+        "valor_fio_b": 57.36,
+        "tarifa_fio_b_unit": 0.18623796189678635,
+        "valor_escassez": 0,
+        "tarifa_escassez_unit": 0
+      },
+      "parametros_usados": {
+        "consumo_faturado": 308,
+        "aliquota_pis_aplicada": 0.0121,
+        "aliquota_cofins_aplicada": 0.0559,
+        "aliquota_icms_aplicada": 0.18
+      }
+    }
+  },
+  {
     "nome": "FATURA REAL SP B1C 158 kWh (ICMS de 12% pela faixa de consumo)",
     "resultado": {
       "detalhes": [
