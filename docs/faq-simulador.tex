@@ -1,0 +1,344 @@
+% ============================================================
+% Duvidas do Simulador EDP - documento de apoio (FAQ)
+% Compilar com pdflatex (2 passadas, por causa do sumario/hyperref):
+%   pdflatex faq-simulador.tex
+%   pdflatex faq-simulador.tex
+% ============================================================
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazilian]{babel}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{enumitem}
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{tcolorbox}
+\usepackage{parskip}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+
+% ---------- Paleta (mesmas cores do simulador e das bandeiras) ----------
+\definecolor{primary}{HTML}{2F364B}   % azul EDP, cabecalho do sistema
+\definecolor{verde}{HTML}{1E8E4F}     % bandeira verde
+\definecolor{amarela}{HTML}{96700A}   % bandeira amarela
+\definecolor{vermelha}{HTML}{AE372F}  % bandeira vermelha
+\definecolor{tinta}{HTML}{1E2233}
+\definecolor{tintasuave}{HTML}{5B6178}
+\definecolor{linha}{HTML}{D9D4C2}
+\definecolor{fundoclaro}{HTML}{F1EEE3}
+
+% ---------- Secoes com filete azul ----------
+\titleformat{\section}
+  {\Large\bfseries\color{primary}}{\thesection}{0.6em}{}
+  [{\color{linha}\titlerule}]
+\titlespacing*{\section}{0pt}{22pt}{10pt}
+
+% ---------- Perguntas como paragraph em destaque ----------
+\titleformat{\paragraph}{\bfseries\color{primary}}{}{0pt}{}
+\titlespacing*{\paragraph}{0pt}{11pt}{3pt}
+
+\setlist[itemize]{leftmargin=1.4em, itemsep=3pt, topsep=3pt}
+
+% ---------- Caixas de aviso (mesma logica das bandeiras) ----------
+\newtcolorbox{tipbox}{colback=verde!7!white, colframe=verde, boxrule=0.6pt,
+  arc=1.5pt, boxsep=3pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  before skip=7pt, after skip=9pt, fontupper=\small\color{tinta}}
+\newtcolorbox{warnbox}{colback=amarela!8!white, colframe=amarela, boxrule=0.6pt,
+  arc=1.5pt, boxsep=3pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  before skip=7pt, after skip=9pt, fontupper=\small\color{tinta}}
+\newtcolorbox{critbox}{colback=vermelha!8!white, colframe=vermelha, boxrule=0.6pt,
+  arc=1.5pt, boxsep=3pt, left=6pt, right=6pt, top=4pt, bottom=4pt,
+  before skip=7pt, after skip=9pt, fontupper=\small\color{tinta}}
+
+% ---------- Faixa de "numeros rapidos" no topo ----------
+\newtcolorbox{fatobox}{colback=fundoclaro, colframe=linha, boxrule=0.5pt,
+  arc=2pt, boxsep=6pt, left=8pt, right=8pt, top=6pt, bottom=6pt}
+
+% ---------- Cabecalho / rodape ----------
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.3pt}
+\fancyhead[L]{\small\color{tintasuave}Simulador de Faturas EDP}
+\fancyhead[R]{\small\color{tintasuave}Documento de apoio}
+\fancyfoot[C]{\small\color{tintasuave}\thepage}
+
+\setcounter{tocdepth}{1}
+\setcounter{secnumdepth}{1}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=primary,
+  urlcolor=primary,
+  citecolor=primary,
+  pdftitle={Duvidas do Simulador EDP},
+  pdfauthor={Equipe do Simulador de Faturas EDP},
+  pdfsubject={Perguntas frequentes sobre acesso, ativacao e uso do simulador},
+  bookmarksopen=true
+}
+
+\newcommand{\campo}[1]{\texttt{\small #1}}
+
+\begin{document}
+
+% ================= CAPA / CABECALHO =================
+\begin{center}
+  {\small\textcolor{tintasuave}{\textbullet\ \textbullet\ \textbullet}\\[2pt]}
+  {\small\scshape\textcolor{tintasuave}{Simulador de Faturas EDP \textperiodcentered\ Documento de apoio}}\\[6pt]
+  {\Huge\bfseries\color{primary}Dúvidas frequentes}\\[4pt]
+  {\Large\color{primary}antes e durante o uso}\\[14pt]
+\end{center}
+
+\noindent Este guia reúne as perguntas mais comuns sobre como acessar o simulador e como preencher e interpretar cada campo do formulário. Não substitui a análise da fatura real --- é um apoio para simular com menos dúvida.
+
+\vspace{10pt}
+\begin{fatobox}
+\begin{tabularx}{\textwidth}{>{\raggedright}X >{\raggedright}X >{\raggedright}X}
+{\footnotesize\bfseries\color{tintasuave}DIFERENÇA ACEITA} &
+{\footnotesize\bfseries\color{tintasuave}GEOGRAFIAS} &
+{\footnotesize\bfseries\color{tintasuave}INSTALAÇÃO NECESSÁRIA} \\[2pt]
+{\Large\ttfamily\color{primary}R\$ 0,03} &
+{\Large\ttfamily\color{primary}ES \textperiodcentered\ SP} &
+{\Large\ttfamily\color{primary}Nenhuma} \\
+\end{tabularx}
+\end{fatobox}
+
+\vspace{6pt}
+\tableofcontents
+\vspace{4pt}
+
+% ================= 01 ACESSO =================
+\section{Antes de começar: acesso e ativação}
+
+\paragraph{Como eu acesso o simulador?}
+Pelo link publicado pelo time --- normalmente um endereço fixo em \campo{*.vercel.app}. É uma página web comum, sem instalação: abre em qualquer navegador (Chrome, Edge, Safari), no computador ou no celular.
+
+\begin{tipbox}
+\textbf{Dica:} salve o link nos favoritos. Ele não muda quando o sistema é atualizado --- cada nova versão sobe no mesmo endereço.
+\end{tipbox}
+
+\paragraph{Preciso instalar algum programa?}
+Não. A versão publicada é só uma página web e já traz as tarifas embutidas --- não precisa de acesso ao banco de dados da EDP nem de nenhum programa extra na sua máquina.
+
+\paragraph{Preciso de login e senha?}
+Só se quem administra tiver configurado uma senha de acesso. Nesse caso o navegador mostra uma caixa pedindo usuário e senha --- o usuário pode ser qualquer texto, só a senha combinada é conferida. Se não houver senha configurada, a página abre direto, sem pedir nada.
+
+\paragraph{Funciona pela VPN Netskope, de casa ou fora da rede da EDP?}
+Sim. A versão publicada roda fora da rede da EDP, então funciona do mesmo jeito estando no escritório, em casa ou conectado pela VPN --- não depende de estar na rede física da empresa.
+
+\paragraph{O simulador grava alguma informação minha?}
+Não. Cada simulação existe só enquanto a página está aberta na sua tela; nada fica salvo em nenhum banco. Se quiser guardar um resultado, use o botão \textbf{"Baixar Tabela (CSV/Excel)"} depois de calcular.
+
+\paragraph{Isso é uma fatura oficial? Tem valor fiscal?}
+Não. É uma ferramenta de auditoria e conferência interna: reproduz o cálculo para comparar com a conta real, mas não emite, não substitui e não tem validade como documento fiscal.
+
+% ================= 02 PRIMEIROS PASSOS =================
+\section{Primeiros passos}
+
+\paragraph{Que informações eu preciso ter em mãos antes de simular?}
+De preferência, a fatura real (ou os dados dela) com:
+\begin{itemize}
+  \item Categoria / classificação da unidade;
+  \item Datas de leitura anterior e atual;
+  \item Consumo em kWh do período;
+  \item Bandeira(s) tarifária(s) vigentes;
+  \item Valor da CIP (Contribuição de Iluminação Pública);
+  \item Se houver: dados de Geração Distribuída, multas, devoluções ou retenções.
+\end{itemize}
+
+\paragraph{Qual a diferença entre EDP ES e EDP SP no formulário?}
+É a distribuidora. Cada uma tem sua própria base de tarifas, vigências de resolução ANEEL, alíquotas de ICMS e tabela mensal de PIS/COFINS --- o campo \textbf{Geografia} troca automaticamente todo esse conjunto de regras.
+
+\paragraph{Para que servem os campos "Instalação" e "Documento de Impressão"?}
+São identificadores livres, só para você reconhecer a simulação na tela e no arquivo exportado --- aparecem no cabeçalho do resultado e no nome do CSV. Não entram em nenhuma conta.
+
+\paragraph{Quais campos são obrigatórios?}
+Leitura anterior, leitura atual, e o consumo --- \campo{Consumo Ativo} na maioria das categorias, ou \campo{Ponta} / \campo{Fora Ponta} / \campo{Intermediário} na Tarifa Branca. Os demais campos já vêm com um valor padrão e podem ficar como estão quando não se aplicam à fatura.
+
+% ================= 03 CATEGORIA =================
+\section{Categoria, fase e tarifa}
+
+\paragraph{O que é o campo "Tarifas" e como escolher a categoria certa?}
+É a classificação da unidade consumidora --- a mesma que aparece na fatura real, perto de "Classificação" ou "Modalidade Tarifária". Escolher a categoria errada muda a estrutura inteira do cálculo (faixas, isenções, alíquotas), então vale confirmar na fatura antes de simular.
+
+\begin{warnbox}
+\textbf{Atenção:} categoria errada é a causa mais comum de um resultado bem diferente do esperado --- confira sempre antes de desconfiar da regra de cálculo.
+\end{warnbox}
+
+\paragraph{O que significam as siglas das categorias?}
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Sigla} & \textbf{Significado} \\
+\midrule
+B1C & Residencial Convencional. \\
+B1CDE & Residencial com Desconto Social (Lei 15.235) --- faixa de 120\,kWh com preço reduzido. \\
+B1BR\dots & Baixa Renda / Tarifa Social (MP 1300), com faixa de kWh isenta. \\
+B2RURAL & Rural Convencional. \\
+B2RUIRRG & Rural Irrigante, com desconto legal no Consumo Reservado. \\
+B3 & Comercial e Demais Classes. \\
+B4A / B4B & Iluminação Pública e Serviço Público. \\
+B3 (PPF) & Poder Público Federal --- retém PIS/PASEP, COFINS, CSLL e IR automaticamente. \\
+B3 (PPE) & Poder Público Estadual --- isento de ICMS, retém só IR. \\
+B3 (CP) & Variante de poder público --- isenta de ICMS apenas no ES; em SP paga ICMS normal. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Quando devo escolher uma opção "Branca" (Tarifa Branca)?}
+Quando a fatura real mostra tarifação por posto horário --- preços diferentes para Ponta, Intermediário e Fora Ponta --- e traz impresso "Modalidade Tarifária: BRANCA". Nesses casos o formulário troca o campo único de consumo pelos três postos automaticamente.
+
+\paragraph{O que é o campo "Fase" e de onde tiro essa informação?}
+É o tipo de fornecimento --- Monofásico, Bifásico ou Trifásico --- impresso na fatura real perto de "Tensão Nominal" ou "Tipo de Fornecimento". Ele define o consumo mínimo faturável (30, 50 ou 100\,kWh) usado no cálculo da Tarifa Branca.
+
+% ================= 04 DATAS E BANDEIRAS =================
+\section{Datas de leitura e bandeiras}
+
+\paragraph{Por que as datas de leitura são tão importantes?}
+Elas fixam o período de faturamento e decidem quantos dias caem em cada bandeira, em cada vigência de resolução ANEEL e em cada tabela mensal de PIS/COFINS. Uma data errada pode trocar a tarifa inteira usada no cálculo, mesmo que o resto do formulário esteja certo.
+
+\paragraph{Como funcionam as Bandeiras Mês 1 e Mês 2?}
+A maioria das faturas cruza dois meses-calendário. O sistema já reparte os dias proporcionalmente entre o Mês 1 (o mês da leitura anterior) e o Mês 2 (o mês da leitura atual) --- você só escolhe a cor de cada bandeira; a proporção de dias é calculada automaticamente pelas próprias datas.
+
+\paragraph{Quando eu uso a Bandeira Mês 3?}
+Só quando o período de leitura cruza \textbf{três} meses-calendário --- o que é raro, e normalmente acontece por atraso de leitura. Em ciclos normais (28 a 35 dias) deixe em \campo{Nenhum}: ela não entra na conta mesmo que seja preenchida.
+
+\paragraph{O sistema avisa se eu esqueci alguma coisa nas bandeiras?}
+Sim, dois avisos aparecem sozinhos embaixo do campo de bandeiras:
+
+\begin{tipbox}
+O período cruza menos de 3 meses e a Bandeira Mês 3 está preenchida --- ela não terá efeito.
+\end{tipbox}
+\begin{warnbox}
+O período cruza 3 meses e a Bandeira Mês 3 está em "Nenhum" --- os dias do último mês ficarão sem bandeira nenhuma.
+\end{warnbox}
+
+% ================= 05 CONSUMO / BT / SUDENE =================
+\section{Consumo, Desconto BT e SUDENE}
+
+\paragraph{Qual a diferença entre Consumo Ativo, Reservado, Ponta, Fora Ponta e Intermediário?}
+\begin{itemize}
+  \item \textbf{Ativo} --- o consumo comum, usado por quase todas as categorias.
+  \item \textbf{Reservado} --- só aparece no Irrigante (B2RUIRRG); tem desconto legal de 60\%.
+  \item \textbf{Ponta / Fora Ponta / Intermediário} --- substituem o Ativo nas categorias de Tarifa Branca, porque ali o preço do kWh muda por horário do dia.
+\end{itemize}
+
+\paragraph{O que é o "Desconto BT (-1,5\% kWh)" e quando eu ligo?}
+É a perda técnica de 1,5\% no ramal de ligação, que a EDP já desconta antes de faturar. Ligue esse toggle sempre que o número lançado for o \textbf{consumo medido no relógio} (leitura atual menos leitura anterior) --- o sistema aplica a perda e arredonda para o kWh inteiro automaticamente, igual à fatura real.
+
+Confirmado em faturas reais de Baixa Renda e também de B1CDE --- não é exclusivo de uma categoria específica dentre as convencionais. Não existe para Tarifa Branca, porque ali os postos horários já entram líquidos.
+
+\begin{tipbox}
+\textbf{Como confirmar que aplicou certo:} o texto abaixo do toggle muda para "\checkmark\ Aplicado: X kWh" --- esse é o valor que realmente entra no cálculo, não o que foi digitado.
+\end{tipbox}
+
+\paragraph{O que é o "Redutor SUDENE"?}
+É a repactuação UBP/SUDENE para municípios do Espírito Santo dentro da área de abrangência --- abate cerca de R\$ 7,81 por MWh a partir de 30/08/2026, proporcional aos dias do período que caem depois dessa data. Só aparece quando a Geografia é \textbf{ES}, e vale também para Tarifa Branca (diferente do Desconto BT).
+
+% ================= 06 GD =================
+\section{Geração Distribuída (GD / MMGD)}
+
+\paragraph{Quando marco a unidade como Geradora e quando como Receptora?}
+\textbf{Receptora} é quem recebe o desconto da energia compensada na própria fatura --- o caso mais comum. \textbf{Geradora} é a unidade que só injeta energia na rede para abater a fatura de outras unidades; ela mesma não recebe compensação nesta conta.
+
+\paragraph{O que são GD1, GD2 e GD3?}
+São os enquadramentos da Lei 14.300 (Marco da Geração Distribuída), que definem quanto da energia injetada é compensado:
+\begin{itemize}
+  \item \textbf{GD1} --- compensa 100\%.
+  \item \textbf{GD2} --- compensa 73,9\% do TUSD até 06/08/2026 e 75,22\% depois disso; o restante é Fio B.
+  \item \textbf{GD3} --- ainda não tem percentual oficial confirmado nos modelos recebidos.
+\end{itemize}
+
+\paragraph{Por que o GD3 dá erro em vez de calcular?}
+\begin{critbox}
+De propósito: em vez de inventar um percentual, o sistema recusa a simulação até o valor oficial do GD3 ser confirmado e cadastrado.
+\end{critbox}
+Se aparecer esse erro, é sinal de que essa fatura ainda não tem regra validada --- encaminhe para conferência antes de seguir com a simulação.
+
+\paragraph{Por que Baixa Renda e Tarifa Branca não deixam eu escolher o enquadramento da geradora?}
+Porque essas duas categorias sempre faturam como GD1 por regra --- o formulário fixa isso automaticamente e mostra um aviso explicando, então o campo de enquadramento fica bloqueado nesses casos.
+
+\paragraph{Posso simular uma receptora com várias geradoras rateando para ela?}
+Sim --- use "+ Adicionar outra geradora" para cada fonte, cada uma com o próprio consumo injetado, percentual de rateio e enquadramento.
+
+% ================= 07 CIP / ICMS / AJUSTES =================
+\section{CIP, ICMS e ajustes}
+
+\paragraph{De onde eu tiro o valor da CIP?}
+Da própria fatura real, na linha "Contribuição de Ilum. Pública" --- é um valor fixo por prefeitura e por mês, não é calculado pelo motor de tarifas. Se a conta não tiver CIP, deixe 0,00.
+
+\paragraph{Quando eu mudo a "Tributação de ICMS" do automático?}
+Quase nunca. O modo \campo{Automático} já aplica a regra certa por categoria e faixa de consumo (isento nos primeiros kWh, 12\%/17\%/18\% integral, ou 4\% reduzido rural no ES). Só troque manualmente se quiser testar um cenário específico com alíquota diferente da esperada para aquela categoria.
+
+\paragraph{Para que servem os botões "+ Multa", "+ Retenção IR" e "+ Outro Valor"?}
+Adicionam uma linha extra de ajuste, com nome e valor livres, para reproduzir qualquer item da fatura real que não tenha campo próprio no formulário: multas, juros de mora, devoluções, bônus, taxas de atendimento etc. O valor pode ser negativo (desconto) ou positivo.
+
+\paragraph{As categorias de Poder Público (PPF/PPE) já calculam retenção sozinhas?}
+Sim. \campo{B3 (PPF)} calcula automaticamente Retenção de PIS/PASEP, COFINS, CSLL e IR; \campo{B3 (PPE)} e \campo{B4A} em SP calculam automaticamente só a Retenção de IR (1,2\%). O botão "+ Retenção IR" em Ajustes serve só para os casos que não se encaixam nessas categorias.
+
+% ================= 08 RESULTADO =================
+\section{Lendo o resultado}
+
+\paragraph{O que significa cada card no topo do resultado?}
+\begin{center}
+\begin{tabularx}{\textwidth}{@{}l >{\raggedright\arraybackslash}X@{}}
+\toprule
+\textbf{Card} & \textbf{O que é} \\
+\midrule
+Total Energia & TUSD + TE, sem os impostos destacados. \\
+PIS/COFINS & Soma dos dois tributos federais. \\
+ICMS & Imposto estadual sobre a energia. \\
+Fio B & Informativo --- parcela de referência da rede; não entra no total. \\
+Escassez Hídrica & Informativo, quando aplicável; também não entra no total. \\
+Total Fatura & Valor final a pagar. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\paragraph{Por que aparece "Fio B (Informativo)" separado, sem entrar no total?}
+Porque é um item de referência que a EDP também imprime em faturas com Geração Distribuída, mostrando o custo de rede que a GD não paga --- mas ele não soma no valor a pagar, só informa.
+
+\paragraph{Como eu exporto o resultado para conferir depois?}
+Clique em \textbf{"Baixar Tabela (CSV/Excel)"}, acima da tabela de resultado. Sai um arquivo com todos os parâmetros usados na simulação e o detalhamento linha a linha, pronto para abrir no Excel.
+
+\paragraph{O simulador não bateu 100\% com a fatura real --- isso é erro?}
+Depende do tamanho da diferença. O critério definido pela área é até \textbf{R\$ 0,03} --- dentro disso é esperado, porque a EDP arredonda cada linha da fatura separadamente e o simulador distribui o imposto proporcionalmente ao total, o que produz um ou dois centavos de diferença conforme a composição da conta.
+
+\begin{warnbox}
+Diferença maior que R\$ 0,03 é sinal de erro de regra, não de arredondamento --- reporte esse caso (veja a última seção).
+\end{warnbox}
+
+% ================= 09 PROBLEMAS =================
+\section{Problemas comuns}
+
+\paragraph{Escolhi GD3 e apareceu um erro.}
+Esperado --- veja a pergunta sobre GD3 na seção de Geração Distribuída. Reporte a fatura para conferência antes de tentar simular esse enquadramento.
+
+\paragraph{Preenchi a Bandeira Mês 3 e não mudou nada no valor.}
+Confira as datas de leitura: a Bandeira Mês 3 só entra na conta se o período cruzar três meses-calendário. Em ciclos normais (28 a 35 dias) ela nunca é usada, mesmo preenchida.
+
+\paragraph{O resultado que eu vi na tela desapareceu.}
+É de propósito: qualquer mudança em qualquer campo do formulário limpa o resultado anterior, para evitar comparar um número antigo com parâmetros novos. Clique em "Calcular Fatura" de novo depois de ajustar.
+
+\paragraph{O link não abre, ou peço acesso e não consigo entrar.}
+Confirme o endereço com quem administra o simulador no seu time --- o cache do navegador às vezes mantém uma versão antiga da página (tente atualizar forçado com \campo{Ctrl+F5}). Se a página pedir usuário e senha e você não tiver a senha combinada, fale com quem administra o acesso --- ela não é a sua senha de rede da EDP.
+
+\paragraph{Encontrei uma conta que não bateu dentro do limite de R\$ 0,03 --- o que eu faço?}
+Separe a fatura real (PDF ou imagem legível), a categoria e o período usados na simulação, e envie para quem mantém o simulador com esses três dados. Cada divergência confirmada é registrada e testada permanentemente, para não voltar a acontecer em faturas futuras.
+
+% ================= RODAPE / CONTATO =================
+\vspace{16pt}
+\begin{center}\color{linha}\rule{0.9\textwidth}{0.4pt}\end{center}
+\vspace{6pt}
+
+\noindent{\bfseries\color{primary}Não achou sua dúvida aqui?}\\
+Fale com quem mantém o simulador no seu time, enviando: a fatura real (ou os dados dela), a categoria usada e o período de leitura simulado. Isso é o que permite reproduzir o caso e corrigir com segurança, sem afetar cálculos já validados.
+
+\vspace{4pt}
+\noindent{\small\itshape\color{tintasuave}Documento vivo --- cresce conforme novas dúvidas aparecem na validação do time.}
+
+\end{document}
