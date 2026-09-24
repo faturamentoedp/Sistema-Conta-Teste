@@ -10,6 +10,7 @@
     "share": "node scripts/share.mjs",
     "tarifas": "node scripts/exportar-tarifas.mjs",
     "verificar": "node scripts/verificar.mjs",
+    "verificar-cip": "node scripts/verificar-cip.mjs",
     "publicar": "npx --yes vercel --prod",
     "lint": "eslint"
   },
