@@ -28,9 +28,21 @@ const CASOS = [
     // B1CDE (Desconto Social Lei 15.235) -> classe RESIDENCIAL (não Baixa Renda) - decisão validada com a área em 24/09/2026
     { nome: 'AFONSO CLAUDIO, B1CDE, 100 kWh (mesma classe do B1C comum)', municipio: 'AFONSO CLAUDIO', categoria: 'B1CDE', consumo: 100, esperado: 13.36 },
 
-    // B2RURAL/B2RUIRRG -> classe RURAL, com fallback pra DEMAIS CLASSES onde não existe
-    { nome: 'GUARAPARI, B2RURAL, 250 kWh (município com classe Rural própria)', municipio: 'GUARAPARI', categoria: 'B2RURAL', consumo: 250, esperado: 64.97 },
-    { nome: 'AFONSO CLAUDIO, B2RUIRRG, 100 kWh (sem classe Rural -> cai em Demais Classes)', municipio: 'AFONSO CLAUDIO', categoria: 'B2RUIRRG', consumo: 100, esperado: 28.03 },
+    // B2RURAL/B2RUIRRG -> classe RURAL. Cada município tem sua própria regra,
+    // não só seus próprios números: alguns têm tabela de Rural (cobra normal),
+    // outros isentam Rural inteiramente (nem tabela têm), e um terceiro grupo
+    // simplesmente não documentou nada (aí cai em Demais Classes por falta de
+    // dado - ver comentário no topo de cip-municipios.js).
+    { nome: 'GUARAPARI, B2RURAL, 250 kWh (município COM tabela de Rural própria)', municipio: 'GUARAPARI', categoria: 'B2RURAL', consumo: 250, esperado: 64.97 },
+    { nome: 'CONCEICAO DA BARRA, B2RURAL, 100 kWh (tem tabela de Rural, mesmo citando "isenta" no texto - a tabela prevalece)', municipio: 'CONCEICAO DA BARRA', categoria: 'B2RURAL', consumo: 100, esperado: 51.04 },
+    { nome: 'AFONSO CLAUDIO, B2RURAL, 100 kWh (SEM tabela de Rural, planilha diz Rural isento -> R$ 0,00)', municipio: 'AFONSO CLAUDIO', categoria: 'B2RURAL', consumo: 100, esperado: 0 },
+    { nome: 'AFONSO CLAUDIO, B2RUIRRG, 100 kWh (mesma isenção de Rural)', municipio: 'AFONSO CLAUDIO', categoria: 'B2RUIRRG', consumo: 100, esperado: 0 },
+
+    // B3_PPF (Poder Público Federal) / B3_PPE (Estadual): isentos só nos
+    // municípios que documentaram isso; nos demais, cai em Demais Classes.
+    { nome: 'MARATAIZES, B3_PPF, 100 kWh (Federal isento aqui)', municipio: 'MARATAIZES', categoria: 'B3_PPF', consumo: 100, esperado: 0 },
+    { nome: 'CARIACICA, B3_PPE, 100 kWh (Estadual isento aqui)', municipio: 'CARIACICA', categoria: 'B3_PPE', consumo: 100, esperado: 0 },
+    { nome: 'AFONSO CLAUDIO, B3_PPF, 100 kWh (sem isenção documentada -> cai em Demais Classes)', municipio: 'AFONSO CLAUDIO', categoria: 'B3_PPF', consumo: 100, esperado: 28.03 },
 
     // B3/B4A e demais - DEMAIS CLASSES, e B4A isento
     { nome: 'DORES DO RIO PRETO, B3, 40 kWh (lei vigente 1078/2025, não a antiga 867/2019)', municipio: 'DORES DO RIO PRETO', categoria: 'B3', consumo: 40, esperado: 19.54 },

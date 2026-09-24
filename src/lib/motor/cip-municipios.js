@@ -13,6 +13,17 @@
  * fixos zerados, e 1078/2025, vigente a partir de Junho/2026, já no mesmo
  * formato percentual dos demais) - só a lei vigente (1078/2025) entrou aqui.
  *
+ * Cada município também tem suas próprias ISENÇÕES - não é só o valor da
+ * alíquota que muda, a REGRA muda (algumas classes nem são cobradas). A
+ * planilha registra isso de duas formas: uma linha 'ISENTO' dentro da
+ * própria tabela (ex.: Guarapari tem 'ILUMINAÇÃO PÚBLICA: ISENTO' como
+ * linha) ou só uma observação em texto livre 'Classes Isentas: ...' quando
+ * a classe nem tem tabela própria (a maioria dos municípios não lista uma
+ * linha 'RURAL' porque Rural ali é isento, não porque o dado faltou). Os 3
+ * flags abaixo (isenta_rural/isenta_ppf/isenta_ppe) vêm dessa segunda forma
+ * e só existem quando NÃO há tabela numérica pra classe - se há tabela, ela
+ * prevalece (ver flags_isencao() no gerador).
+ *
  * Duas ressalvas que a própria planilha da área já sinalizava e que NÃO
  * foram resolvidas aqui (mantidas como estavam, sem decisão automática):
  *   - ARACRUZ: comentário da área diz "VERIFICAR!!! Lei 3870/2014 está
@@ -20,6 +31,11 @@
  *   - Outro município tem a mesma observação marcada como "Isenta?".
  * Ou seja: pelo menos um município pode estar cobrando Baixa Renda errado
  * hoje. Repassado à área, não alterado por conta própria.
+ *
+ * 'PODER PUBLICO MUNICIPAL' também aparece isento em muitos municípios,
+ * mas hoje não existe uma categoria de Poder Público Municipal no
+ * formulário (só existem B3_PPF = Federal e B3_PPE = Estadual) - não dá
+ * pra aplicar essa isenção ainda.
  */
 
 // Tarifa B4a usada como base do cálculo (R$/MWh -> aqui já em R$ cheios,
@@ -36,8 +52,10 @@ export const TARIFA_B4A = {
  *  - B1CDE (Desconto Social Lei 15.235) usa RESIDENCIAL, não BAIXA RENDA -
  *    é um desconto municipal só na tarifa de energia, a subclasse cadastral
  *    de CIP continua Residencial comum.
- *  - B2RURAL/B2RUIRRG usam RURAL; em município sem essa linha, cai em
- *    DEMAIS CLASSES.
+ *  - B2RURAL/B2RUIRRG usam RURAL.
+ *  - B3_PPF (Poder Público Federal) e B3_PPE (Estadual) usam DEMAIS CLASSES
+ *    como ponto de partida, mas ficam isentas quando o município registrou
+ *    isso (ver isenta_ppf/isenta_ppe em CIP_MUNICIPIOS_ES).
  *  - B4A/B4B (iluminação pública) são isentas - a prefeitura não cobra CIP
  *    de si mesma; confirmado por município que lista isso explicitamente
  *    (ex.: Guarapari tem uma linha 'ILUMINAÇÃO PÚBLICA: ISENTO').
@@ -48,6 +66,8 @@ export function classe_cip_por_categoria(categoria) {
     if (cat.startsWith('B1C')) return 'RESIDENCIAL';
     if (cat.startsWith('B2RU')) return 'RURAL';
     if (cat === 'B4A' || cat === 'B4B') return 'ISENTO';
+    if (cat.startsWith('B3_PPF') || cat.startsWith('B3PPF')) return 'PPF';
+    if (cat.startsWith('B3_PPE') || cat.startsWith('B3PPE')) return 'PPE';
     return 'DEMAIS CLASSES';
 }
 
@@ -91,14 +111,26 @@ export function resolver_faixa_cip(faixas, consumo_kwh) {
 
 /**
  * Calcula a CIP automática para um município do ES. Retorna null quando
- * não há dado suficiente (município não cadastrado, ou classe sem faixas
- * pra essa categoria) - nesses casos o campo de CIP continua manual.
+ * não há dado suficiente (município não cadastrado, ou classe sem faixas e
+ * sem isenção registrada pra essa categoria) - nesses casos o campo de CIP
+ * continua manual.
+ *
+ * Ordem de decisão pra RURAL/PPF/PPE (nessa ordem):
+ *   1. Existe tabela de faixas pra essa classe nesse município? Usa ela.
+ *   2. Não existe, mas o município registrou isenção pra essa classe
+ *      (isenta_rural/isenta_ppf/isenta_ppe)? CIP = 0.
+ *   3. Nenhum dos dois: cai em DEMAIS CLASSES como aproximação - é uma
+ *      lacuna de dado, não uma regra confirmada (ver comentário no topo
+ *      do arquivo).
  */
 export function calcular_cip_municipio(municipio, categoria, consumo_kwh, data_leitura_anterior, data_leitura_atual) {
     const dados = CIP_MUNICIPIOS_ES[municipio];
     if (!dados) return null;
     const classe = classe_cip_por_categoria(categoria);
     if (classe === 'ISENTO') return 0;
+    if (classe === 'RURAL' && !dados.faixas['RURAL'] && dados.isenta_rural) return 0;
+    if (classe === 'PPF') { if (dados.isenta_ppf) return 0; return calcular_cip_municipio(municipio, 'B3', consumo_kwh, data_leitura_anterior, data_leitura_atual); }
+    if (classe === 'PPE') { if (dados.isenta_ppe) return 0; return calcular_cip_municipio(municipio, 'B3', consumo_kwh, data_leitura_anterior, data_leitura_atual); }
     let faixas = dados.faixas[classe];
     if (!faixas && classe === 'RURAL') faixas = dados.faixas['DEMAIS CLASSES'];
     if (!faixas) return null;
@@ -115,6 +147,7 @@ export const CIP_MUNICIPIOS_ES = {
     'AFONSO CLAUDIO': {
         leis: ['1626/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA, PODER PUBLICO - MUNICIPAL e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0259 }, { max: 50, aliquota: 0.0309 }, { max: 70, aliquota: 0.0513 }, { max: 100, aliquota: 0.0604 }, { max: 150, aliquota: 0.0739 }, { max: 200, aliquota: 0.0996 }, { max: 300, aliquota: 0.1174 }, { max: 400, aliquota: 0.1321 }, { max: 500, aliquota: 0.1444 }, { max: null, aliquota: 0.1684 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0104 }, { max: 50, aliquota: 0.011 }, { max: 70, aliquota: 0.0193 }, { max: 100, aliquota: 0.0288 }, { max: 150, aliquota: 0.0412 }, { max: 200, aliquota: 0.0604 }, { max: 300, aliquota: 0.0739 }, { max: 400, aliquota: 0.0996 }, { max: 500, aliquota: 0.1174 }, { max: null, aliquota: 0.1321 }],
@@ -123,6 +156,9 @@ export const CIP_MUNICIPIOS_ES = {
     'AGUA DOCE DO NORTE': {
         leis: ['144/2021'],
         nota: 'Classes Isentas: SERVIÇO PUBLICO - AES, CONSUMO PROPRIO, ILUMINAÇÃO PUBLICA, PODER PUBLICO - ESTADUAL, PODER PUBLICO - FEDERAL, PODER PUBLICO - MUNICIPAL e RURAL',
+        isenta_rural: true,
+        isenta_ppf: true,
+        isenta_ppe: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0609 }, { max: 50, aliquota: 0.0675 }, { max: 70, aliquota: 0.08855 }, { max: 100, aliquota: 0.1208 }, { max: 150, aliquota: 0.1546 }, { max: 200, aliquota: 0.1695 }, { max: 300, aliquota: 0.1869 }, { max: 400, aliquota: 0.1965 }, { max: 500, aliquota: 0.2052 }, { max: null, aliquota: 0.2173 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0184 }, { max: 50, aliquota: 0.0244 }, { max: 70, aliquota: 0.0366 }, { max: 100, aliquota: 0.0462 }, { max: 150, aliquota: 0.061 }, { max: 200, aliquota: 0.0855 }, { max: 300, aliquota: 0.1 }, { max: 400, aliquota: 0.1242 }, { max: 500, aliquota: 0.131 }, { max: null, aliquota: 0.1393 }],
@@ -132,6 +168,7 @@ export const CIP_MUNICIPIOS_ES = {
     'ALEGRE': {
         leis: ['2582/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0394 }, { max: 50, aliquota: 0.0406 }, { max: 70, aliquota: 0.0706 }, { max: 100, aliquota: 0.0907 }, { max: 150, aliquota: 0.1338 }, { max: 200, aliquota: 0.1782 }, { max: 300, aliquota: 0.2296 }, { max: 400, aliquota: 0.2719 }, { max: 500, aliquota: 0.31 }, { max: null, aliquota: 0.3748 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0272 }, { max: 50, aliquota: 0.0312 }, { max: 70, aliquota: 0.0352 }, { max: 100, aliquota: 0.0402 }, { max: 150, aliquota: 0.0501 }, { max: 200, aliquota: 0.0557 }, { max: 300, aliquota: 0.0928 }, { max: 400, aliquota: 0.1654 }, { max: 500, aliquota: 0.1939 }, { max: null, aliquota: 0.2181 }],
@@ -151,6 +188,7 @@ export const CIP_MUNICIPIOS_ES = {
     'ANCHIETA': {
         leis: ['110/2021'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL | Isenta?',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0505 }, { max: 50, aliquota: 0.053 }, { max: 70, aliquota: 0.0849 }, { max: 100, aliquota: 0.1305 }, { max: 150, aliquota: 0.1476 }, { max: 200, aliquota: 0.1623 }, { max: 300, aliquota: 0.1742 }, { max: 400, aliquota: 0.176 }, { max: 500, aliquota: 0.1774 }, { max: 750, aliquota: 0.1817 }, { max: null, aliquota: 0.2061 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0271 }, { max: 50, aliquota: 0.0404 }, { max: 70, aliquota: 0.0505 }, { max: 100, aliquota: 0.0669 }, { max: 150, aliquota: 0.0695 }, { max: 200, aliquota: 0.0852 }, { max: 300, aliquota: 0.0938 }, { max: 400, aliquota: 0.1156 }, { max: 500, aliquota: 0.1228 }, { max: null, aliquota: 0.1436 }],
@@ -160,6 +198,7 @@ export const CIP_MUNICIPIOS_ES = {
     'ARACRUZ': {
         leis: ['3870/2014'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL | Lei 3870/2014 está isentando estas faixas do Baixa Renda. No CCS não está cadastrado. | VERIFICAR!!! Lei 3870/2014 está isentando estas faixas do Baixa Renda. No CCS não está cadastrado.',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0505 }, { max: 50, aliquota: 0.053 }, { max: 70, aliquota: 0.0849 }, { max: 100, aliquota: 0.1136 }, { max: 150, aliquota: 0.1766 }, { max: 200, aliquota: 0.193 }, { max: 300, aliquota: 0.2221 }, { max: 400, aliquota: 0.2423 }, { max: 500, aliquota: 0.2827 }, { max: null, aliquota: 0.3029 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0271 }, { max: 50, aliquota: 0.0404 }, { max: 70, aliquota: 0.0741 }, { max: 100, aliquota: 0.0808 }, { max: 150, aliquota: 0.1017 }, { max: 200, aliquota: 0.111 }, { max: 300, aliquota: 0.1295 }, { max: 400, aliquota: 0.1413 }, { max: 500, aliquota: 0.1531 }, { max: null, aliquota: 0.1766 }],
@@ -169,6 +208,7 @@ export const CIP_MUNICIPIOS_ES = {
     'ATILIO VIVACQUA': {
         leis: ['583/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0519 }, { max: 50, aliquota: 0.0545 }, { max: 70, aliquota: 0.088 }, { max: 100, aliquota: 0.0924 }, { max: 150, aliquota: 0.1092 }, { max: 200, aliquota: 0.1218 }, { max: 300, aliquota: 0.136 }, { max: 400, aliquota: 0.1588 }, { max: 500, aliquota: 0.1745 }, { max: null, aliquota: 0.1978 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0272 }, { max: 50, aliquota: 0.0311 }, { max: 70, aliquota: 0.0322 }, { max: 100, aliquota: 0.0517 }, { max: 150, aliquota: 0.0811 }, { max: 200, aliquota: 0.0959 }, { max: 300, aliquota: 0.1131 }, { max: 400, aliquota: 0.1287 }, { max: 500, aliquota: 0.1443 }, { max: null, aliquota: 0.1599 }],
@@ -178,6 +218,7 @@ export const CIP_MUNICIPIOS_ES = {
     'BAIXO GUANDU': {
         leis: ['2.141/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.055 }, { max: 50, aliquota: 0.0562 }, { max: 70, aliquota: 0.1094 }, { max: 100, aliquota: 0.1277 }, { max: 150, aliquota: 0.1576 }, { max: 200, aliquota: 0.2125 }, { max: 300, aliquota: 0.2505 }, { max: 400, aliquota: 0.2819 }, { max: 500, aliquota: 0.308 }, { max: null, aliquota: 0.3489 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0333 }, { max: 50, aliquota: 0.0397 }, { max: 70, aliquota: 0.0583 }, { max: 100, aliquota: 0.0755 }, { max: 150, aliquota: 0.0829 }, { max: 200, aliquota: 0.1216 }, { max: 300, aliquota: 0.1576 }, { max: 400, aliquota: 0.2125 }, { max: null, aliquota: 0.2819 }],
@@ -187,6 +228,7 @@ export const CIP_MUNICIPIOS_ES = {
     'BARRA DE SAO FRANCISCO': {
         leis: ['05/2004'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0172 }, { max: 70, aliquota: 0.0463 }, { max: 150, aliquota: 0.0702 }, { max: 300, aliquota: 0.0792 }, { max: 500, aliquota: 0.0896 }, { max: null, aliquota: 0.1046 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0 }, { max: 70, aliquota: 0.0172 }, { max: 150, aliquota: 0.0444 }, { max: 300, aliquota: 0.053 }, { max: 500, aliquota: 0.0881 }, { max: null, aliquota: 0.1046 }],
@@ -196,6 +238,7 @@ export const CIP_MUNICIPIOS_ES = {
     'BOA ESPERANCA': {
         leis: ['1191/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0367 }, { max: 50, aliquota: 0.0456 }, { max: 70, aliquota: 0.0639 }, { max: 100, aliquota: 0.0876 }, { max: 150, aliquota: 0.1042 }, { max: 200, aliquota: 0.1223 }, { max: 300, aliquota: 0.1689 }, { max: 400, aliquota: 0.2146 }, { max: 500, aliquota: 0.2621 }, { max: null, aliquota: 0.3025 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0216 }, { max: 50, aliquota: 0.0252 }, { max: 70, aliquota: 0.0273 }, { max: 100, aliquota: 0.0321 }, { max: 150, aliquota: 0.0439 }, { max: 200, aliquota: 0.0596 }, { max: 300, aliquota: 0.074 }, { max: 400, aliquota: 0.1174 }, { max: 500, aliquota: 0.1351 }, { max: null, aliquota: 0.1577 }],
@@ -205,6 +248,7 @@ export const CIP_MUNICIPIOS_ES = {
     'BREJETUBA': {
         leis: ['235/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0319 }, { max: 50, aliquota: 0.038 }, { max: 70, aliquota: 0.0631 }, { max: 100, aliquota: 0.0743 }, { max: 150, aliquota: 0.0909 }, { max: 200, aliquota: 0.1225 }, { max: 300, aliquota: 0.1444 }, { max: 400, aliquota: 0.1624 }, { max: 500, aliquota: 0.1776 }, { max: null, aliquota: 0.2071 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0107 }, { max: 50, aliquota: 0.0115 }, { max: 70, aliquota: 0.0237 }, { max: 100, aliquota: 0.0354 }, { max: 150, aliquota: 0.0507 }, { max: 200, aliquota: 0.0743 }, { max: 300, aliquota: 0.0909 }, { max: 400, aliquota: 0.1225 }, { max: 500, aliquota: 0.1444 }, { max: null, aliquota: 0.1624 }],
@@ -214,6 +258,9 @@ export const CIP_MUNICIPIOS_ES = {
     'CARIACICA': {
         leis: ['4376/2006'],
         nota: 'Classes Isentas: SERVIÇO PUBLICO - AES, CONSUMO PROPRIO, ILUMINAÇÃO PUBLICA, PODER PUBLICO - MUNICIPAL, PODER PUBLICO - ESTADUAL, PODER PUBLICO - FEDERAL e RURAL',
+        isenta_rural: true,
+        isenta_ppf: true,
+        isenta_ppe: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0427 }, { max: 50, aliquota: 0.043 }, { max: 70, aliquota: 0.0615 }, { max: 100, aliquota: 0.0931 }, { max: 150, aliquota: 0.1112 }, { max: 200, aliquota: 0.1238 }, { max: 300, aliquota: 0.1378 }, { max: 400, aliquota: 0.1433 }, { max: 500, aliquota: 0.1506 }, { max: null, aliquota: 0.1551 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0185 }, { max: 50, aliquota: 0.0212 }, { max: 70, aliquota: 0.0283 }, { max: 100, aliquota: 0.0357 }, { max: 150, aliquota: 0.0444 }, { max: 200, aliquota: 0.0715 }, { max: 300, aliquota: 0.0984 }, { max: 400, aliquota: 0.0999 }, { max: 500, aliquota: 0.1012 }, { max: null, aliquota: 0.1025 }],
@@ -223,6 +270,7 @@ export const CIP_MUNICIPIOS_ES = {
     'CASTELO': {
         leis: ['3131/2011'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.01988 }, { max: 50, aliquota: 0.02373 }, { max: 70, aliquota: 0.03941 }, { max: 100, aliquota: 0.04641 }, { max: 150, aliquota: 0.0567 }, { max: 200, aliquota: 0.07651 }, { max: 300, aliquota: 0.09016 }, { max: 400, aliquota: 0.09128 }, { max: 500, aliquota: 0.09975 }, { max: null, aliquota: 0.126 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0 }, { max: 50, aliquota: 0.01715 }, { max: 70, aliquota: 0.01827 }, { max: 100, aliquota: 0.0273 }, { max: 150, aliquota: 0.03934 }, { max: 200, aliquota: 0.05754 }, { max: 300, aliquota: 0.07 }, { max: 400, aliquota: 0.0945 }, { max: 500, aliquota: 0.112 }, { max: null, aliquota: 0.126 }],
@@ -251,6 +299,7 @@ export const CIP_MUNICIPIOS_ES = {
     'CONCEICAO DO CASTELO': {
         leis: ['1034/2005'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.035 }, { max: 50, aliquota: 0.04 }, { max: 70, aliquota: 0.05 }, { max: 100, aliquota: 0.055 }, { max: 150, aliquota: 0.07 }, { max: 200, aliquota: 0.09 }, { max: 300, aliquota: 0.095 }, { max: 400, aliquota: 0.1 }, { max: 500, aliquota: 0.12 }, { max: null, aliquota: 0.15 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0 }, { max: 50, aliquota: 0.015 }, { max: 70, aliquota: 0.02 }, { max: 100, aliquota: 0.03 }, { max: 150, aliquota: 0.04 }, { max: 200, aliquota: 0.05 }, { max: 300, aliquota: 0.06 }, { max: 400, aliquota: 0.07 }, { max: 500, aliquota: 0.08 }, { max: null, aliquota: 0.1 }],
@@ -260,6 +309,7 @@ export const CIP_MUNICIPIOS_ES = {
     'DIVINO DE SAO LOURENCO': {
         leis: ['124/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0512 }, { max: 50, aliquota: 0.0541 }, { max: 70, aliquota: 0.0902 }, { max: 100, aliquota: 0.1312 }, { max: 150, aliquota: 0.1536 }, { max: 200, aliquota: 0.1706 }, { max: 300, aliquota: 0.1929 }, { max: 400, aliquota: 0.2104 }, { max: 500, aliquota: 0.2367 }, { max: null, aliquota: 0.2454 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0151 }, { max: 50, aliquota: 0.0178 }, { max: 70, aliquota: 0.0332 }, { max: 100, aliquota: 0.0497 }, { max: 150, aliquota: 0.0787 }, { max: 200, aliquota: 0.0809 }, { max: 300, aliquota: 0.1005 }, { max: 400, aliquota: 0.1128 }, { max: 500, aliquota: 0.1231 }, { max: null, aliquota: 0.1538 }],
@@ -269,6 +319,7 @@ export const CIP_MUNICIPIOS_ES = {
     'DORES DO RIO PRETO': {
         leis: ['867/2019', '1078/2025'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL | Classes Isentas: ILUMINAÇÃO PUBLICA, RURAL E PODER PÚBLICO MUNICIPAL.',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0409 }, { max: 50, aliquota: 0.0421 }, { max: 70, aliquota: 0.0494 }, { max: 100, aliquota: 0.0688 }, { max: 150, aliquota: 0.086 }, { max: 200, aliquota: 0.1025 }, { max: 300, aliquota: 0.1289 }, { max: 400, aliquota: 0.145 }, { max: 500, aliquota: 0.1587 }, { max: null, aliquota: 0.1869 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0034 }, { max: 50, aliquota: 0.0038 }, { max: 70, aliquota: 0.0169 }, { max: 100, aliquota: 0.0253 }, { max: 150, aliquota: 0.0363 }, { max: 200, aliquota: 0.053 }, { max: 300, aliquota: 0.099 }, { max: 400, aliquota: 0.1177 }, { max: 500, aliquota: 0.1307 }, { max: null, aliquota: 0.198 }],
@@ -278,6 +329,7 @@ export const CIP_MUNICIPIOS_ES = {
     'FUNDAO': {
         leis: ['1372/2022'],
         nota: 'Classes Isentas: PODER PUBLICO - MUNICIPAL, ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.038 }, { max: 50, aliquota: 0.045 }, { max: 70, aliquota: 0.075 }, { max: 100, aliquota: 0.097 }, { max: 150, aliquota: 0.119 }, { max: 200, aliquota: 0.1685 }, { max: 300, aliquota: 0.189 }, { max: 400, aliquota: 0.195 }, { max: 500, aliquota: 0.21 }, { max: null, aliquota: 0.238 }],
             'RESIDENCIAL': [{ max: 50, aliquota: 0.0275 }, { max: 70, aliquota: 0.041 }, { max: 100, aliquota: 0.0615 }, { max: 150, aliquota: 0.0735 }, { max: 200, aliquota: 0.1075 }, { max: 300, aliquota: 0.1315 }, { max: 400, aliquota: 0.177 }, { max: 500, aliquota: 0.2085 }, { max: null, aliquota: 0.2345 }],
@@ -287,6 +339,7 @@ export const CIP_MUNICIPIOS_ES = {
     'GUACUI': {
         leis: ['3061/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0208 }, { max: 50, aliquota: 0.0248 }, { max: 70, aliquota: 0.0411 }, { max: 100, aliquota: 0.0484 }, { max: 150, aliquota: 0.0592 }, { max: 200, aliquota: 0.0798 }, { max: 300, aliquota: 0.0941 }, { max: 400, aliquota: 0.1058 }, { max: 500, aliquota: 0.1157 }, { max: null, aliquota: 0.1311 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0 }, { max: 50, aliquota: 0.0115 }, { max: 70, aliquota: 0.0154 }, { max: 100, aliquota: 0.0231 }, { max: 150, aliquota: 0.0331 }, { max: 200, aliquota: 0.0484 }, { max: 300, aliquota: 0.0592 }, { max: 400, aliquota: 0.0798 }, { max: 500, aliquota: 0.0941 }, { max: null, aliquota: 0.1058 }],
@@ -307,6 +360,7 @@ export const CIP_MUNICIPIOS_ES = {
     'IBATIBA': {
         leis: ['417/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 50, aliquota: 0.0473 }, { max: 70, aliquota: 0.0521 }, { max: 100, aliquota: 0.0568 }, { max: 150, aliquota: 0.0662 }, { max: 200, aliquota: 0.0815 }, { max: 300, aliquota: 0.1036 }, { max: 400, aliquota: 0.1091 }, { max: 500, aliquota: 0.1145 }, { max: null, aliquota: 0.12 }],
             'RESIDENCIAL': [{ max: 50, aliquota: 0 }, { max: 70, aliquota: 0.032 }, { max: 100, aliquota: 0.04 }, { max: 150, aliquota: 0.0464 }, { max: 200, aliquota: 0.0481 }, { max: 300, aliquota: 0.0568 }, { max: 400, aliquota: 0.0615 }, { max: 500, aliquota: 0.0663 }, { max: null, aliquota: 0.071 }],
@@ -316,6 +370,9 @@ export const CIP_MUNICIPIOS_ES = {
     'IBIRACU': {
         leis: ['2743/2006'],
         nota: 'Classes Isentas: PODER PUBLICO - ESTADUAL, PODER PUBLICO - FEDERAL, PODER PUBLICO - MUNICIPAL, ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
+        isenta_ppf: true,
+        isenta_ppe: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0345 }, { max: 50, aliquota: 0.04 }, { max: 70, aliquota: 0.067 }, { max: 100, aliquota: 0.0885 }, { max: 150, aliquota: 0.1083 }, { max: 200, aliquota: 0.146 }, { max: 300, aliquota: 0.172 }, { max: 400, aliquota: 0.176 }, { max: 500, aliquota: 0.1925 }, { max: null, aliquota: 0.218 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0 }, { max: 50, aliquota: 0.0237 }, { max: 70, aliquota: 0.0308 }, { max: 100, aliquota: 0.046 }, { max: 150, aliquota: 0.055 }, { max: 200, aliquota: 0.0805 }, { max: 300, aliquota: 0.0985 }, { max: 400, aliquota: 0.1326 }, { max: 500, aliquota: 0.1563 }, { max: null, aliquota: 0.1758 }],
@@ -325,6 +382,7 @@ export const CIP_MUNICIPIOS_ES = {
     'IBITIRAMA': {
         leis: ['452/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0786 }, { max: 50, aliquota: 0.0917 }, { max: 70, aliquota: 0.0935 }, { max: 100, aliquota: 0.0963 }, { max: 150, aliquota: 0.1043 }, { max: 200, aliquota: 0.1048 }, { max: 300, aliquota: 0.1161 }, { max: 400, aliquota: 0.1173 }, { max: 500, aliquota: 0.1179 }, { max: null, aliquota: 0.132 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0272 }, { max: 50, aliquota: 0.0311 }, { max: 70, aliquota: 0.035 }, { max: 100, aliquota: 0.04 }, { max: 150, aliquota: 0.0589 }, { max: 200, aliquota: 0.0654 }, { max: 300, aliquota: 0.0786 }, { max: 400, aliquota: 0.0794 }, { max: 500, aliquota: 0.0817 }, { max: null, aliquota: 0.0888 }],
@@ -344,6 +402,7 @@ export const CIP_MUNICIPIOS_ES = {
     'IRUPI': {
         leis: ['012/2025'],
         nota: 'Classes Isentas: RURAL RESIDENCIAL, ASSOCIAÇÕES ENTIDADES FOLANTRÓPICAS E TEMPLOS RELIGIOSOS.',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0259 }, { max: 50, aliquota: 0.0309 }, { max: 70, aliquota: 0.0513 }, { max: 100, aliquota: 0.0604 }, { max: 150, aliquota: 0.0739 }, { max: 200, aliquota: 0.0996 }, { max: 300, aliquota: 0.1174 }, { max: 400, aliquota: 0.1321 }, { max: 500, aliquota: 0.1444 }, { max: null, aliquota: 0.1684 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0104 }, { max: 50, aliquota: 0.011 }, { max: 70, aliquota: 0.0193 }, { max: 100, aliquota: 0.0288 }, { max: 150, aliquota: 0.0412 }, { max: 200, aliquota: 0.0604 }, { max: 300, aliquota: 0.0739 }, { max: 400, aliquota: 0.0996 }, { max: 500, aliquota: 0.1174 }, { max: null, aliquota: 0.1321 }],
@@ -353,6 +412,7 @@ export const CIP_MUNICIPIOS_ES = {
     'ITAGUACU': {
         leis: ['800/1998'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0306 }, { max: 50, aliquota: 0.0365 }, { max: 70, aliquota: 0.0606 }, { max: 100, aliquota: 0.0714 }, { max: 150, aliquota: 0.0883 }, { max: 200, aliquota: 0.1175 }, { max: 300, aliquota: 0.1386 }, { max: 400, aliquota: 0.156 }, { max: 500, aliquota: 0.1705 }, { max: null, aliquota: 0.1931 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.013 }, { max: 50, aliquota: 0.0138 }, { max: 70, aliquota: 0.0228 }, { max: 100, aliquota: 0.034 }, { max: 150, aliquota: 0.0488 }, { max: 200, aliquota: 0.0714 }, { max: 300, aliquota: 0.0873 }, { max: 400, aliquota: 0.1175 }, { max: 500, aliquota: 0.1386 }, { max: null, aliquota: 0.156 }],
@@ -362,6 +422,7 @@ export const CIP_MUNICIPIOS_ES = {
     'ITAPEMIRIM': {
         leis: ['1718/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0654 }, { max: 100, aliquota: 0.0916 }, { max: 200, aliquota: 0.1177 }, { max: null, aliquota: 0.1439 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0131 }, { max: 100, aliquota: 0.0262 }, { max: 200, aliquota: 0.0523 }, { max: null, aliquota: 0.0785 }],
@@ -371,6 +432,9 @@ export const CIP_MUNICIPIOS_ES = {
     'JAGUARE': {
         leis: ['680/2006'],
         nota: 'Classes Isentas: SERVIÇO PUBLICO -AES, PODER PUBLICO - ESTADUAL, PODER PUBLICO - FEDERAL, PODER PUBLICO - MUNICIPAL, ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
+        isenta_ppf: true,
+        isenta_ppe: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0285 }, { max: 50, aliquota: 0.034 }, { max: 70, aliquota: 0.0565 }, { max: 100, aliquota: 0.0665 }, { max: 150, aliquota: 0.0814 }, { max: 200, aliquota: 0.1096 }, { max: 300, aliquota: 0.1292 }, { max: 400, aliquota: 0.1453 }, { max: 500, aliquota: 0.1589 }, { max: null, aliquota: 0.18 }],
             'RESIDENCIAL': [{ max: 50, aliquota: 0 }, { max: 70, aliquota: 0.0212 }, { max: 100, aliquota: 0.0317 }, { max: 150, aliquota: 0.0454 }, { max: 200, aliquota: 0.0665 }, { max: 300, aliquota: 0.0814 }, { max: 400, aliquota: 0.1096 }, { max: 500, aliquota: 0.1292 }, { max: null, aliquota: 0.1453 }],
@@ -389,6 +453,7 @@ export const CIP_MUNICIPIOS_ES = {
     'LARANJA DA TERRA': {
         leis: ['372/2003'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0335 }, { max: 50, aliquota: 0.0385 }, { max: 70, aliquota: 0.0415 }, { max: 100, aliquota: 0.0595 }, { max: 150, aliquota: 0.0755 }, { max: 200, aliquota: 0.1175 }, { max: 300, aliquota: 0.1285 }, { max: 400, aliquota: 0.1321 }, { max: 500, aliquota: 0.1885 }, { max: 600, aliquota: 0.1885 }, { max: 700, aliquota: 0.2185 }, { max: 800, aliquota: 0.2215 }, { max: 900, aliquota: 0.2385 }, { max: null, aliquota: 0.2465 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0335 }, { max: 50, aliquota: 0.0385 }, { max: 70, aliquota: 0.0415 }, { max: 100, aliquota: 0.0595 }, { max: 150, aliquota: 0.0755 }, { max: 200, aliquota: 0.1175 }, { max: 300, aliquota: 0.1285 }, { max: 400, aliquota: 0.1321 }, { max: 500, aliquota: 0.1885 }, { max: 600, aliquota: 0.1885 }, { max: 700, aliquota: 0.2185 }, { max: 800, aliquota: 0.2215 }, { max: 900, aliquota: 0.2385 }, { max: null, aliquota: 0.2465 }],
@@ -398,6 +463,7 @@ export const CIP_MUNICIPIOS_ES = {
     'MANTENOPOLIS': {
         leis: ['954/2004'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0285 }, { max: 50, aliquota: 0.034 }, { max: 70, aliquota: 0.0565 }, { max: 100, aliquota: 0.0665 }, { max: 150, aliquota: 0.0814 }, { max: 200, aliquota: 0.1096 }, { max: 300, aliquota: 0.1292 }, { max: 400, aliquota: 0.1453 }, { max: 500, aliquota: 0.1589 }, { max: null, aliquota: 0.18 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0 }, { max: 50, aliquota: 0.0215 }, { max: 70, aliquota: 0.025 }, { max: 100, aliquota: 0.032 }, { max: 150, aliquota: 0.046 }, { max: 200, aliquota: 0.067 }, { max: 300, aliquota: 0.082 }, { max: 400, aliquota: 0.11 }, { max: 500, aliquota: 0.13 }, { max: null, aliquota: 0.15 }],
@@ -407,6 +473,8 @@ export const CIP_MUNICIPIOS_ES = {
     'MARATAIZES': {
         leis: ['741/2003'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA, PODER PUBLICO - ESTADUAL, PODER PUBLICO - FEDERAL e PODER PUBLICO - MUNICIPAL',
+        isenta_ppf: true,
+        isenta_ppe: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0345 }, { max: 50, aliquota: 0.0345 }, { max: 70, aliquota: 0.0483 }, { max: 100, aliquota: 0.0483 }, { max: 150, aliquota: 0.1036 }, { max: 200, aliquota: 0.1243 }, { max: 300, aliquota: 0.1519 }, { max: 400, aliquota: 0.1726 }, { max: 500, aliquota: 0.1933 }, { max: null, aliquota: 0.2763 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0345 }, { max: 50, aliquota: 0.0345 }, { max: 70, aliquota: 0.0345 }, { max: 100, aliquota: 0.0345 }, { max: 150, aliquota: 0.0587 }, { max: 200, aliquota: 0.0587 }, { max: 300, aliquota: 0.0693 }, { max: 400, aliquota: 0.1694 }, { max: 500, aliquota: 0.1997 }, { max: null, aliquota: 0.2247 }],
@@ -425,6 +493,7 @@ export const CIP_MUNICIPIOS_ES = {
     'MONTANHA': {
         leis: ['547/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0366 }, { max: 100, aliquota: 0.0548 }, { max: 200, aliquota: 0.0732 }, { max: null, aliquota: 0.0915 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0183 }, { max: 100, aliquota: 0.0366 }, { max: 200, aliquota: 0.0548 }, { max: null, aliquota: 0.0732 }],
@@ -434,6 +503,7 @@ export const CIP_MUNICIPIOS_ES = {
     'MUCURICI': {
         leis: ['399/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.045 }, { max: 50, aliquota: 0.0498 }, { max: 70, aliquota: 0.0868 }, { max: 100, aliquota: 0.1004 }, { max: 150, aliquota: 0.1224 }, { max: 200, aliquota: 0.165 }, { max: 300, aliquota: 0.175 }, { max: null, aliquota: 0.175 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0282 }, { max: 50, aliquota: 0.0353 }, { max: 70, aliquota: 0.041 }, { max: 100, aliquota: 0.0567 }, { max: 150, aliquota: 0.0749 }, { max: 200, aliquota: 0.1098 }, { max: 300, aliquota: 0.1311 }, { max: 400, aliquota: 0.1835 }, { max: 500, aliquota: 0.1917 }, { max: null, aliquota: 0.2274 }],
@@ -443,6 +513,7 @@ export const CIP_MUNICIPIOS_ES = {
     'MUNIZ FREIRE': {
         leis: ['7842/2018'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 50, aliquota: 0.0326 }, { max: 70, aliquota: 0.0424 }, { max: 100, aliquota: 0.0574 }, { max: 200, aliquota: 0.0797 }, { max: 300, aliquota: 0.1034 }, { max: 400, aliquota: 0.1738 }, { max: 500, aliquota: 0.21 }, { max: null, aliquota: 0.2824 }],
             'RESIDENCIAL': [{ max: 50, aliquota: 0.0217 }, { max: 70, aliquota: 0.0253 }, { max: 100, aliquota: 0.0325 }, { max: 200, aliquota: 0.0435 }, { max: 300, aliquota: 0.0652 }, { max: 500, aliquota: 0.1014 }, { max: null, aliquota: 0.1738 }],
@@ -452,6 +523,9 @@ export const CIP_MUNICIPIOS_ES = {
     'MUQUI': {
         leis: ['296/2006'],
         nota: 'Classes Isentas: SERVIÇO PUBLICO - AES, CONSUMO PROPRIO, PODER PUBLICO - ESTADUAL, PODER PUBLICO - FEDERAL, PODER PUBLICO - MUNICIPAL, ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
+        isenta_ppf: true,
+        isenta_ppe: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0275 }, { max: 50, aliquota: 0.0275 }, { max: 70, aliquota: 0.0481 }, { max: 100, aliquota: 0.0481 }, { max: 150, aliquota: 0.0894 }, { max: 200, aliquota: 0.0894 }, { max: 300, aliquota: 0.1032 }, { max: 400, aliquota: 0.1032 }, { max: 500, aliquota: 0.11 }, { max: null, aliquota: 0.1169 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0103 }, { max: 50, aliquota: 0.0103 }, { max: 70, aliquota: 0.0275 }, { max: 100, aliquota: 0.0344 }, { max: 150, aliquota: 0.0619 }, { max: 200, aliquota: 0.0619 }, { max: 300, aliquota: 0.0619 }, { max: 400, aliquota: 0.0757 }, { max: 500, aliquota: 0.0757 }, { max: null, aliquota: 0.0757 }],
@@ -461,6 +535,7 @@ export const CIP_MUNICIPIOS_ES = {
     'NOVA VENECIA': {
         leis: ['2569/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0515 }, { max: 50, aliquota: 0.052 }, { max: 70, aliquota: 0.0712 }, { max: 100, aliquota: 0.0991 }, { max: 150, aliquota: 0.1304 }, { max: 200, aliquota: 0.1474 }, { max: 300, aliquota: 0.1735 }, { max: 400, aliquota: 0.1962 }, { max: 500, aliquota: 0.2175 }, { max: null, aliquota: 0.2521 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0104 }, { max: 50, aliquota: 0.011 }, { max: 70, aliquota: 0.025 }, { max: 100, aliquota: 0.033 }, { max: 150, aliquota: 0.042 }, { max: 200, aliquota: 0.0755 }, { max: 300, aliquota: 0.0939 }, { max: 400, aliquota: 0.1019 }, { max: 500, aliquota: 0.1109 }, { max: null, aliquota: 0.1657 }],
@@ -470,6 +545,7 @@ export const CIP_MUNICIPIOS_ES = {
     'PINHEIROS': {
         leis: ['824/2005'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0397 }, { max: 50, aliquota: 0.0517 }, { max: 70, aliquota: 0.0637 }, { max: 100, aliquota: 0.0657 }, { max: 150, aliquota: 0.0777 }, { max: 200, aliquota: 0.0897 }, { max: 300, aliquota: 0.1161 }, { max: 400, aliquota: 0.1351 }, { max: 500, aliquota: 0.1521 }, { max: null, aliquota: 0.2051 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0257 }, { max: 50, aliquota: 0.0257 }, { max: 70, aliquota: 0.0257 }, { max: 100, aliquota: 0.0257 }, { max: 150, aliquota: 0.0543 }, { max: 200, aliquota: 0.0693 }, { max: 300, aliquota: 0.0827 }, { max: 400, aliquota: 0.1174 }, { max: 500, aliquota: 0.1351 }, { max: null, aliquota: 0.1577 }],
@@ -479,6 +555,7 @@ export const CIP_MUNICIPIOS_ES = {
     'PONTO BELO': {
         leis: ['467/2016'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.043 }, { max: 50, aliquota: 0.0546 }, { max: 70, aliquota: 0.0546 }, { max: 100, aliquota: 0.0991 }, { max: 150, aliquota: 0.1156 }, { max: 200, aliquota: 0.1536 }, { max: 300, aliquota: 0.1734 }, { max: 400, aliquota: 0.1915 }, { max: 500, aliquota: 0.2064 }, { max: null, aliquota: 0.2361 }],
             'INDUSTRIAL': [{ max: 30, aliquota: 0.043 }, { max: 50, aliquota: 0.0546 }, { max: 70, aliquota: 0.0546 }, { max: 100, aliquota: 0.0991 }, { max: 150, aliquota: 0.1156 }, { max: 200, aliquota: 0.1536 }, { max: 300, aliquota: 0.1734 }, { max: 400, aliquota: 0.1915 }, { max: 500, aliquota: 0.2064 }, { max: null, aliquota: 0.241 }],
@@ -489,6 +566,7 @@ export const CIP_MUNICIPIOS_ES = {
     'PRESIDENTE KENNEDY': {
         leis: ['578/2002'],
         nota: 'Classes Isentas: PODER PUBLICO - MUNICIPAL, ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.081 }, { max: 100, aliquota: 0.108 }, { max: 300, aliquota: 0.135 }, { max: 500, aliquota: 0.162 }, { max: null, aliquota: 0.1755 }],
             'RESIDENCIAL': [{ max: 50, aliquota: 0.027 }, { max: 100, aliquota: 0.054 }, { max: 300, aliquota: 0.081 }, { max: 500, aliquota: 0.0945 }, { max: null, aliquota: 0.1008 }],
@@ -498,6 +576,9 @@ export const CIP_MUNICIPIOS_ES = {
     'RIO BANANAL': {
         leis: ['1358/2017'],
         nota: 'Classes Isentas: SERVIÇO PUBLICO - AES, CONSUMO PROPRIO, PODER PUBLICO - ESTADUAL, PODER PUBLICO - FEDERAL, PODER PUBLICO - MUNICIPAL, ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
+        isenta_ppf: true,
+        isenta_ppe: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.041 }, { max: 50, aliquota: 0.044 }, { max: 70, aliquota: 0.0649 }, { max: 100, aliquota: 0.0956 }, { max: 150, aliquota: 0.1169 }, { max: 200, aliquota: 0.1575 }, { max: 300, aliquota: 0.1857 }, { max: 400, aliquota: 0.209 }, { max: 500, aliquota: 0.2284 }, { max: null, aliquota: 0.2694 }],
             'RESIDENCIAL': [{ max: 50, aliquota: 0 }, { max: 70, aliquota: 0.0306 }, { max: 100, aliquota: 0.0456 }, { max: 150, aliquota: 0.0653 }, { max: 200, aliquota: 0.0956 }, { max: 300, aliquota: 0.1169 }, { max: 400, aliquota: 0.1575 }, { max: 500, aliquota: 0.1857 }, { max: null, aliquota: 0.209 }],
@@ -507,6 +588,7 @@ export const CIP_MUNICIPIOS_ES = {
     'RIO NOVO DO SUL': {
         leis: ['353/2008'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.04 }, { max: 50, aliquota: 0.05 }, { max: 70, aliquota: 0.075 }, { max: 100, aliquota: 0.09 }, { max: 150, aliquota: 0.12 }, { max: 200, aliquota: 0.15 }, { max: 300, aliquota: 0.175 }, { max: 400, aliquota: 0.2 }, { max: 500, aliquota: 0.22 }, { max: null, aliquota: 0.24 }],
             'RESIDENCIAL': [{ max: 50, aliquota: 0 }, { max: 70, aliquota: 0.03 }, { max: 100, aliquota: 0.05 }, { max: 150, aliquota: 0.07 }, { max: 200, aliquota: 0.1 }, { max: 300, aliquota: 0.12 }, { max: 400, aliquota: 0.16 }, { max: 500, aliquota: 0.2 }, { max: null, aliquota: 0.24 }],
@@ -516,6 +598,9 @@ export const CIP_MUNICIPIOS_ES = {
     'SANTA MARIA DE JETIBA': {
         leis: ['698/2003'],
         nota: 'Classes Isentas: PODER PUBLICO - ESTADUAL, PODER PUBLICO - FEDERAL, PODER PUBLICO - MUNICIPAL, ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
+        isenta_ppf: true,
+        isenta_ppe: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0259 }, { max: 50, aliquota: 0.0259 }, { max: 70, aliquota: 0.0407 }, { max: 100, aliquota: 0.0554 }, { max: 150, aliquota: 0.0775 }, { max: 200, aliquota: 0.0996 }, { max: 300, aliquota: 0.1217 }, { max: 400, aliquota: 0.1365 }, { max: 500, aliquota: 0.1475 }, { max: null, aliquota: 0.1698 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0096 }, { max: 50, aliquota: 0.0096 }, { max: 70, aliquota: 0.0185 }, { max: 100, aliquota: 0.0259 }, { max: 150, aliquota: 0.05 }, { max: 200, aliquota: 0.0648 }, { max: 300, aliquota: 0.0794 }, { max: 400, aliquota: 0.1015 }, { max: 500, aliquota: 0.1309 }, { max: null, aliquota: 0.1383 }],
@@ -525,6 +610,7 @@ export const CIP_MUNICIPIOS_ES = {
     'SAO MATEUS': {
         leis: ['351/2005'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0 }, { max: 50, aliquota: 0 }, { max: 70, aliquota: 0 }, { max: 100, aliquota: 0.0831 }, { max: 150, aliquota: 0.1119 }, { max: 200, aliquota: 0.1676 }, { max: 300, aliquota: 0.181 }, { max: 400, aliquota: 0.1965 }, { max: 500, aliquota: 0.2335 }, { max: null, aliquota: 0.2413 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0 }, { max: 50, aliquota: 0 }, { max: 70, aliquota: 0 }, { max: 100, aliquota: 0.0658 }, { max: 150, aliquota: 0.087 }, { max: 200, aliquota: 0.0963 }, { max: 300, aliquota: 0.1069 }, { max: 400, aliquota: 0.1218 }, { max: 500, aliquota: 0.1276 }, { max: null, aliquota: 0.1364 }],
@@ -534,6 +620,9 @@ export const CIP_MUNICIPIOS_ES = {
     'SOORETAMA': {
         leis: ['070/2003'],
         nota: 'Classes Isentas: SERVIÇO PUBLICO - AES, CONSUMO PROPRIO, PODER PUBLICO - ESTADUAL, PODER PUBLICO - FEDERAL, PODER PUBLICO - MUNICIPAL, ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
+        isenta_ppf: true,
+        isenta_ppe: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.03 }, { max: 50, aliquota: 0.041 }, { max: 70, aliquota: 0.0608 }, { max: 100, aliquota: 0.0825 }, { max: 150, aliquota: 0.1035 }, { max: 200, aliquota: 0.1285 }, { max: 300, aliquota: 0.149 }, { max: 400, aliquota: 0.1705 }, { max: 500, aliquota: 0.1995 }, { max: null, aliquota: 0.221 }],
             'RESIDENCIAL': [{ max: 50, aliquota: 0 }, { max: 70, aliquota: 0.0113 }, { max: 100, aliquota: 0.025 }, { max: 150, aliquota: 0.045 }, { max: 200, aliquota: 0.0675 }, { max: 300, aliquota: 0.0825 }, { max: 400, aliquota: 0.1045 }, { max: 500, aliquota: 0.1215 }, { max: null, aliquota: 0.146 }],
@@ -553,6 +642,8 @@ export const CIP_MUNICIPIOS_ES = {
     'VENDA NOVA DO IMIGRANTE': {
         leis: ['1532/2022'],
         nota: 'Classes Isentas: PODER PUBLICO - ESTADUAL, PODER PUBLICO - FEDERAL, PODER PUBLICO - MUNICIPAL, ILUMINAÇÃO PUBLICA e ENTIDADES FILANTRÓPICAS',
+        isenta_ppf: true,
+        isenta_ppe: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0364 }, { max: 50, aliquota: 0.0433 }, { max: 70, aliquota: 0.0631 }, { max: 100, aliquota: 0.0688 }, { max: 150, aliquota: 0.0777 }, { max: 200, aliquota: 0.0907 }, { max: 300, aliquota: 0.1028 }, { max: 400, aliquota: 0.1157 }, { max: 500, aliquota: 0.1328 }, { max: null, aliquota: 0.1576 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0.0116 }, { max: 50, aliquota: 0.0124 }, { max: 70, aliquota: 0.0253 }, { max: 100, aliquota: 0.0328 }, { max: 150, aliquota: 0.0433 }, { max: 200, aliquota: 0.0582 }, { max: 300, aliquota: 0.0712 }, { max: 400, aliquota: 0.0873 }, { max: 500, aliquota: 0.1028 }, { max: null, aliquota: 0.1157 }],
@@ -563,6 +654,7 @@ export const CIP_MUNICIPIOS_ES = {
     'VIANA': {
         leis: ['2508/2012'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0.0425 }, { max: 50, aliquota: 0.0476 }, { max: 70, aliquota: 0.0841 }, { max: 100, aliquota: 0.0989 }, { max: 150, aliquota: 0.1212 }, { max: 200, aliquota: 0.1632 }, { max: 300, aliquota: 0.1907 }, { max: 400, aliquota: 0.2002 }, { max: 500, aliquota: 0.2189 }, { max: null, aliquota: 0.248 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0 }, { max: 50, aliquota: 0 }, { max: 70, aliquota: 0.0285 }, { max: 100, aliquota: 0.0427 }, { max: 150, aliquota: 0.0613 }, { max: 200, aliquota: 0.0989 }, { max: 300, aliquota: 0.1212 }, { max: 400, aliquota: 0.1509 }, { max: 500, aliquota: 0.1786 }, { max: null, aliquota: 0.2002 }],
@@ -572,6 +664,7 @@ export const CIP_MUNICIPIOS_ES = {
     'VILA PAVAO': {
         leis: ['006/2002'],
         nota: 'Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL',
+        isenta_rural: true,
         faixas: {
             'DEMAIS CLASSES': [{ max: 30, aliquota: 0 }, { max: 50, aliquota: 0.0632 }, { max: 70, aliquota: 0.1049 }, { max: 100, aliquota: 0.1235 }, { max: 150, aliquota: 0.1511 }, { max: 200, aliquota: 0.2073 }, { max: 300, aliquota: 0.24 }, { max: 400, aliquota: 0.27 }, { max: 500, aliquota: 0.2952 }, { max: null, aliquota: 0.329 }],
             'RESIDENCIAL': [{ max: 30, aliquota: 0 }, { max: 50, aliquota: 0.0068 }, { max: 70, aliquota: 0.0332 }, { max: 100, aliquota: 0.0497 }, { max: 150, aliquota: 0.0706 }, { max: 200, aliquota: 0.1215 }, { max: 300, aliquota: 0.1487 }, { max: 400, aliquota: 0.2003 }, { max: 500, aliquota: 0.2301 }, { max: null, aliquota: 0.2657 }],
