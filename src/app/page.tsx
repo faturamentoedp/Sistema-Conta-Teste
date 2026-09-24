@@ -2,6 +2,27 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
+import { MUNICIPIOS_ES_CIP, calcular_cip_municipio } from '@/lib/motor/cip-municipios.js';
+
+// Perda de 1,5% no ramal de ligação (toggle "Desconto BT"), arredondada para
+// kWh inteiro. Extraída para função de módulo porque tanto o cálculo final
+// (handleSubmit) quanto a CIP automática por município (que precisa do
+// consumo já faturado, não o medido) têm que aplicar exatamente a mesma
+// regra - ver desconto-bt-perda-ramal na memória do projeto.
+function aplicarPerdaBT(valor: number, descontoBT: boolean): number {
+  return descontoBT ? Math.round(valor * 0.985) : valor;
+}
+
+// Título de exibição para os municípios do ES na lista de CIP - a base vem
+// da planilha da área em CAIXA ALTA e sem acento (ex.: "SAO MATEUS"), então
+// isto é só uma capitalização legível, sem tentar reconstruir acentuação.
+function tituloMunicipio(nome: string): string {
+  return nome
+    .toLowerCase()
+    .split(' ')
+    .map((p) => (p ? p.charAt(0).toUpperCase() + p.slice(1) : p))
+    .join(' ');
+}
 
 export default function Home() {
   const [form, setForm] = useState({
@@ -28,6 +49,9 @@ export default function Home() {
   });
   const [descontoBT, setDescontoBT] = useState(false);
   const [sudeneAtivo, setSudeneAtivo] = useState(false);
+  // Município usado para preencher a CIP automaticamente (só ES). Vazio =
+  // comportamento de sempre, CIP 100% manual - nada muda pra quem não usa.
+  const [municipioCip, setMunicipioCip] = useState('');
   const [ajustes, setAjustes] = useState<{nome: string, valor: string}[]>([{nome: '', valor: ''}]);
 
   // Geração Distribuída: a unidade pode ser geradora ou receptora, e uma
@@ -69,6 +93,43 @@ export default function Home() {
     setError(null);
   }, [form, ajustes, gdAtivo, gdPapel, geradoras, descontoBT, sudeneAtivo]);
 
+  // CIP automática por município (só ES). Município em branco = nada muda,
+  // continua 100% manual. Escolhido um município, recalcula sempre que
+  // categoria, consumo ou datas mudarem - o campo de CIP continua um input
+  // normal, então o valor preenchido pode ser sobrescrito à mão a qualquer
+  // momento (só volta a ser recalculado na próxima mudança de um desses
+  // campos, ou ao trocar o município de novo).
+  React.useEffect(() => {
+    if (!municipioCip || form.distribuidora !== 'ES') return;
+    if (!form.data_leitura_anterior || !form.data_leitura_atual) return;
+    const dataAnt = new Date(form.data_leitura_anterior + 'T00:00:00Z');
+    const dataAtu = new Date(form.data_leitura_atual + 'T00:00:00Z');
+    if (isNaN(dataAnt.getTime()) || isNaN(dataAtu.getTime())) return;
+
+    const consumo = form.categoria.endsWith('_TB')
+      ? aplicarPerdaBT(parseFloat(String(form.consumo_ponta).replace(',', '.')) || 0, false)
+        + (parseFloat(String(form.consumo_fora_ponta).replace(',', '.')) || 0)
+        + (parseFloat(String(form.consumo_intermediario).replace(',', '.')) || 0)
+      : aplicarPerdaBT(parseFloat(String(form.consumo_kwh).replace(',', '.')) || 0, descontoBT);
+
+    const cip = calcular_cip_municipio(municipioCip, form.categoria, consumo, dataAnt, dataAtu);
+    if (cip !== null) {
+      setForm((prev) => ({ ...prev, valor_cip: cip.toFixed(2) }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    municipioCip,
+    form.distribuidora,
+    form.categoria,
+    form.consumo_kwh,
+    form.consumo_ponta,
+    form.consumo_fora_ponta,
+    form.consumo_intermediario,
+    form.data_leitura_anterior,
+    form.data_leitura_atual,
+    descontoBT,
+  ]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
@@ -87,8 +148,6 @@ export default function Home() {
     setLoading(true);
     setError(null);
     try {
-      const fatorBT = descontoBT ? 0.985 : 1.0;
-
       // A perda de 1,5% do ramal incide sobre o consumo medido e o resultado é
       // arredondado para kWh INTEIRO antes de qualquer outra regra. Conferido
       // na fatura da Inst. 151389514 (SP, Baixa Renda): 394 x 0,985 = 388,09,
@@ -98,7 +157,7 @@ export default function Home() {
       //
       // Só arredonda quando o desconto está ligado: com ele desligado, um
       // consumo com decimais informado à mão continua passando como está.
-      const aplicaBT = (valor: number) => descontoBT ? Math.round(valor * fatorBT) : valor;
+      const aplicaBT = (valor: number) => aplicarPerdaBT(valor, descontoBT);
 
       const rawKwh = parseFloat(String(form.consumo_kwh).replace(',', '.')) || 0;
       const rawReservado = parseFloat(String(form.consumo_reservado).replace(',', '.')) || 0;
@@ -567,6 +626,26 @@ export default function Home() {
               </div>
             )}
 
+
+            {/* CIP automática por município - só ES, e só como atalho: o
+                campo de CIP ao lado continua editável e nada muda pra quem
+                deixar em "Nenhum" (comportamento manual de sempre). */}
+            {form.distribuidora === 'ES' && (
+              <div>
+                <label className="block text-xs font-semibold text-black mb-1">Município (CIP automática)</label>
+                <select value={municipioCip} onChange={(e) => setMunicipioCip(e.target.value)} className="w-full">
+                  <option value="">Nenhum (informar CIP manualmente)</option>
+                  {MUNICIPIOS_ES_CIP.map((m: string) => (
+                    <option key={m} value={m}>{tituloMunicipio(m)}</option>
+                  ))}
+                </select>
+                {municipioCip && (
+                  <p className="text-[11px] text-slate-500 mt-1">
+                    ✓ CIP calculada pela tabela de {tituloMunicipio(municipioCip)} - ainda pode ser ajustada à mão no campo CIP (R$) abaixo.
+                  </p>
+                )}
+              </div>
+            )}
 
             <div className="grid grid-cols-2 gap-4">
               <div>
