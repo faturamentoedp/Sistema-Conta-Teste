@@ -51,7 +51,7 @@ for (const c of CASOS) {
 // Rateio da Tarifa B4a pela vigência (07/08/2026) - mesmo criterio de dias das outras tarifas do ES
 const antesVigencia = calcular_cip_municipio('AFONSO CLAUDIO', 'B1C', 100, ...DATA_ANTES_VIGENCIA);
 const esperadoAntes = Math.round(0.0288 * 434.13 * 100) / 100;
-const bateuAntes = Math.abs(antesVigencia - esperadoAntes) < 0.01;
+const bateuAntes = Math.abs(antesVigencia - esperadoAntes) < 0.005;
 console.log(`${bateuAntes ? 'ok  ' : 'FALHA'}  AFONSO CLAUDIO, B1C, 100 kWh, antes de 07/08/2026 (tarifa B4a antiga) -> ${antesVigencia} (esperado ${esperadoAntes})`);
 if (!bateuAntes) falhas++;
 
