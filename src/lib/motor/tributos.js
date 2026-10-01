@@ -54,7 +54,8 @@ export const TRIBUTOS_MENSAIS = {
         // Setembro/2026 estava faltando e o simulador caía na alíquota
         // genérica (0,630/2,890), o que a área identificou em 14/09/2026 numa
         // simulação do ES. Valores confirmados pela chefia.
-        '2026-09': { pis: 0.0128, cofins: 0.0587 }
+        '2026-09': { pis: 0.0128, cofins: 0.0587 },
+        '2026-10': { pis: 0.0110, cofins: 0.0508 }
     },
 
     // Tabela oficial de SP (exercício/período K4/MM.AAAA).
