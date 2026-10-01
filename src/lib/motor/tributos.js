@@ -157,6 +157,10 @@ export const TRIBUTOS_MENSAIS = {
         '2026-07': { pis: 0.0100, cofins: 0.0459 },
 
         '2026-08': { pis: 0.0106, cofins: 0.0487 },
-        '2026-09': { pis: 0.0121, cofins: 0.0559 }
+        '2026-09': { pis: 0.0121, cofins: 0.0559 },
+        // Comunicado "Alíquotas efetivas do PIS/COFINS da EDP São Paulo":
+        // mês de referência agosto/2026, com uso previsto em outubro/2026 -
+        // mesma convenção de defasagem dos demais meses dessa tabela.
+        '2026-10': { pis: 0.0106, cofins: 0.0489 }
     }
 };
