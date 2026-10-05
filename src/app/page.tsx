@@ -234,6 +234,9 @@ export default function Home() {
     if (resultado.resumo.valor_escassez) {
       csv += `Escassez Hídrica (Informativo);${formatBRL(resultado.resumo.valor_escassez)}\n`;
     }
+    if (resultado.resumo.valor_beneficio_tarifa_social) {
+      csv += `Benefício Tarifa Social (Informativo);${formatBRL(resultado.resumo.valor_beneficio_tarifa_social)}\n`;
+    }
     csv += `CIP;${formatBRL(resultado.resumo.valor_cip)}\n`;
     csv += `TOTAL FATURA;${formatBRL(resultado.resumo.total_fatura)}\n\n`;
 
@@ -730,6 +733,16 @@ export default function Home() {
                   <div className="flex-1 pl-4 border-l-4 border-cyan-600 py-1 bg-cyan-50/40">
                     <span className="text-[10px] text-cyan-700 font-bold uppercase tracking-wider block">ESCASSEZ HÍDRICA (INFORMATIVO)</span>
                     <span className="text-xl font-bold text-cyan-900">{formatBRL(resultado.resumo.valor_escassez)}</span>
+                  </div>
+                )}
+
+                {/* Mensagem "Benefício Tarifário obtido com a Tarifa Social" da
+                    fatura Baixa Renda (80 kWh isentos x TUSD+TE). Informativo:
+                    não entra no total. Só aparece em Baixa Renda de ES. */}
+                {!!resultado.resumo.valor_beneficio_tarifa_social && (
+                  <div className="flex-1 pl-4 border-l-4 border-rose-500 py-1 bg-rose-50/40">
+                    <span className="text-[10px] text-rose-700 font-bold uppercase tracking-wider block">BENEFÍCIO TARIFA SOCIAL (INFORMATIVO)</span>
+                    <span className="text-xl font-bold text-rose-900">{formatBRL(resultado.resumo.valor_beneficio_tarifa_social)}</span>
                   </div>
                 )}
 

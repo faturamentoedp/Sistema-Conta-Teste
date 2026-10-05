@@ -83,6 +83,46 @@ export const CENARIOS = [
         }
     },
     {
+        // Modelo da área para Baixa Renda ES ("Benefício Tarifa Social"), 450 kWh,
+        // PIS/COFINS de outubro/2026 (1,10% / 5,08%), ICMS 17%. O modelo não
+        // mostra as datas: 32 dias com 27 de bandeira amarela (BAM 380 de 450
+        // kWh) e 5 de outra - reproduzido como 03/09 a 05/10/2026, amarela em
+        // setembro e verde em outubro. Fecha o total do modelo (339,98) e os
+        // dois informativos do modelo: Benefício 53,94 e Escassez -0,20.
+        nome: 'MODELO ES Baixa Renda 450 kWh (Benefício Tarifa Social 53,94 / Escassez -0,20)',
+        modelo_oficial: 339.98,
+        beneficio_social_impresso: 53.94,
+        escassez_impressa: -0.20,
+        params: {
+            distribuidora: 'ES', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', fase: 'monofasico',
+            data_leitura_anterior: '2026-09-03', data_leitura_atual: '2026-10-05',
+            consumo_kwh: 450, bandeira_mes1: 'AMARELA', bandeira_mes2: 'VERDE',
+            valor_cip: 0, ajustes: []
+        }
+    },
+    {
+        // Fatura real Baixa Renda ES (ref. 09/2026, Inst. com leitura por média
+        // aritmética), 413 kWh, 04/08 a 03/09/2026, bandeira amarela os 30
+        // dias, PIS/COFINS 1,28% / 5,87%. A conta imprime "Benefício Tarifário
+        // obtido com a Tarifa Social R$ 53,58" e "Escassez hídrica ... -0,26".
+        // CIP 21,06 + multa 4,88 + juros 4,46 + IPCA 0,24; total 340,39.
+        nome: 'FATURA REAL ES Baixa Renda 413 kWh (REH 3.600 em 28 de 30 dias, Benefício 53,58)',
+        fatura_real: 340.39,
+        beneficio_social_impresso: 53.58,
+        escassez_impressa: -0.26,
+        params: {
+            distribuidora: 'ES', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', fase: 'monofasico',
+            data_leitura_anterior: '2026-08-04', data_leitura_atual: '2026-09-03',
+            consumo_kwh: 413, bandeira_mes1: 'AMARELA', bandeira_mes2: 'AMARELA',
+            valor_cip: 21.06,
+            ajustes: [
+                { nome: 'Multa AGO/26', valor: 4.88 },
+                { nome: 'Juros de Mora JUL/26', valor: 4.46 },
+                { nome: 'Atualiz. Monet. IPCA JUL/26', valor: 0.24 }
+            ]
+        }
+    },
+    {
         // Baixa Renda de SP com a perda de 1,5% do ramal ("Desconto BT").
         // O consumo medido foi 394 kWh; a perda derruba para 388,09, que a
         // conta fatura arredondado para 388 - daí 388 - 80 isentos = 308,0000.

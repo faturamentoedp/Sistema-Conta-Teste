@@ -154,6 +154,26 @@ export const REPRODUZIR_FALLBACK_POSTO = false;
 export const SUBVENCAO_INCLUI_BANDEIRA = { ES: true, SP: false };
 
 /**
+ * Informativo "Benefício Tarifário obtido com a Tarifa Social" - a nota de
+ * rodapé (ATENÇÃO) da fatura Baixa Renda, que também aparece no modelo da
+ * área como "Benefício Tarifa Social (mensagem na fatura)". Não soma no total.
+ *
+ * Valor = kWh isentos (FAIXA_TARIFA_SOCIAL_KWH) x (TUSD + TE), SEM a
+ * bandeira. Conferido em duas fontes:
+ *  - Modelo da área, 450 kWh em out/2026: 80 x (0,34895 + 0,32532) = 53,94,
+ *    igual ao "Benefício Tarifa Social" do modelo. A bandeira (BAM, 1,28) fica
+ *    numa linha separada e só entra no total de 55,22 usado pra calcular o
+ *    ICMS do desconto - não na mensagem.
+ *  - Fatura real ES, 413 kWh, 04/08 a 03/09/2026: 80 x 0,669844 (tarifa
+ *    ponderada 2/28 dias entre REH 3.508 e 3.600) = 53,59, contra R$ 53,58
+ *    impresso na conta. Com a bandeira daria 55,10 - não bate.
+ *
+ * Só confirmado em ES. Em SP não temos uma fatura Baixa Renda com a mensagem
+ * pra conferir, então fica desligado até aparecer uma.
+ */
+export const BENEFICIO_TARIFA_SOCIAL_INFORMATIVO = { ES: true, SP: false };
+
+/**
  * Informativo: Encargo CDE - Escassez Hídrica.
  *
  * Componente embutido no TUSD/TE (itens SAP ZIEH11 e ZIEH01) que a fatura só
@@ -165,18 +185,36 @@ export const SUBVENCAO_INCLUI_BANDEIRA = { ES: true, SP: false };
  * residencial, ES, leitura 21/07 a 20/08/2026): 121 kWh x (0,00018609 -
  * 0,00259652) = -R$0,29, batendo com o rodapé impresso.
  *
- * ⚠️ Valor fixo, não uma tarifa por vigência: a planilha "B1 Res" também
- * lista um TUSD e um TE separados por resolução (REH 3.508 x REH 3.600), mas
- * só o TUSD bate com a média ponderada pelos dias de cada uma - o TE
- * proporcionalizado da planilha (-0,002597) é ~5,6x maior que essa média
- * (-0,000463), então tem algo na conta do TE que essas duas colunas não
- * mostram. Sem a fórmula real, gravamos direto o resultado final já
- * proporcionalizado (tusd + te = -0,00241043) que bateu com a fatura, em vez
- * de tentar recalcular a partir da REH 3.508/REH 3.600 separadamente.
+ * ⚠️ Antes de 05/10/2026 as duas vigências abaixo traziam o MESMO valor
+ * (tusd + te = -0,00241043), que é a média ponderada do ciclo de referência
+ * (16 dias na REH 3.508 + 14 na REH 3.600) - o que só acerta aquele ciclo.
+ * Para qualquer leitura inteira dentro de uma das vigências o informativo
+ * saía errado: no modelo Baixa Renda da área (450 kWh, out/2026) o simulador
+ * dava -1,08 contra -0,20, e na fatura real ES de 413 kWh (04/08 a
+ * 03/09/2026) dava -1,00 contra -0,26 impresso.
  *
- * Isso funciona para qualquer leitura dentro dessas vigências, mas não foi
- * validado fora do ciclo de referência (21/07 a 20/08/2026) - se aparecer
- * outra fatura de B1 no ES com o informativo, confira antes de confiar.
+ * Separando por resolução, três pontos fecham juntos (só a SOMA tusd + te é
+ * usada no cálculo; o TUSD fica fixo e o resto vai no TE):
+ *   1. ciclo B1 de referência, 16/14 dias: 16/30 x r_3508 + 14/30 x r_3600
+ *      = -0,00241043 (o valor que já bateu com o Doc 1025308715);
+ *   2. modelo Baixa Renda, 370 kWh faturados todos na REH 3.600:
+ *      370 x r_3600 = -0,20  ->  r_3600 = -0,000542;
+ *   3. fatura real Baixa Renda, 333 kWh faturados, 2 dias na REH 3.508 e 28
+ *      na 3.600: 333 x (2/30 x r_3508 + 28/30 x r_3600) = -0,258 (impresso
+ *      -0,26), com r_3508 = -0,004045 vindo de (1) e (2).
+ * Com isso o TE ponderado do ciclo de referência volta a dar exatamente
+ * -0,00259652, o número da planilha "B1 Res" que antes parecia "inexplicável".
+ *
+ * Os dois valores por resolução são DERIVADOS (não lidos de uma tabela
+ * publicada) - a fonte primária continua sendo a planilha da área. Os pontos
+ * (2) e (3) são de Baixa Renda; para B1 residencial só o ciclo (1) está
+ * comprovado em fatura, então confira com a próxima fatura B1 do ES que
+ * trouxer o informativo depois de 07/08/2026.
+ *
+ * Em Baixa Renda o informativo incide só nos kWh efetivamente faturados (sem
+ * os 80 kWh isentos): o encargo está embutido no TUSD/TE e, nos kWh a tarifa
+ * zero, ele zera junto. Sem essa exclusão (413 kWh no lugar de 333) o ponto
+ * (3) daria -0,32 em vez dos -0,26 impressos.
  *
  * Só temos o valor publicado para B1 residencial no ES, mas por pedido da
  * equipe (26/08/2026) ele é aplicado pra qualquer categoria no ES - sem
@@ -185,8 +223,11 @@ export const SUBVENCAO_INCLUI_BANDEIRA = { ES: true, SP: false };
  */
 export const ENCARGO_ESCASSEZ_HIDRICA = {
     ES: [
-        { inicio: '2026-01-01', fim: '2026-08-06', tusd: 0.00018609, te: -0.00259652 },
-        { inicio: '2026-08-07', fim: '2027-08-06', tusd: 0.00018609, te: -0.00259652 }
+        // REH 3.508 (até 06/08/2026): soma -0,004045. O TUSD é o mesmo nas duas
+        // linhas e o resto vai no TE - só a soma é evidenciada, ver acima.
+        { inicio: '2026-01-01', fim: '2026-08-06', tusd: 0.00018609, te: -0.0042314 },
+        // REH 3.600 (a partir de 07/08/2026): soma -0,000542.
+        { inicio: '2026-08-07', fim: '2027-08-06', tusd: 0.00018609, te: -0.00072809 }
     ]
 };
 

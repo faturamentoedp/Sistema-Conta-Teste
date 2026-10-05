@@ -22,6 +22,7 @@ import {
     FAIXA_DESCONTO_SOCIAL_KWH,
     CATEGORIA_DESCONTO_SOCIAL,
     SUBVENCAO_INCLUI_BANDEIRA,
+    BENEFICIO_TARIFA_SOCIAL_INFORMATIVO,
     OVERRIDES_TARIFA,
     REPRODUZIR_FALLBACK_POSTO,
     PERC_REDUCAO_GD,
@@ -508,6 +509,10 @@ export function calcular_fatura(params, dbRows) {
     const bases = [];
     let isencao_br_restante = is_baixa_renda ? FAIXA_TARIFA_SOCIAL_KWH : 0;
     let base_br_pura = 0;
+    // Só TUSD + TE dos kWh isentos, SEM a bandeira: é o valor da mensagem
+    // "Benefício Tarifário obtido com a Tarifa Social" (base_br_pura inclui
+    // a bandeira em ES e serve ao ICMS do desconto, não à mensagem).
+    let beneficio_tarifa_br = 0;
     let consumo_br_total = 0;
 
     let payload_tarifas = {};
@@ -547,6 +552,7 @@ export function calcular_fatura(params, dbRows) {
 
             base_br_pura += isencao_nesta_faixa * t_tusd;
             base_br_pura += isencao_nesta_faixa * t_te;
+            beneficio_tarifa_br += isencao_nesta_faixa * (t_tusd + t_te);
             consumo_br_total += isencao_nesta_faixa;
         }
 
@@ -1091,18 +1097,47 @@ export function calcular_fatura(params, dbRows) {
     // confirmação por fatura real de cada uma.
     const encargo_escassez = resolver_encargo_escassez(distribuidora, data_anterior, data_atual);
     const tarifa_escassez_unit = encargo_escassez ? (encargo_escassez.tusd + encargo_escassez.te) : 0;
-    const valor_escassez_calc = encargo_escassez && consumo_faturado_total > 0
-        ? Math.round((consumo_faturado_total * tarifa_escassez_unit) * 100) / 100
+    // Em Baixa Renda os kWh isentos (MP 1300) saem a tarifa zero, e o encargo,
+    // embutido no TUSD/TE, zera junto - então só os kWh faturados contam.
+    // Conferido no modelo da área (450 kWh -> -0,20) e na fatura real ES de
+    // 413 kWh (-0,26); ver ENCARGO_ESCASSEZ_HIDRICA.
+    const kwh_escassez = Math.max(consumo_faturado_total - consumo_br_total, 0);
+    const valor_escassez_calc = encargo_escassez && kwh_escassez > 0
+        ? Math.round((kwh_escassez * tarifa_escassez_unit) * 100) / 100
         : 0;
 
-    if (encargo_escassez && consumo_faturado_total > 0) {
+    if (encargo_escassez && kwh_escassez > 0) {
         linhas.push({
             nome: "Informativo: Encargo CDE - Escassez Hídrica",
             unidade: "kWh",
-            quantidade: consumo_faturado_total,
+            quantidade: kwh_escassez,
             tarifa_base: tarifa_escassez_unit,
             preco_unit: tarifa_escassez_unit,
             valor_total: valor_escassez_calc,
+            base_pis_cofins: 0.0,
+            valor_pis_cofins: 0.0,
+            base_icms: 0.0,
+            aliquota_icms: 0.0,
+            valor_icms: 0.0,
+            is_informativo: true
+        });
+    }
+
+    // ---- Informativo: Benefício Tarifa Social (mensagem da fatura Baixa Renda) ----
+    // Não soma no total, igual ao Fio B e à Escassez Hídrica. Só ES confirmado
+    // - ver BENEFICIO_TARIFA_SOCIAL_INFORMATIVO em tarifas-aneel.js.
+    const valor_beneficio_tarifa_social = (BENEFICIO_TARIFA_SOCIAL_INFORMATIVO[distribuidora] && is_baixa_renda && beneficio_tarifa_br > 0)
+        ? Math.round(beneficio_tarifa_br * 100) / 100
+        : 0;
+
+    if (valor_beneficio_tarifa_social > 0) {
+        linhas.push({
+            nome: "Informativo: Benefício Tarifa Social",
+            unidade: "kWh",
+            quantidade: consumo_br_total,
+            tarifa_base: beneficio_tarifa_br / consumo_br_total,
+            preco_unit: beneficio_tarifa_br / consumo_br_total,
+            valor_total: valor_beneficio_tarifa_social,
             base_pis_cofins: 0.0,
             valor_pis_cofins: 0.0,
             base_icms: 0.0,
@@ -1137,7 +1172,10 @@ export function calcular_fatura(params, dbRows) {
             valor_fio_b: valor_fio_b_calc,
             tarifa_fio_b_unit: preco_unit_fio_b,
             valor_escassez: valor_escassez_calc,
-            tarifa_escassez_unit: tarifa_escassez_unit
+            tarifa_escassez_unit: tarifa_escassez_unit,
+            // Só aparece em Baixa Renda de ES, igual ao total_retencoes: nas
+            // demais contas o campo não existe e nada muda no resultado.
+            ...(valor_beneficio_tarifa_social > 0 ? { valor_beneficio_tarifa_social } : {})
         },
         parametros_usados: {
             consumo_faturado: consumo_faturado_total,

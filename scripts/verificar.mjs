@@ -108,6 +108,24 @@ for (const cenario of CENARIOS) {
         }
     }
 
+    // Informativos que não somam no total mas aparecem impressos na fatura
+    // (ex.: Benefício Tarifa Social, Escassez Hídrica) também podem ser
+    // ancorados, com a mesma tolerância.
+    for (const [campo, rotulo] of [['beneficio_social_impresso', 'benefício tarifa social'], ['escassez_impressa', 'escassez hídrica']]) {
+        if (cenario[campo] === undefined) continue;
+        const chave = campo === 'beneficio_social_impresso' ? 'valor_beneficio_tarifa_social' : 'valor_escassez';
+        const limite = cenario.tolerancia ?? TOLERANCIA_PADRAO;
+        const valor = obtido.resumo[chave] ?? 0;
+        const dif = valor - cenario[campo];
+        if (Math.abs(dif) > limite) {
+            falhas++;
+            console.log(`FALHA informativo   ${cenario.nome}`);
+            console.log(`        ${rotulo} do motor ${valor.toFixed(2)} vs ${cenario[campo].toFixed(2)} (dif ${dif.toFixed(2)})`);
+        } else {
+            console.log(`ok    informativo   ${rotulo} -> R$ ${cenario[campo].toFixed(2)}  (${cenario.nome.slice(0, 60)})`);
+        }
+    }
+
     const achados = diferencas(esperado, obtido);
     if (achados.length === 0) {
         console.log(`ok    motor local   ${cenario.nome}`);
