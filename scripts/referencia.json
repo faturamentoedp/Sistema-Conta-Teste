@@ -1138,6 +1138,194 @@
     }
   },
   {
+    "nome": "FATURA REAL ES Baixa Renda 321 kWh com SUDENE (OUT/2026, 241 kWh faturados)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "Valor Baixa Renda",
+          "unidade": "",
+          "quantidade": 54.4088,
+          "tarifa_base": 0,
+          "preco_unit": 1.2183690873535167,
+          "valor_total": 66.29,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 69.87,
+          "aliquota_icms": 17,
+          "valor_icms": 11.88
+        },
+        {
+          "nome": "Desconto Baixa Renda",
+          "unidade": "",
+          "quantidade": -54.4088,
+          "tarifa_base": 1,
+          "preco_unit": 1,
+          "valor_total": -54.41,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD-Consumo MP1300",
+          "unidade": "kWh",
+          "quantidade": 80,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TE - Consumo MP 1300",
+          "unidade": "kWh",
+          "quantidade": 80,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Consumo MP1300",
+          "unidade": "kWh",
+          "quantidade": 241,
+          "tarifa_base": 0.34895,
+          "preco_unit": 0.4480912863070539,
+          "valor_total": 107.99,
+          "base_pis_cofins": 89.63,
+          "valor_pis_cofins": 5.54,
+          "base_icms": 107.99,
+          "aliquota_icms": 17,
+          "valor_icms": 18.36
+        },
+        {
+          "nome": "TE - Consumo MP1300",
+          "unidade": "kWh",
+          "quantidade": 241,
+          "tarifa_base": 0.32532,
+          "preco_unit": 0.4177593360995851,
+          "valor_total": 100.68,
+          "base_pis_cofins": 83.56,
+          "valor_pis_cofins": 5.16,
+          "base_icms": 100.68,
+          "aliquota_icms": 17,
+          "valor_icms": 17.12
+        },
+        {
+          "nome": "Adic.Band. Amarela MP1300",
+          "unidade": "kWh",
+          "quantidade": 57.931,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "Adic.Band. Amarela MP1300",
+          "unidade": "kWh",
+          "quantidade": 174.5172,
+          "tarifa_base": 0.01885,
+          "preco_unit": 0.024238298574581763,
+          "valor_total": 4.23,
+          "base_pis_cofins": 3.51,
+          "valor_pis_cofins": 0.22,
+          "base_icms": 4.23,
+          "aliquota_icms": 17,
+          "valor_icms": 0.72
+        },
+        {
+          "nome": "Red. SUDENE Cons. MP1300",
+          "unidade": "kWh",
+          "quantidade": 241,
+          "tarifa_base": 0.007810000000000001,
+          "preco_unit": 0.010029459128348826,
+          "valor_total": -2.42,
+          "base_pis_cofins": -2.01,
+          "valor_pis_cofins": -0.12,
+          "base_icms": -2.42,
+          "aliquota_icms": 17,
+          "valor_icms": -0.41,
+          "is_sudene": true
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 321,
+          "tarifa_base": 0.1570275,
+          "preco_unit": 0.20165184292916707,
+          "valor_total": 64.73,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 241,
+          "tarifa_base": -0.0005420000000000001,
+          "preco_unit": -0.0005420000000000001,
+          "valor_total": -0.13,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Benefício Tarifa Social",
+          "unidade": "kWh",
+          "quantidade": 80,
+          "tarifa_base": 0.6664599999999999,
+          "preco_unit": 0.6664599999999999,
+          "valor_total": 53.32,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 222.36,
+        "total_pis_cofins": 10.8,
+        "total_base_pis_cofins": 174.69,
+        "total_pis": 1.92,
+        "total_cofins": 8.87,
+        "total_icms": 47.67,
+        "total_fatura": 246.22,
+        "valor_cip": 23.86,
+        "valor_fio_b": 64.73,
+        "tarifa_fio_b_unit": 0.20165184292916707,
+        "valor_escassez": -0.13,
+        "tarifa_escassez_unit": -0.0005420000000000001,
+        "valor_beneficio_tarifa_social": 53.32
+      },
+      "parametros_usados": {
+        "consumo_faturado": 321,
+        "aliquota_pis_aplicada": 0.011,
+        "aliquota_cofins_aplicada": 0.0508,
+        "aliquota_icms_aplicada": 0.17
+      }
+    }
+  },
+  {
     "nome": "FATURA REAL SP Baixa Renda Inst. 151389514 (perda de 1,5% no ramal)",
     "resultado": {
       "detalhes": [

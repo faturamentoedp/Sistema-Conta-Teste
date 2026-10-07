@@ -123,6 +123,24 @@ export const CENARIOS = [
         }
     },
     {
+        // Fatura real Baixa Renda ES, ref. OUT/2026, 321 kWh, 09/09 a 08/10/2026
+        // (29 dias; amarela 21 dias, verde 8), COM redutor SUDENE, CIP 23,86.
+        // Total impresso 246,22; Escassez -0,13. Dois pontos que o motor errava:
+        //  - o redutor SUDENE incide só nos 241 kWh faturados (não nos 321);
+        //  - o redutor também abate a tarifa dos 80 kWh isentos, então o
+        //    "Desconto Baixa Renda" sai 54,42 e não 55,03 (a conta fechava
+        //    R$ 0,67 abaixo). Sem esses dois acertos o motor dava 245,55.
+        nome: 'FATURA REAL ES Baixa Renda 321 kWh com SUDENE (OUT/2026, 241 kWh faturados)',
+        fatura_real: 246.22,
+        escassez_impressa: -0.13,
+        params: {
+            distribuidora: 'ES', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', fase: 'monofasico',
+            data_leitura_anterior: '2026-09-09', data_leitura_atual: '2026-10-08',
+            consumo_kwh: 321, bandeira_mes1: 'AMARELA', bandeira_mes2: 'VERDE',
+            valor_cip: 23.86, ajustes: [], sudene: true
+        }
+    },
+    {
         // Baixa Renda de SP com a perda de 1,5% do ramal ("Desconto BT").
         // O consumo medido foi 394 kWh; a perda derruba para 388,09, que a
         // conta fatura arredondado para 388 - daí 388 - 80 isentos = 308,0000.

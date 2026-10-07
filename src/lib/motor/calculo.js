@@ -650,6 +650,43 @@ export function calcular_fatura(params, dbRows) {
     let divisor = icms > 0 ? (1 - icms - (1 - icms) * (pis + cofins)) : (1 - pis - cofins);
     if (divisor <= 0) divisor = 1.0;
 
+    // Tarifa do redutor SUDENE rateada pelos dias do período que caem depois do
+    // início da vigência (0 = desligado ou fora da vigência). Calculada aqui,
+    // antes do bloco Baixa Renda, porque o redutor também entra no valor do
+    // desconto Baixa Renda - ver mais abaixo e SUDENE_CONFIG em tarifas-aneel.js.
+    let tarifa_sudene = 0;
+    if (params.sudene) {
+        const cfg_sudene = SUDENE_CONFIG[distribuidora];
+        if (cfg_sudene) {
+            const MS_SUD = 1000 * 60 * 60 * 24;
+            const inicio_sudene = new Date(cfg_sudene.inicio_vigencia + 'T00:00:00Z');
+            const dias_periodo_sudene = Math.round((data_atual.getTime() - data_anterior.getTime()) / MS_SUD);
+
+            let dias_sudene = 0;
+            if (data_atual > inicio_sudene) {
+                dias_sudene = data_anterior >= inicio_sudene
+                    ? dias_periodo_sudene
+                    : Math.round((data_atual.getTime() - inicio_sudene.getTime()) / MS_SUD);
+            }
+
+            if (dias_periodo_sudene > 0 && dias_sudene > 0) {
+                tarifa_sudene = (cfg_sudene.tarifa_base_kwh / dias_periodo_sudene) * dias_sudene;
+            }
+        }
+    }
+
+    // Baixa Renda com SUDENE: os kWh isentos (MP 1300) também têm a tarifa
+    // reduzida pelo redutor, então o "Valor/Desconto Baixa Renda" sai menor.
+    // Conferido na fatura real ES de OUT/2026 (321 kWh): desconto 54,42 =
+    // 80 x (0,34895 + 0,32532 - 0,00781) + bandeira 1,09; sem o redutor
+    // daria 55,03 e a conta fechava R$ 0,67 abaixo. O mesmo abatimento vale
+    // para o informativo "Benefício Tarifa Social" (desconto menos bandeira).
+    if (is_baixa_renda && consumo_br_total > 0 && tarifa_sudene > 0) {
+        const sudene_isentos = consumo_br_total * tarifa_sudene;
+        base_br_pura -= sudene_isentos;
+        beneficio_tarifa_br -= sudene_isentos;
+    }
+
     const total_energia_faturado = Math.round((total_base / divisor) * 100) / 100;
 
     const linhas = [];
@@ -943,73 +980,60 @@ export function calcular_fatura(params, dbRows) {
     // A tarifa é rateada pelos dias do período que caem depois do início da
     // vigência, e sofre o mesmo gross-up tributário da energia - por isso usa o
     // mesmo `divisor`. Ver SUDENE_CONFIG em tarifas-aneel.js.
-    if (params.sudene) {
-        const cfg = SUDENE_CONFIG[distribuidora];
-        if (cfg) {
-            const MS = 1000 * 60 * 60 * 24;
-            const inicio = new Date(cfg.inicio_vigencia + 'T00:00:00Z');
-            const dias_totais = Math.round((data_atual.getTime() - data_anterior.getTime()) / MS);
+    if (tarifa_sudene > 0) {
+        const reduzir = (nome, qtd, tarifa_base) => {
+            if (qtd <= 0 || tarifa_base <= 0) return;
+            const preco_unit = tarifa_base / divisor;
+            const valor_total = -Math.round((qtd * preco_unit) * 100) / 100;
+            const icms_linha = Math.round((valor_total * icms) * 100) / 100;
+            const base_pis_cofins = Math.round((valor_total - icms_linha) * 100) / 100;
 
-            let dias_sudene = 0;
-            if (data_atual > inicio) {
-                dias_sudene = data_anterior >= inicio
-                    ? dias_totais
-                    : Math.round((data_atual.getTime() - inicio.getTime()) / MS);
-            }
-
-            if (dias_totais > 0 && dias_sudene > 0) {
-                const tarifa_sudene = (cfg.tarifa_base_kwh / dias_totais) * dias_sudene;
-
-                const reduzir = (nome, qtd, tarifa_base) => {
-                    if (qtd <= 0 || tarifa_base <= 0) return;
-                    const preco_unit = tarifa_base / divisor;
-                    const valor_total = -Math.round((qtd * preco_unit) * 100) / 100;
-                    const icms_linha = Math.round((valor_total * icms) * 100) / 100;
-                    const base_pis_cofins = Math.round((valor_total - icms_linha) * 100) / 100;
-
-                    // Mesma apresentação das linhas de energia: no irrigante a
-                    // fatura imprime alíquota de 12% sobre base reduzida a 1/3,
-                    // o que dá a carga efetiva de 4%.
-                    let base_icms_linha = 0;
-                    let aliquota_icms_pct = 0;
-                    if (icms_linha !== 0) {
-                        if (icms === 0.04) {
-                            aliquota_icms_pct = 12.0;
-                            base_icms_linha = Math.round((valor_total / 3) * 100) / 100;
-                        } else {
-                            aliquota_icms_pct = Math.round(icms * 100 * 1000) / 1000;
-                            base_icms_linha = valor_total;
-                        }
-                    }
-
-                    linhas.push({
-                        nome,
-                        unidade: "kWh",
-                        quantidade: qtd,
-                        tarifa_base,
-                        preco_unit,
-                        valor_total,
-                        base_pis_cofins,
-                        valor_pis_cofins: Math.round((base_pis_cofins * (pis + cofins)) * 100) / 100,
-                        base_icms: base_icms_linha,
-                        aliquota_icms: aliquota_icms_pct,
-                        valor_icms: icms_linha,
-                        is_sudene: true
-                    });
-                };
-
-                if (is_tb) {
-                    reduzir("Red. SUDENE Cons. Tar. Branca", consumo_faturado_total, tarifa_sudene);
-                } else if (is_irrigante) {
-                    reduzir("Red. SUDENE Cons. ativo", consumo_faturado_total, tarifa_sudene);
-                    // O horário reservado tem desconto regulatório de 60%, então
-                    // o redutor incide sobre 40% da tarifa - mesma proporção já
-                    // usada nas linhas de Consumo Reservado.
-                    reduzir("Red. SUDENE Cons. Reserv", consumo_reservado, tarifa_sudene * 0.4);
+            // Mesma apresentação das linhas de energia: no irrigante a
+            // fatura imprime alíquota de 12% sobre base reduzida a 1/3,
+            // o que dá a carga efetiva de 4%.
+            let base_icms_linha = 0;
+            let aliquota_icms_pct = 0;
+            if (icms_linha !== 0) {
+                if (icms === 0.04) {
+                    aliquota_icms_pct = 12.0;
+                    base_icms_linha = Math.round((valor_total / 3) * 100) / 100;
                 } else {
-                    reduzir("Red. SUDENE Cons. ativo", consumo_faturado_total, tarifa_sudene);
+                    aliquota_icms_pct = Math.round(icms * 100 * 1000) / 1000;
+                    base_icms_linha = valor_total;
                 }
             }
+
+            linhas.push({
+                nome,
+                unidade: "kWh",
+                quantidade: qtd,
+                tarifa_base,
+                preco_unit,
+                valor_total,
+                base_pis_cofins,
+                valor_pis_cofins: Math.round((base_pis_cofins * (pis + cofins)) * 100) / 100,
+                base_icms: base_icms_linha,
+                aliquota_icms: aliquota_icms_pct,
+                valor_icms: icms_linha,
+                is_sudene: true
+            });
+        };
+
+        if (is_tb) {
+            reduzir("Red. SUDENE Cons. Tar. Branca", consumo_faturado_total, tarifa_sudene);
+        } else if (is_irrigante) {
+            reduzir("Red. SUDENE Cons. ativo", consumo_faturado_total, tarifa_sudene);
+            // O horário reservado tem desconto regulatório de 60%, então
+            // o redutor incide sobre 40% da tarifa - mesma proporção já
+            // usada nas linhas de Consumo Reservado.
+            reduzir("Red. SUDENE Cons. Reserv", consumo_reservado, tarifa_sudene * 0.4);
+        } else if (is_baixa_renda) {
+            // Em Baixa Renda o redutor incide só nos kWh efetivamente
+            // faturados (241 de 321 na fatura de OUT/2026), não nos 80
+            // isentos - estes entram no desconto, ver acima.
+            reduzir("Red. SUDENE Cons. MP1300", consumo_faturado_total - consumo_br_total, tarifa_sudene);
+        } else {
+            reduzir("Red. SUDENE Cons. ativo", consumo_faturado_total, tarifa_sudene);
         }
     }
 
