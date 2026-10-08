@@ -16,6 +16,7 @@ Planilhas
 scripts/exportar-tarifas.mjs
 scripts/capturar-referencia.mjs
 scripts/share.mjs
+scripts/publicar.mjs
 scripts/rede.mjs
 scripts/inspecao
 check_db.js

@@ -140,21 +140,68 @@ Digite a senha combinada quando ele pedir e publique de novo com `npx vercel --p
 
 > ❌ **Não** cadastre `DB_SERVER`, `DB_USER`, `DB_PASSWORD` ou `DB_DATABASE` na Vercel. É justamente o que mantém a publicação livre de credenciais.
 
-### Atualizando o site depois de mexer no código
-A URL **nunca muda**: cada publicação substitui a anterior no mesmo endereço, e os colegas não precisam de link novo. Depois de alterar qualquer coisa:
+### Produção x Teste
+
+São dois ambientes, com dois links e duas branches do Git:
+
+| | **Produção** | **Teste** |
+|---|---|---|
+| O que tem | só o que a área **já validou** | tudo que foi adicionado, **validado ou não** |
+| Branch | `main` | `teste` |
+| Link | o de sempre, fixo (`sistema-conta-teste-psi.vercel.app`) | `sistema-conta-teste-teste.vercel.app` |
+| Na tela | nenhuma marcação | faixa amarela **"Ambiente de teste"** + versão (commit) |
+| Publicar | `npm run publicar` | `npm run publicar:teste` |
+
+**No dia a dia, trabalhe sempre na `teste`.** Toda regra nova, ajuste ou correção entra lá, vai pro link de teste, e quem for validar abre o link de teste.
+
+```bash
+git checkout teste
+```
+(faça as alterações, comite e depois)
+```bash
+npm run publicar:teste
+```
+
+O comando de teste roda a regressão, sobe um *preview* (nunca toca na produção) e aponta o endereço fixo de teste para a versão nova. Se a regressão falhar ele avisa, mas publica — teste pode estar no meio do caminho.
+
+#### Levando para produção o que foi validado
+Só depois que a área validou. Como a `teste` mistura coisas validadas e não validadas, o caminho normal é levar **só os commits validados**:
+
+```bash
+git checkout main
+```
+```bash
+git cherry-pick <commit validado> <outro commit validado>
+```
+Se **tudo** que está na `teste` foi validado, dá para levar de uma vez com `git merge teste`. Depois:
 
 ```bash
 npm run publicar
 ```
+```bash
+git checkout teste
+```
 
-Esse é o único comando necessário — ele builda e sobe para produção. Se quiser conferir antes num endereço temporário, sem mexer no que o time usa, rode `npx vercel` (sem o `--prod`): isso gera uma URL de *preview* separada.
+O `npm run publicar` (produção) **recusa** publicar quando: a branch não é a `main`; há alteração não commitada; ou a regressão (`verificar` e `verificar-cip`) falha. E ainda pede para digitar `PRODUCAO` para confirmar. Para só ensaiar, sem publicar: `npm run publicar -- --dry-run`.
+
+> Todo commit que vai pra `main` deveria vir com o caso que o validou (fatura real ou modelo oficial) já em `scripts/cenarios.mjs`, ancorado no total — é o que o `verificar` confere em cada publicação.
+
+#### Configuração única na Vercel (painel)
+A Vercel não deixa fazer isso por linha de comando sem login, então é uma vez só, no painel do projeto `sistema-conta-teste`:
+
+1. **Settings → Git → Production Branch**: `main`. (Se o projeto estiver ligado ao GitHub, `git push origin main` passa a publicar a produção e `git push origin teste` gera o preview sozinho — os comandos `npm run publicar*` continuam valendo como alternativa.)
+2. **Settings → Domains**: adicione `sistema-conta-teste-teste.vercel.app` (o `publicar:teste` aponta ele sozinho para o último deploy de teste; se estiver ligado ao GitHub, associe-o à branch `teste`).
+3. **Settings → Deployment Protection**: por padrão os previews pedem login da Vercel e os colegas **não conseguem abrir** o link de teste. Escolha: desligar a proteção só para previews, ou deixar ligada e convidar as pessoas.
+4. **Senha opcional só no teste**: `npx vercel env add APP_SENHA preview` (variável só do ambiente de teste; a produção não é afetada).
+
+> ❌ O que vale para produção vale para teste: nunca cadastre `DB_SERVER`, `DB_USER`, `DB_PASSWORD` ou `DB_DATABASE` em **nenhum** ambiente da Vercel.
 
 Fluxo recomendado quando a mudança envolve cálculo:
 ```bash
 npm run verificar
 ```
 ```bash
-npm run publicar
+npm run publicar:teste
 ```
 
 ### Atualizando as tarifas depois de um reajuste
@@ -162,12 +209,12 @@ Na máquina corporativa, com acesso ao banco:
 ```bash
 npm run tarifas
 ```
-Confira que nada quebrou e publique:
+Confira que nada quebrou e publique **primeiro no teste**; a produção só depois de a área conferir:
 ```bash
 npm run verificar
 ```
 ```bash
-npm run publicar
+npm run publicar:teste
 ```
 
 ### Critério de aceitação

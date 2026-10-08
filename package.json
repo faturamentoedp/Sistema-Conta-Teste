@@ -11,7 +11,8 @@
     "tarifas": "node scripts/exportar-tarifas.mjs",
     "verificar": "node scripts/verificar.mjs",
     "verificar-cip": "node scripts/verificar-cip.mjs",
-    "publicar": "npx --yes vercel --prod",
+    "publicar": "node scripts/publicar.mjs producao",
+    "publicar:teste": "node scripts/publicar.mjs teste",
     "lint": "eslint"
   },
   "dependencies": {

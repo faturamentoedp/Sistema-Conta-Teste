@@ -4,6 +4,11 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { MUNICIPIOS_ES_CIP, calcular_cip_municipio } from '@/lib/motor/cip-municipios.js';
 
+// Ambiente do build ('production' | 'preview' | 'local') e versão (commit),
+// gravados em tempo de build por next.config.ts.
+const AMBIENTE = process.env.NEXT_PUBLIC_AMBIENTE ?? 'local';
+const VERSAO = process.env.NEXT_PUBLIC_VERSAO ?? '';
+
 // Perda de 1,5% no ramal de ligação (toggle "Desconto BT"), arredondada para
 // kWh inteiro. Extraída para função de módulo porque tanto o cálculo final
 // (handleSubmit) quanto a CIP automática por município (que precisa do
@@ -282,6 +287,29 @@ export default function Home() {
           Simulador de Energia
         </h1>
       </nav>
+
+      {/* Faixa de ambiente: a produção (validada) não mostra nada; qualquer
+          outro ambiente avisa. Definida em next.config.ts. */}
+      {AMBIENTE !== 'production' && (
+        <div
+          role="status"
+          className={`px-6 py-2 text-xs font-semibold flex flex-wrap items-center gap-x-3 gap-y-1 ${
+            AMBIENTE === 'preview'
+              ? 'bg-amber-100 text-amber-900 border-b border-amber-300'
+              : 'bg-slate-100 text-slate-700 border-b border-slate-300'
+          }`}
+        >
+          <span className="uppercase tracking-wide">
+            {AMBIENTE === 'preview' ? 'Ambiente de teste' : 'Ambiente local'}
+          </span>
+          <span className="font-normal">
+            {AMBIENTE === 'preview'
+              ? 'Pode conter regras ainda não validadas pela área. Para conferir uma conta oficial, use o link de produção.'
+              : 'Execução na máquina do desenvolvedor.'}
+          </span>
+          {VERSAO && <span className="font-mono font-normal opacity-70">versão {VERSAO}</span>}
+        </div>
+      )}
 
       <main className="w-full max-w-[95%] mx-auto px-4 mt-8 pb-12 flex flex-col xl:flex-row gap-12">
 
