@@ -83,6 +83,36 @@ export default function Home() {
       + (atu.getUTCMonth() - inicio.getUTCMonth()) + 1;
   })();
 
+  // Em que dias cai cada "Mês" de bandeira - o mesmo critério do motor
+  // (calcular_proporcionalidade_dias): conta a partir do DIA SEGUINTE à leitura
+  // anterior, e o Mês 1 é o mês desse primeiro dia faturado, que NÃO é
+  // necessariamente o mês da leitura anterior (leitura em 30/09 -> Mês 1 =
+  // outubro). Espelha o "Nº dias Fat. Bandeira ... dd/mm a dd/mm" que a fatura
+  // imprime, pra quem confere conta saber qual bandeira vai em qual campo.
+  const trechosBandeira = (() => {
+    if (!form.data_leitura_anterior || !form.data_leitura_atual) return [] as { rotulo: string; ini: string; fim: string; dias: number }[];
+    const ant = new Date(form.data_leitura_anterior + 'T00:00:00Z');
+    const atu = new Date(form.data_leitura_atual + 'T00:00:00Z');
+    if (isNaN(ant.getTime()) || isNaN(atu.getTime()) || atu <= ant) return [];
+    const DIA = 86400000;
+    const primeiro = ant.getTime() + DIA;
+    const fmt = (t: number) => {
+      const d = new Date(t);
+      return `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+    };
+    const trechos: { rotulo: string; ini: string; fim: string; dias: number }[] = [];
+    let cursor = Date.UTC(new Date(primeiro).getUTCFullYear(), new Date(primeiro).getUTCMonth(), 1);
+    while (cursor <= atu.getTime() && trechos.length < 6) {
+      const c = new Date(cursor);
+      const proximo = Date.UTC(c.getUTCFullYear(), c.getUTCMonth() + 1, 1);
+      const ini = Math.max(cursor, primeiro);
+      const fim = Math.min(proximo - DIA, atu.getTime());
+      if (fim >= ini) trechos.push({ rotulo: `Mês ${trechos.length + 1}`, ini: fmt(ini), fim: fmt(fim), dias: Math.round((fim - ini) / DIA) + 1 });
+      cursor = proximo;
+    }
+    return trechos;
+  })();
+
   const [loading, setLoading] = useState(false);
   const [resultado, setResultado] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
@@ -420,6 +450,19 @@ export default function Home() {
             {/* A bandeira do mês 3 só tem efeito quando o período de leitura
                 cruza três meses-calendário. Sem esse aviso, quem preenchesse o
                 campo num ciclo normal acharia que o sistema ignorou. */}
+            {trechosBandeira.length > 0 && (
+              <p className="text-[11px] text-slate-600 -mt-2">
+                Pelas datas informadas:{' '}
+                {trechosBandeira.map((t, i) => (
+                  <span key={t.rotulo}>
+                    {i > 0 && ' · '}
+                    <strong>{t.rotulo}</strong> {t.ini} a {t.fim} ({t.dias} {t.dias === 1 ? 'dia' : 'dias'})
+                  </span>
+                ))}
+                . Use a bandeira que a fatura traz para cada um desses trechos.
+              </p>
+            )}
+
             {mesesNoPeriodo > 0 && mesesNoPeriodo < 3 && form.bandeira_mes3 !== '' && (
               <p className="text-[11px] text-slate-500 -mt-2">
                 O período informado cruza {mesesNoPeriodo === 1 ? 'apenas 1 mês' : '2 meses'} — a Bandeira Mês 3 não será aplicada.

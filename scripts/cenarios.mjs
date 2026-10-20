@@ -141,6 +141,29 @@ export const CENARIOS = [
         }
     },
     {
+        // Fatura real SP Baixa Renda BPC, Lote 11 / UC 0.000.026.101.004-73, ref.
+        // OUT/2026: 355 kWh medidos e 355 faturados (275 + 80 isentos) - aqui NÃO
+        // houve a perda de 1,5% do ramal, então o toggle "Desconto BT" fica
+        // desligado. 17/09 a 19/10/2026, 32 dias: AMARELA 18/09 a 30/09 (13
+        // dias, Mês 1) e VERDE 01/10 a 19/10 (19 dias, Mês 2). Trazida pela
+        // verificação de SP: invertendo a ordem das bandeiras (o padrão do
+        // formulário é Verde/Amarela) o total sobe para 230,61 - o aviso de
+        // trechos sob os campos de bandeira existe por causa disso.
+        // Juros 0,56 + multa 4,79 de SET/26; total impresso 229,36.
+        nome: 'FATURA REAL SP Baixa Renda BPC Lote 11 (355 kWh, amarela 13 dias e verde 19)',
+        fatura_real: 229.36,
+        params: {
+            distribuidora: 'SP', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', fase: 'monofasico',
+            data_leitura_anterior: '2026-09-17', data_leitura_atual: '2026-10-19',
+            consumo_kwh: 355, bandeira_mes1: 'AMARELA', bandeira_mes2: 'VERDE',
+            valor_cip: 0,
+            ajustes: [
+                { nome: 'Juros Mora Ref.: Set/26', valor: 0.56 },
+                { nome: 'Multa Ref.: Set/26', valor: 4.79 }
+            ]
+        }
+    },
+    {
         // Baixa Renda de SP com a perda de 1,5% do ramal ("Desconto BT").
         // O consumo medido foi 394 kWh; a perda derruba para 388,09, que a
         // conta fatura arredondado para 388 - daí 388 - 80 isentos = 308,0000.

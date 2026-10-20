@@ -1326,6 +1326,177 @@
     }
   },
   {
+    "nome": "FATURA REAL SP Baixa Renda BPC Lote 11 (355 kWh, amarela 13 dias e verde 19)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "Subvenção Tarifária",
+          "unidade": "",
+          "quantidade": 47.312,
+          "tarifa_base": 0,
+          "preco_unit": 1.21956374704092,
+          "valor_total": 57.7,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 57.7,
+          "aliquota_icms": 18,
+          "valor_icms": 10.39
+        },
+        {
+          "nome": "Crédito Subvenção Tarifária",
+          "unidade": "",
+          "quantidade": -47.312,
+          "tarifa_base": 1,
+          "preco_unit": 1,
+          "valor_total": -47.31,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD-Consumo MP1300",
+          "unidade": "kWh",
+          "quantidade": 80,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TE - Consumo MP 1300",
+          "unidade": "kWh",
+          "quantidade": 80,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Consumo MP1300",
+          "unidade": "kWh",
+          "quantidade": 275,
+          "tarifa_base": 0.3008,
+          "preco_unit": 0.3900363636363637,
+          "valor_total": 107.26,
+          "base_pis_cofins": 87.95,
+          "valor_pis_cofins": 5.23,
+          "base_icms": 107.26,
+          "aliquota_icms": 18,
+          "valor_icms": 19.31
+        },
+        {
+          "nome": "TE - Consumo MP1300",
+          "unidade": "kWh",
+          "quantidade": 275,
+          "tarifa_base": 0.2906,
+          "preco_unit": 0.3768,
+          "valor_total": 103.62,
+          "base_pis_cofins": 84.97,
+          "valor_pis_cofins": 5.06,
+          "base_icms": 103.62,
+          "aliquota_icms": 18,
+          "valor_icms": 18.65
+        },
+        {
+          "nome": "Adic.Band. Amarela MP1300",
+          "unidade": "kWh",
+          "quantidade": 32.5,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "Adic.Band. Amarela MP1300",
+          "unidade": "kWh",
+          "quantidade": 111.7188,
+          "tarifa_base": 0.01885,
+          "preco_unit": 0.024436352699814177,
+          "valor_total": 2.73,
+          "base_pis_cofins": 2.24,
+          "valor_pis_cofins": 0.13,
+          "base_icms": 2.73,
+          "aliquota_icms": 18,
+          "valor_icms": 0.49
+        },
+        {
+          "nome": "Juros Mora Ref.: Set/26",
+          "unidade": "",
+          "quantidade": 1,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0.56,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "Multa Ref.: Set/26",
+          "unidade": "",
+          "quantidade": 1,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 4.79,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 355,
+          "tarifa_base": 0.13536,
+          "preco_unit": 0.1755163963122885,
+          "valor_total": 62.31,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 224,
+        "total_pis_cofins": 10.42,
+        "total_base_pis_cofins": 175.16,
+        "total_pis": 1.86,
+        "total_cofins": 8.57,
+        "total_icms": 48.839999999999996,
+        "total_fatura": 229.35,
+        "valor_cip": 0,
+        "valor_fio_b": 62.31,
+        "tarifa_fio_b_unit": 0.1755163963122885,
+        "valor_escassez": 0,
+        "tarifa_escassez_unit": 0
+      },
+      "parametros_usados": {
+        "consumo_faturado": 355,
+        "aliquota_pis_aplicada": 0.0106,
+        "aliquota_cofins_aplicada": 0.0489,
+        "aliquota_icms_aplicada": 0.18
+      }
+    }
+  },
+  {
     "nome": "FATURA REAL SP Baixa Renda Inst. 151389514 (perda de 1,5% no ramal)",
     "resultado": {
       "detalhes": [
