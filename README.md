@@ -186,6 +186,9 @@ O `npm run publicar` (produção) **recusa** publicar quando: a branch não é a
 
 > Todo commit que vai pra `main` deveria vir com o caso que o validou (fatura real ou modelo oficial) já em `scripts/cenarios.mjs`, ancorado no total — é o que o `verificar` confere em cada publicação.
 
+#### Botões no Excel (sem linha de comando)
+A pasta `ferramentas/` tem o **`Painel Conta Teste.xlsx`**: botões que executam os mesmos comandos - **Publicar teste**, **Publicar produção** e **Verificar cálculos** - e uma aba "Orientações" com o passo a passo e o que fazer quando o botão recusa. Cada botão é um link para um `.bat` da mesma pasta (não usa macro, então funciona com macros bloqueadas); o Excel mostra um aviso de segurança a cada clique: responda **Sim**. Mantenha o Excel dentro de `ferramentas/`. Pré-requisitos: Node.js e `npx vercel login` feito uma vez. As travas são as mesmas do `npm run publicar`.
+
 #### Configuração única na Vercel (painel)
 A Vercel não deixa fazer isso por linha de comando sem login, então é uma vez só, no painel do projeto `sistema-conta-teste`:
 
