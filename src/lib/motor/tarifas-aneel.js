@@ -228,8 +228,38 @@ export const ENCARGO_ESCASSEZ_HIDRICA = {
         { inicio: '2026-01-01', fim: '2026-08-06', tusd: 0.00018609, te: -0.0042314 },
         // REH 3.600 (a partir de 07/08/2026): soma -0,000542.
         { inicio: '2026-08-07', fim: '2027-08-06', tusd: 0.00018609, te: -0.00072809 }
+    ],
+    // SP (REH 3.541). Fonte: aba ESCASSEZ / "TARIFAS 2025" do modelo da area
+    // ("CTESTE SP CONV 3.xlsm"), mesma linha usada em B1C, B1C ICMS, B1CTB, B2,
+    // B3, B3 IR, B3 TB, B3 PPF... (grupo B convencional). TE e TUSD vem
+    // separados porque, em tarifa social, so o TE entra - ver
+    // ESCASSEZ_SO_TE_NA_FAIXA_SOCIAL. A virada de 01/01/2026 e a mesma que
+    // vigencias.js ja trata para o TE de SP.
+    //
+    // Nao cadastrado: B2 irrigante (a aba "B2 (Irr)" usa outros valores e vem
+    // com #REF! no calculo do informativo) e qualquer periodo antes de
+    // 23/10/2025 (REH 3.390) - nesses casos o informativo nao aparece.
+    SP: [
+        { inicio: '2025-10-23', fim: '2025-12-31', tusd: 0.00011506162773328076, te: -0.0020731505487585774 },
+        { inicio: '2026-01-01', fim: '2026-10-22', tusd: 0.00012448550414992767, te: -0.00127319 }
     ]
 };
+
+/**
+ * Em tarifa social o informativo de Escassez Hidrica so considera a parte do
+ * TE (a TUSD do encargo, positiva, nao entra) nos kWh que tem desconto:
+ *  - B1CDE, ate 120 kWh: a aba B1CDE do modelo da area usa so -0,00127 na
+ *    faixa ate 120 e (tusd + te) acima. Fatura real SP B1CDE NF-e
+ *    027.725.044, 308 kWh: 120 x 0,00127319 + 188 x 0,0011487 = 0,3687, e a
+ *    conta imprime R$ 0,37.
+ *  - Baixa Renda: nos kWh faturados (sem os 80 isentos). Fatura real SP
+ *    Baixa Renda BPC (Lote 11), 355 kWh: 275 x 0,00127319 = 0,35 (impresso
+ *    R$ 0,35). Com TUSD + TE daria 0,32, e sobre os 355 kWh, 0,41 - nenhum
+ *    dos dois bate. So um ponto de comparacao em Baixa Renda: confirmar na
+ *    proxima fatura de SP.
+ * Em ES o valor ja foi calibrado com tusd + te (ver acima), por isso fica fora.
+ */
+export const ESCASSEZ_SO_TE_NA_FAIXA_SOCIAL = { SP: true };
 
 /**
  * TUSD Fio B publicado pela ANEEL - o item "TUSD - Fio B (Item Informativo)".
