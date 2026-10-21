@@ -29,6 +29,7 @@ import {
     SEMPRE_GD1,
     ICMS_FAIXAS_RESIDENCIAL,
     ENCARGO_ESCASSEZ_HIDRICA,
+    ESCASSEZ_SO_TE_NA_FAIXA_SOCIAL,
     FIO_B_TUSD,
     SUDENE_CONFIG
 } from './tarifas-aneel.js';
@@ -1120,14 +1121,29 @@ export function calcular_fatura(params, dbRows) {
     // pedido da equipe ele é aplicado pra qualquer categoria no ES - sem
     // confirmação por fatura real de cada uma.
     const encargo_escassez = resolver_encargo_escassez(distribuidora, data_anterior, data_atual);
-    const tarifa_escassez_unit = encargo_escassez ? (encargo_escassez.tusd + encargo_escassez.te) : 0;
+    let tarifa_escassez_unit = encargo_escassez ? (encargo_escassez.tusd + encargo_escassez.te) : 0;
     // Em Baixa Renda os kWh isentos (MP 1300) saem a tarifa zero, e o encargo,
     // embutido no TUSD/TE, zera junto - então só os kWh faturados contam.
     // Conferido no modelo da área (450 kWh -> -0,20) e na fatura real ES de
     // 413 kWh (-0,26); ver ENCARGO_ESCASSEZ_HIDRICA.
-    const kwh_escassez = Math.max(consumo_faturado_total - consumo_br_total, 0);
+    let kwh_escassez = Math.max(consumo_faturado_total - consumo_br_total, 0);
+    let valor_escassez_bruto = encargo_escassez ? kwh_escassez * tarifa_escassez_unit : 0;
+
+    // SP, tarifa social (B1CDE e Baixa Renda): nos kWh com desconto só o TE do
+    // encargo entra; no B1CDE, acima de 120 kWh volta o tusd + te. Ver
+    // ESCASSEZ_SO_TE_NA_FAIXA_SOCIAL em tarifas-aneel.js.
+    if (encargo_escassez && ESCASSEZ_SO_TE_NA_FAIXA_SOCIAL[distribuidora] && (is_baixa_renda || is_desconto_social)) {
+        const kwh_social = is_baixa_renda
+            ? Math.max(consumo_faturado_total - consumo_br_total, 0)
+            : Math.min(consumo_faturado_total, FAIXA_DESCONTO_SOCIAL_KWH);
+        const kwh_cheio = is_baixa_renda ? 0 : Math.max(consumo_faturado_total - FAIXA_DESCONTO_SOCIAL_KWH, 0);
+        kwh_escassez = kwh_social + kwh_cheio;
+        valor_escassez_bruto = kwh_social * encargo_escassez.te + kwh_cheio * (encargo_escassez.tusd + encargo_escassez.te);
+        tarifa_escassez_unit = kwh_escassez > 0 ? valor_escassez_bruto / kwh_escassez : 0;
+    }
+
     const valor_escassez_calc = encargo_escassez && kwh_escassez > 0
-        ? Math.round((kwh_escassez * tarifa_escassez_unit) * 100) / 100
+        ? Math.round(valor_escassez_bruto * 100) / 100
         : 0;
 
     if (encargo_escassez && kwh_escassez > 0) {

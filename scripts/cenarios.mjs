@@ -152,6 +152,7 @@ export const CENARIOS = [
         // Juros 0,56 + multa 4,79 de SET/26; total impresso 229,36.
         nome: 'FATURA REAL SP Baixa Renda BPC Lote 11 (355 kWh, amarela 13 dias e verde 19)',
         fatura_real: 229.36,
+        escassez_impressa: -0.35, // rodape: "Encargo CDE - Escassez hidrica incluso da tarifa R$0,35-"
         params: {
             distribuidora: 'SP', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', fase: 'monofasico',
             data_leitura_anterior: '2026-09-17', data_leitura_atual: '2026-10-19',
@@ -192,6 +193,7 @@ export const CENARIOS = [
         // formulário (page.tsx), aqui o consumo já entra pós-perda.
         nome: 'FATURA REAL SP B1CDE NF-e 027.725.044 (Desconto Social, perda de 1,5% no ramal: 313 medido -> 308 faturado)',
         fatura_real: 308.97,
+        escassez_impressa: -0.37, // rodape: "Encargo CDE - Escassez hidrica incluso na tarifa R$0,37-"
         params: {
             distribuidora: 'SP', categoria: 'B1CDE', fase: 'bifasico',
             data_leitura_anterior: '2026-08-19', data_leitura_atual: '2026-09-21',
