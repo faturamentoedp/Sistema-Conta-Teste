@@ -152,6 +152,7 @@ export const CENARIOS = [
         // Juros 0,56 + multa 4,79 de SET/26; total impresso 229,36.
         nome: 'FATURA REAL SP Baixa Renda BPC Lote 11 (355 kWh, amarela 13 dias e verde 19)',
         fatura_real: 229.36,
+        fio_b_modelo: 70.56, // modelo da area SP: 355 kWh x TUSD Fio B 0,198766 (a fatura nao imprime o Fio B)
         escassez_impressa: -0.35, // rodape: "Encargo CDE - Escassez hidrica incluso da tarifa R$0,35-"
         params: {
             distribuidora: 'SP', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', fase: 'monofasico',
@@ -215,6 +216,7 @@ export const CENARIOS = [
     {
         nome: 'MODELO SP B3 50 kWh (ICMS 18%, bandeira rateada 17/13 dias)',
         modelo_oficial: 52.85,
+        fio_b_modelo: 9.94, // modelo da area SP (aba B3): 50 kWh x TUSD Fio B 0,198766
         params: {
             distribuidora: 'SP', categoria: 'B3', fase: 'monofasico',
             data_leitura_anterior: '2026-04-13', data_leitura_atual: '2026-05-13',
