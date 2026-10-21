@@ -157,6 +157,33 @@ for (const cenario of CENARIOS) {
     }
 }
 
+// Avisos de dado faltando (tarifa fora de vigência, PIS/COFINS do mês): o motor
+// segue calculando, mas tem que avisar - e NÃO pode avisar quando está tudo
+// cadastrado, senão o aviso vira ruído.
+const CASOS_AVISO = [
+    { nome: 'ES dentro da cobertura (set a out/2026)', dist: 'ES', ant: '2026-09-09', atu: '2026-10-08', esperado: 0 },
+    { nome: 'SP dentro da cobertura (set a out/2026)', dist: 'SP', ant: '2026-09-17', atu: '2026-10-19', esperado: 0 },
+    // Datas em 2030 de propósito: quando novembro/2026 ou a nova resolução de SP
+    // forem cadastrados, estes dois casos continuam valendo (um período tão
+    // distante nunca terá dado cadastrado).
+    { nome: 'ES muito além da cobertura (sem tarifa e sem PIS/COFINS)', dist: 'ES', ant: '2030-01-10', atu: '2030-02-09', esperado: 2, contem: 'PIS/COFINS de 02/2030' },
+    { nome: 'SP muito além da cobertura (sem tarifa e sem PIS/COFINS)', dist: 'SP', ant: '2030-01-10', atu: '2030-02-09', esperado: 2, contem: 'Tarifa de SP' },
+];
+for (const c of CASOS_AVISO) {
+    const r = calcular_local({
+        distribuidora: c.dist, categoria: 'B1C', fase: 'monofasico', data_leitura_anterior: c.ant, data_leitura_atual: c.atu,
+        consumo_kwh: 150, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE', valor_cip: 0, ajustes: []
+    });
+    const avisos = r.avisos || [];
+    const ok = avisos.length === c.esperado && (!c.contem || avisos.some((a) => a.includes(c.contem)));
+    if (ok) {
+        console.log(`ok    aviso         ${c.nome} (${avisos.length} aviso(s))`);
+    } else {
+        falhas++;
+        console.log(`FALHA aviso         ${c.nome}: esperado ${c.esperado}, veio ${avisos.length} ${JSON.stringify(avisos).slice(0, 120)}`);
+    }
+}
+
 console.log('');
 if (falhas === 0) {
     console.log(`Tudo idêntico à referência: ${CENARIOS.length} cenários.`);

@@ -208,6 +208,49 @@ export function resolver_fio_b_tusd(distribuidora, categoria, data_anterior, dat
 }
 
 /**
+ * Avisos de dado faltando para o período simulado. O motor nunca para de
+ * responder - sem tarifa ou sem PIS/COFINS do mês ele usa a última vigência e
+ * a alíquota genérica -, mas isso é silencioso: o resultado sai plausível e
+ * errado. Aqui o que foi preenchido "no chute" vira texto pra tela.
+ *
+ * @returns {string[]} lista vazia quando todo o período está coberto.
+ */
+export function avisos_de_cobertura(distribuidora, data_anterior, data_atual) {
+    const avisos = [];
+    const fmt = (d) => `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}/${d.getUTCFullYear()}`;
+
+    const lista = VIGENCIAS[distribuidora] || [];
+    if (lista.length > 0) {
+        const inicios = lista.map((v) => new Date(v.inicio + 'T00:00:00Z').getTime());
+        const fins = lista.map((v) => new Date(v.fim + 'T00:00:00Z').getTime());
+        const primeiro_inicio = new Date(Math.min(...inicios));
+        const ultimo_fim = new Date(Math.max(...fins));
+        if (data_atual.getTime() > ultimo_fim.getTime()) {
+            avisos.push(
+                `Tarifa de ${distribuidora}: a leitura atual (${fmt(data_atual)}) é posterior ao fim da última vigência cadastrada (${fmt(ultimo_fim)}). ` +
+                `Os dias depois dessa data usam a tarifa anterior - o total pode divergir da fatura até a nova resolução ser cadastrada.`
+            );
+        }
+        if (data_anterior.getTime() + 86400000 < primeiro_inicio.getTime()) {
+            avisos.push(
+                `Tarifa de ${distribuidora}: o período começa antes da primeira vigência cadastrada (${fmt(primeiro_inicio)}). Os dias anteriores usam a tarifa mais antiga disponível.`
+            );
+        }
+    }
+
+    const ano = data_atual.getUTCFullYear();
+    const mes = String(data_atual.getUTCMonth() + 1).padStart(2, '0');
+    if (!TRIBUTOS_MENSAIS[distribuidora]?.[`${ano}-${mes}`]) {
+        avisos.push(
+            `PIS/COFINS de ${mes}/${ano} (${distribuidora}) ainda não cadastrado: está sendo usada a alíquota genérica ` +
+            `(${(TRIBUTOS_PADRAO.pis * 100).toFixed(2).replace('.', ',')}% / ${(TRIBUTOS_PADRAO.cofins * 100).toFixed(2).replace('.', ',')}%). ` +
+            `O total pode divergir da fatura - cadastre o mês em tributos.js.`
+        );
+    }
+    return avisos;
+}
+
+/**
  * Consolida as geradoras que rateiam energia para a unidade.
  *
  * Cada geradora entra com o seu consumo, o percentual de rateio destinado a
@@ -1208,6 +1251,8 @@ export function calcular_fatura(params, dbRows) {
 
     const total_fatura = total_energia - total_retencoes + cip + valor_ajuste_total;
 
+    const avisos_cobertura = avisos_de_cobertura(distribuidora, data_anterior, data_atual);
+
     return {
         detalhes: linhas,
         resumo: {
@@ -1228,6 +1273,9 @@ export function calcular_fatura(params, dbRows) {
             // demais contas o campo não existe e nada muda no resultado.
             ...(valor_beneficio_tarifa_social > 0 ? { valor_beneficio_tarifa_social } : {})
         },
+        // Só existe quando algum dado do período não está cadastrado (tarifa
+        // fora de vigência, PIS/COFINS do mês) - ver avisos_de_cobertura.
+        ...(avisos_cobertura.length > 0 ? { avisos: avisos_cobertura } : {}),
         parametros_usados: {
             consumo_faturado: consumo_faturado_total,
             aliquota_pis_aplicada: pis,
