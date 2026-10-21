@@ -777,6 +777,16 @@ export default function Home() {
           {resultado && (
             <div className="space-y-8">
 
+              {/* Dado faltando para o período (tarifa fora de vigência, PIS/COFINS
+                  do mês): o motor segue calculando com o último valor conhecido,
+                  então o resultado vem junto de um aviso em vez de parecer certo. */}
+              {Array.isArray(resultado.avisos) && resultado.avisos.length > 0 && (
+                <div role="alert" className="border border-amber-300 bg-amber-50 text-amber-900 rounded px-4 py-3 text-xs space-y-1">
+                  <p className="font-bold uppercase tracking-wide">Atenção - resultado pode divergir da fatura</p>
+                  {resultado.avisos.map((a: string, i: number) => <p key={i}>{a}</p>)}
+                </div>
+              )}
+
               {/* Cards com os Valores Totais */}
               <div className="flex flex-wrap md:flex-nowrap items-stretch gap-0 border-b border-slate-200 pb-4">
 
