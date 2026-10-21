@@ -289,7 +289,47 @@ export const FIO_B_TUSD = {
             { inicio: '2026-01-01', fim: '2026-08-06', tusd: 0.203831 }, // REH 3.508/2025
             { inicio: '2026-08-07', fim: '2027-08-06', tusd: 0.209512 }  // REH 3.600/2026
         ]
-    }
+    },
+
+    /**
+     * SP (REH 3.541). Fonte: aba de cada categoria do modelo da area
+     * ("CTESTE SP CONV 3.xlsm", bloco COMPONENTES > TUSD FIO B): o valor e
+     * consumo x TUSD Fio B direto, sem tributos (50 kWh x 0,198766 = 9,938282 na
+     * linha VALOR) - mesma conta do ES. Aqui a estimativa antiga de 45% da TUSD
+     * dava 0,1755 por kWh em vez de 0,198766 (355 kWh no Lote 11: R$ 62,31
+     * contra R$ 70,56), e a verificacao de SP reportou so o Fio B divergente.
+     *
+     *  - 0,198766: B1 (Residencial, Baixa Renda, B1CDE), B2, B3 (CP, PPF, PPE).
+     *  - 0,109321 (B4A) e 0,119259 (B4B): valores proprios das abas B4A e B4B.
+     *  - Valor anterior (0,197693) da coluna "TARIFA ANT." da aba B1C ICMS,
+     *    aplicado ate 31/12/2025 - mesma virada que vigencias.js usa para o TE de
+     *    SP. A janela exata do valor antigo e suposicao; 0,198766 vale para
+     *    qualquer leitura de 2026.
+     *
+     * Fora daqui, SP segue com a estimativa de 45%: Tarifa Branca (a propria
+     * aba traz o aviso "TB FIOB ESTA COM ERRO") e B2 irrigante (aba com #REF!).
+     * A janela de 2026 termina em 22/10/2026 - depois dela o motor volta para a
+     * estimativa e a tela avisa que falta a nova resolucao de SP.
+     */
+    SP: (() => {
+        const b = (tusd_2026, tusd_2025) => [
+            { inicio: '2025-10-23', fim: '2025-12-31', tusd: tusd_2025 },
+            { inicio: '2026-01-01', fim: '2026-10-22', tusd: tusd_2026 }
+        ];
+        const grupo_b1_b2_b3 = b(0.198766, 0.197693);
+        return {
+            B1C: grupo_b1_b2_b3,
+            B1CDE: grupo_b1_b2_b3,
+            'B1BRN/B1BPC/B1BRQ/B1BRI': grupo_b1_b2_b3,
+            B2RURAL: grupo_b1_b2_b3,
+            B3: grupo_b1_b2_b3,
+            B3_CP: grupo_b1_b2_b3,
+            B3_PPF: grupo_b1_b2_b3,
+            B3_PPE: grupo_b1_b2_b3,
+            B4A: b(0.109321, 0.109321),
+            B4B: b(0.119259, 0.119259)
+        };
+    })()
 };
 
 /**

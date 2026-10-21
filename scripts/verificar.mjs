@@ -111,9 +111,9 @@ for (const cenario of CENARIOS) {
     // Informativos que não somam no total mas aparecem impressos na fatura
     // (ex.: Benefício Tarifa Social, Escassez Hídrica) também podem ser
     // ancorados, com a mesma tolerância.
-    for (const [campo, rotulo] of [['beneficio_social_impresso', 'benefício tarifa social'], ['escassez_impressa', 'escassez hídrica']]) {
+    for (const [campo, rotulo] of [['beneficio_social_impresso', 'benefício tarifa social'], ['escassez_impressa', 'escassez hídrica'], ['fio_b_modelo', 'fio b (modelo da área)']]) {
         if (cenario[campo] === undefined) continue;
-        const chave = campo === 'beneficio_social_impresso' ? 'valor_beneficio_tarifa_social' : 'valor_escassez';
+        const chave = { beneficio_social_impresso: 'valor_beneficio_tarifa_social', escassez_impressa: 'valor_escassez', fio_b_modelo: 'valor_fio_b' }[campo];
         const limite = cenario.tolerancia ?? TOLERANCIA_PADRAO;
         const valor = obtido.resumo[chave] ?? 0;
         const dif = valor - cenario[campo];
