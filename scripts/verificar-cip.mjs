@@ -34,7 +34,7 @@ const CASOS = [
     // simplesmente não documentou nada (aí cai em Demais Classes por falta de
     // dado - ver comentário no topo de cip-municipios.js).
     { nome: 'GUARAPARI, B2RURAL, 250 kWh (município COM tabela de Rural própria)', municipio: 'GUARAPARI', categoria: 'B2RURAL', consumo: 250, esperado: 64.97 },
-    { nome: 'CONCEICAO DA BARRA, B2RURAL, 100 kWh (tem tabela de Rural, mesmo citando "isenta" no texto - a tabela prevalece)', municipio: 'CONCEICAO DA BARRA', categoria: 'B2RURAL', consumo: 100, esperado: 51.04 },
+    { nome: 'CONCEICAO DA BARRA, B2RURAL, 100 kWh (a página isenta Rural; a tabela sob o título "ISENÇÃO PARA AS CLASSES RURAL..." não é cobrança)', municipio: 'CONCEICAO DA BARRA', categoria: 'B2RURAL', consumo: 100, esperado: 0 },
     { nome: 'AFONSO CLAUDIO, B2RURAL, 100 kWh (SEM tabela de Rural, planilha diz Rural isento -> R$ 0,00)', municipio: 'AFONSO CLAUDIO', categoria: 'B2RURAL', consumo: 100, esperado: 0 },
     { nome: 'AFONSO CLAUDIO, B2RUIRRG, 100 kWh (mesma isenção de Rural)', municipio: 'AFONSO CLAUDIO', categoria: 'B2RUIRRG', consumo: 100, esperado: 0 },
 
@@ -47,6 +47,28 @@ const CASOS = [
     // B3/B4A e demais - DEMAIS CLASSES, e B4A isento
     { nome: 'DORES DO RIO PRETO, B3, 40 kWh (lei vigente 1078/2025, não a antiga 867/2019)', municipio: 'DORES DO RIO PRETO', categoria: 'B3', consumo: 40, esperado: 19.54 },
     { nome: 'GUARAPARI, B4A, 100 kWh (iluminação pública isenta)', municipio: 'GUARAPARI', categoria: 'B4A', consumo: 100, esperado: 0 },
+
+    // Municípios que só existem na página da EDP (não estavam na planilha) -
+    // valores lidos direto da tabela publicada. 18 deles usam VALOR FIXO em R$
+    // por faixa, sem Tarifa B4a (o valor não muda com a data da leitura).
+    { nome: 'VITORIA, B1C, 100 kWh (valor fixo, faixa 71-100)', municipio: 'VITORIA', categoria: 'B1C', consumo: 100, esperado: 6.44 },
+    { nome: 'VITORIA, B1C, 50 kWh (faixa isenta)', municipio: 'VITORIA', categoria: 'B1C', consumo: 50, esperado: 0 },
+    { nome: 'VITORIA, B1C, 600 kWh (acima de 500)', municipio: 'VITORIA', categoria: 'B1C', consumo: 600, esperado: 29.51 },
+    { nome: 'VITORIA, Baixa Renda, 300 kWh (Baixa Renda isenta)', municipio: 'VITORIA', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', consumo: 300, esperado: 0 },
+    { nome: 'VITORIA, B3, 100 kWh (Demais Classes)', municipio: 'VITORIA', categoria: 'B3', consumo: 100, esperado: 13.51 },
+    { nome: 'VITORIA, B2RURAL, 100 kWh (Rural isento)', municipio: 'VITORIA', categoria: 'B2RURAL', consumo: 100, esperado: 0 },
+    { nome: 'SERRA, B1C, 100 kWh', municipio: 'SERRA', categoria: 'B1C', consumo: 100, esperado: 13.67 },
+    { nome: 'SERRA, B3, 50 kWh', municipio: 'SERRA', categoria: 'B3', consumo: 50, esperado: 14.63 },
+    { nome: 'VILA VELHA, Baixa Renda, 100 kWh', municipio: 'VILA VELHA', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', consumo: 100, esperado: 9.9 },
+    { nome: 'LINHARES, B1C, 120 kWh (faixa 101-150)', municipio: 'LINHARES', categoria: 'B1C', consumo: 120, esperado: 20.77 },
+    { nome: 'CACHOEIRO DE ITAPEMIRIM, B1C, 70 kWh (isento até 70)', municipio: 'CACHOEIRO DE ITAPEMIRIM', categoria: 'B1C', consumo: 70, esperado: 0 },
+    { nome: 'CACHOEIRO DE ITAPEMIRIM, B1C, 71 kWh', municipio: 'CACHOEIRO DE ITAPEMIRIM', categoria: 'B1C', consumo: 71, esperado: 8.18 },
+    { nome: 'CACHOEIRO DE ITAPEMIRIM, B3, 100 kWh', municipio: 'CACHOEIRO DE ITAPEMIRIM', categoria: 'B3', consumo: 100, esperado: 27.27 },
+    { nome: 'SAO JOSE DO CALCADO devolve null (CIP é % da fatura, fica manual)', municipio: 'SAO JOSE DO CALCADO', categoria: 'B1C', consumo: 100, esperado: null },
+
+    // Alfredo Chaves isenta só o Rural IRRIGANTE; o Rural comum tem tabela
+    { nome: 'ALFREDO CHAVES, B2RURAL, 100 kWh (tem tabela de Rural)', municipio: 'ALFREDO CHAVES', categoria: 'B2RURAL', consumo: 100, esperado: 8.96 },
+    { nome: 'ALFREDO CHAVES, B2RUIRRG, 100 kWh (Rural Irrigante isento)', municipio: 'ALFREDO CHAVES', categoria: 'B2RUIRRG', consumo: 100, esperado: 0 },
 
     // Município não cadastrado -> não trava, devolve null pra manter manual
     { nome: 'Município inexistente devolve null (fica manual)', municipio: 'MUNICIPIO_QUE_NAO_EXISTE', categoria: 'B1C', consumo: 100, esperado: null },
@@ -67,9 +89,14 @@ const bateuAntes = Math.abs(antesVigencia - esperadoAntes) < 0.005;
 console.log(`${bateuAntes ? 'ok  ' : 'FALHA'}  AFONSO CLAUDIO, B1C, 100 kWh, antes de 07/08/2026 (tarifa B4a antiga) -> ${antesVigencia} (esperado ${esperadoAntes})`);
 if (!bateuAntes) falhas++;
 
+const fixoAntes = calcular_cip_municipio('VITORIA', 'B1C', 100, ...DATA_ANTES_VIGENCIA);
+const bateuFixo = Math.abs(fixoAntes - 6.44) < 0.005;
+console.log(`${bateuFixo ? 'ok  ' : 'FALHA'}  VITORIA, B1C, 100 kWh, antes de 07/08/2026 (valor fixo não muda com a B4a) -> ${fixoAntes} (esperado 6.44)`);
+if (!bateuFixo) falhas++;
+
 if (falhas > 0) {
     console.log(`\n${falhas} caso(s) de CIP por município divergiram.`);
     process.exit(1);
 } else {
-    console.log(`\nTudo certo: ${CASOS.length + 1} casos de CIP por município confirmados.`);
+    console.log(`\nTudo certo: ${CASOS.length + 2} casos de CIP por município confirmados.`);
 }

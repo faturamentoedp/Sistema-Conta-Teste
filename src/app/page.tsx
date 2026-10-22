@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { MUNICIPIOS_ES_CIP, calcular_cip_municipio } from '@/lib/motor/cip-municipios.js';
+import { MUNICIPIOS_ES_CIP, NOMES_MUNICIPIOS_ES, CIP_MUNICIPIOS_ES, calcular_cip_municipio } from '@/lib/motor/cip-municipios.js';
 
 // Ambiente do build ('production' | 'preview' | 'local') e versão (commit),
 // gravados em tempo de build por next.config.ts.
@@ -18,15 +18,16 @@ function aplicarPerdaBT(valor: number, descontoBT: boolean): number {
   return descontoBT ? Math.round(valor * 0.985) : valor;
 }
 
-// Título de exibição para os municípios do ES na lista de CIP - a base vem
-// da planilha da área em CAIXA ALTA e sem acento (ex.: "SAO MATEUS"), então
-// isto é só uma capitalização legível, sem tentar reconstruir acentuação.
-function tituloMunicipio(nome: string): string {
-  return nome
-    .toLowerCase()
-    .split(' ')
-    .map((p) => (p ? p.charAt(0).toUpperCase() + p.slice(1) : p))
-    .join(' ');
+// Nome de exibição (com acento, como na página da EDP) do município da lista
+// de CIP. A chave interna é sem acento e em caixa alta (ex.: "SAO MATEUS").
+function nomeMunicipio(chave: string): string {
+  return (NOMES_MUNICIPIOS_ES as Record<string, string>)[chave] ?? chave;
+}
+
+// Município em que a CIP não é por faixa de kWh (hoje, São José do Calçado: é
+// um percentual sobre o valor da fatura) - o campo de CIP segue manual.
+function cipManualNoMunicipio(chave: string): boolean {
+  return !!(CIP_MUNICIPIOS_ES as Record<string, { incompativel?: string }>)[chave]?.incompativel;
 }
 
 export default function Home() {
@@ -710,12 +711,17 @@ export default function Home() {
                 <select value={municipioCip} onChange={(e) => setMunicipioCip(e.target.value)} className="w-full">
                   <option value="">Nenhum (informar CIP manualmente)</option>
                   {MUNICIPIOS_ES_CIP.map((m: string) => (
-                    <option key={m} value={m}>{tituloMunicipio(m)}</option>
+                    <option key={m} value={m}>{nomeMunicipio(m)}{cipManualNoMunicipio(m) ? ' (CIP manual)' : ''}</option>
                   ))}
                 </select>
-                {municipioCip && (
+                {municipioCip && !cipManualNoMunicipio(municipioCip) && (
                   <p className="text-[11px] text-slate-500 mt-1">
-                    ✓ CIP calculada pela tabela de {tituloMunicipio(municipioCip)} - ainda pode ser ajustada à mão no campo CIP (R$) abaixo.
+                    ✓ CIP calculada pela tabela de {nomeMunicipio(municipioCip)} - ainda pode ser ajustada à mão no campo CIP (R$) abaixo.
+                  </p>
+                )}
+                {municipioCip && cipManualNoMunicipio(municipioCip) && (
+                  <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 mt-1">
+                    Em {nomeMunicipio(municipioCip)} a CIP é um percentual sobre o valor da fatura, não uma tabela por faixa de kWh - informe o valor da CIP à mão no campo abaixo.
                   </p>
                 )}
               </div>
