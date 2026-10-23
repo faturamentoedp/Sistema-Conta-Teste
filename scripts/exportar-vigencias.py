@@ -4,6 +4,17 @@ tarifária por período de vigência.
 
 Uso: python scripts/exportar-vigencias.py <export_ES.xlsx> <export_SP.xlsx>
 
+Use "-" no lugar de um dos arquivos para MANTER as vigências desse estado como já
+estão em src/lib/motor/vigencias.js - o caso de hoje, em que só SP tem tarifa nova:
+    python scripts/exportar-vigencias.py - "data (33).xlsx"
+
+Cada arquivo pode ser o export já filtrado (só a EDP) ou a base nacional da ANEEL
+com todas as distribuidoras (150 mil linhas): o script fica só com as linhas da
+distribuidora de cada estado (EDP ES / EDP SP) e avisa quando a última vigência
+do arquivo é anterior a hoje - sinal de que a base da ANEEL ainda não recebeu o
+reajuste novo. (Até 22/10/2026 o script não filtrava: passar a base nacional
+misturava Cemig, Copel etc. dentro de "ES" no vigencias.js.)
+
 Pega só as linhas "Tarifa de Aplicação" (é a tarifa efetivamente faturada, não
 a Base Econômica) e converte de R$/MWh para R$/kWh. As linhas de acessante
 "SCEE" são a tarifa de compensação usada pela Geração Distribuída e vão para um
@@ -50,10 +61,16 @@ MAPA = {
 EXCLUIR_DO_RESIDENCIAL = ('desconto social', 'tarifa social')
 
 
-def ler(arquivo):
+SIGLA_ANEEL = {'ES': 'EDP ES', 'SP': 'EDP SP'}
+
+
+def ler(arquivo, sigla_estado):
     df = pd.read_excel(arquivo)
     df.columns = COLUNAS[:len(df.columns)]
     df = df.dropna(subset=['Subgrupo', 'Resolucao'])
+    df = df[df.Sigla.astype(str).str.strip() == SIGLA_ANEEL[sigla_estado]]
+    if df.empty:
+        raise SystemExit(f'{arquivo}: nenhuma linha de "{SIGLA_ANEEL[sigla_estado]}" - arquivo errado?')
     df = df[df.BaseTarifaria == 'Tarifa de Aplicação']
     df = df[df.Unidade == 'R$/MWh']
     df = df[~df.Modalidade.astype(str).str.contains('pré-pagamento', na=False)]
@@ -122,14 +139,32 @@ def coletar(df, sigla):
     return saida
 
 
+def vigencias_atuais():
+    """Lê o VIGENCIAS que já está no vigencias.js (é JSON depois de 'export const VIGENCIAS =')."""
+    with open('src/lib/motor/vigencias.js', encoding='utf-8') as f:
+        texto = f.read()
+    inicio = texto.index('export const VIGENCIAS =') + len('export const VIGENCIAS =')
+    return json.loads(texto[inicio:].strip().rstrip(';'))
+
+
 def main():
     resultado = {}
+    atuais = None
     for arquivo, sigla in ((sys.argv[1], 'ES'), (sys.argv[2], 'SP')):
-        df = ler(arquivo)
+        if arquivo == '-':
+            atuais = atuais or vigencias_atuais()
+            resultado[sigla] = atuais[sigla]
+            print(f'{sigla}: mantido como está em vigencias.js ({len(atuais[sigla])} vigência(s))')
+            continue
+        df = ler(arquivo, sigla)
         vigencias = coletar(df, sigla)
         # so interessa a vigencia corrente e as futuras
         vigencias = [v for v in vigencias if v['fim'] >= '2026-01-01']
         resultado[sigla] = vigencias
+        ultimo_fim = max(v['fim'] for v in vigencias)
+        if ultimo_fim < str(pd.Timestamp.today().date()):
+            print(f'   ATENÇÃO: a última vigência de {sigla} no arquivo termina em {ultimo_fim}, '
+                  f'antes de hoje - a base da ANEEL ainda não tem o reajuste novo.')
         print(f'{sigla}: {len(vigencias)} vigencia(s)')
         for v in vigencias:
             print(f"   {v['resolucao']}  {v['inicio']} a {v['fim']}  "
