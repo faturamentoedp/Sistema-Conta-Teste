@@ -4,6 +4,10 @@ tarifária por período de vigência.
 
 Uso: python scripts/exportar-vigencias.py <export_ES.xlsx> <export_SP.xlsx>
 
+Por padrão só entram as vigências que terminam em 2026-01-01 ou depois. Para trazer
+o histórico (contas antigas de SP, por exemplo) use --desde=AAAA-MM-DD:
+    python scripts/exportar-vigencias.py - "data (33).xlsx" --desde=2000-01-01
+
 Use "-" no lugar de um dos arquivos para MANTER as vigências desse estado como já
 estão em src/lib/motor/vigencias.js - o caso de hoje, em que só SP tem tarifa nova:
     python scripts/exportar-vigencias.py - "data (33).xlsx"
@@ -147,6 +151,9 @@ def vigencias_atuais():
     return json.loads(texto[inicio:].strip().rstrip(';'))
 
 
+DESDE = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--desde=')), '2026-01-01')
+
+
 def main():
     resultado = {}
     atuais = None
@@ -159,7 +166,7 @@ def main():
         df = ler(arquivo, sigla)
         vigencias = coletar(df, sigla)
         # so interessa a vigencia corrente e as futuras
-        vigencias = [v for v in vigencias if v['fim'] >= '2026-01-01']
+        vigencias = [v for v in vigencias if v['fim'] >= DESDE]
         resultado[sigla] = vigencias
         ultimo_fim = max(v['fim'] for v in vigencias)
         if ultimo_fim < str(pd.Timestamp.today().date()):
