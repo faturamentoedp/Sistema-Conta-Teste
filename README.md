@@ -207,6 +207,16 @@ npm run verificar
 npm run publicar:teste
 ```
 
+### Importando um reajuste da ANEEL (tarifas por vigência)
+As tarifas por vigência (`src/lib/motor/vigencias.js`) vêm do export da base da ANEEL (https://portalrelatorios.aneel.gov.br/luznatarifa/basestarifas, painel **TUSD e TE**; ao abrir, o painel vem filtrado em 2024 - limpe o filtro de data e filtre a **Sigla** = EDP SP ou EDP ES antes de exportar).
+
+```bash
+python scripts/exportar-vigencias.py - "data (33).xlsx"
+```
+O `-` mantém o ES como está (use `"export_ES.xlsx" "export_SP.xlsx"` para os dois). O script só aproveita as linhas da distribuidora de cada estado e **avisa quando a última vigência do arquivo termina antes de hoje** - sinal de que a base da ANEEL ainda não recebeu o reajuste novo. Depois: `npm run verificar`, `npm run publicar:teste`, validação da área e só então a produção.
+
+> Em 23/10/2026 (reajuste de SP, REH 3.611/2026, vigência a partir de 23/10) nem o painel nem o CSV de dados abertos da ANEEL tinham as tarifas novas - os dois terminavam em 22/10/2026. A base costuma atrasar alguns dias após a homologação; enquanto isso as tarifas só estão nos anexos da própria REH em legislacao.aneel.gov.br. O arquivo "data.xlsx" (base nacional, 150 mil linhas) não traz o subgrupo B do ES e não serve como export do ES.
+
 ### Atualizando as tarifas depois de um reajuste
 Na máquina corporativa, com acesso ao banco:
 ```bash
