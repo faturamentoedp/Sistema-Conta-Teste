@@ -55,7 +55,10 @@ export const TRIBUTOS_MENSAIS = {
         // genérica (0,630/2,890), o que a área identificou em 14/09/2026 numa
         // simulação do ES. Valores confirmados pela chefia.
         '2026-09': { pis: 0.0128, cofins: 0.0587 },
-        '2026-10': { pis: 0.0110, cofins: 0.0508 }
+        '2026-10': { pis: 0.0110, cofins: 0.0508 },
+        // Comunicado EDP ES: mês de referência setembro/2026, uso em novembro/2026
+        // (transação ZCCS_PISCOFINS, Mês Lanc 11/2026).
+        '2026-11': { pis: 0.0090, cofins: 0.0416 }
     },
 
     // Tabela oficial de SP (exercício/período K4/MM.AAAA).
@@ -161,6 +164,8 @@ export const TRIBUTOS_MENSAIS = {
         // Comunicado "Alíquotas efetivas do PIS/COFINS da EDP São Paulo":
         // mês de referência agosto/2026, com uso previsto em outubro/2026 -
         // mesma convenção de defasagem dos demais meses dessa tabela.
-        '2026-10': { pis: 0.0106, cofins: 0.0489 }
+        '2026-10': { pis: 0.0106, cofins: 0.0489 },
+        // Comunicado EDP SP: mês de referência setembro/2026, uso em novembro/2026.
+        '2026-11': { pis: 0.0089, cofins: 0.0412 }
     }
 };
