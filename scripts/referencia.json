@@ -1511,6 +1511,460 @@
     }
   },
   {
+    "nome": "FATURA REAL SP B1 bifásico, 1 kWh medido -> 50 faturados (NF-e 027.587.971, SET/2026)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "TUSD - Consumo",
+          "unidade": "kWh",
+          "quantidade": 50,
+          "tarifa_base": 0.45667,
+          "preco_unit": 0.49,
+          "valor_total": 24.5,
+          "base_pis_cofins": 24.5,
+          "valor_pis_cofins": 1.67,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TE - Consumo",
+          "unidade": "kWh",
+          "quantidade": 50,
+          "tarifa_base": 0.33003,
+          "preco_unit": 0.3542,
+          "valor_total": 17.71,
+          "base_pis_cofins": 17.71,
+          "valor_pis_cofins": 1.2,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "Adic.Band. Amarela",
+          "unidade": "kWh",
+          "quantidade": 50,
+          "tarifa_base": 0.01885,
+          "preco_unit": 0.0202,
+          "valor_total": 1.01,
+          "base_pis_cofins": 1.01,
+          "valor_pis_cofins": 0.07,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "Valor referente à fatura de Agosto / 2026",
+          "unidade": "",
+          "quantidade": 1,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 45.93,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 50,
+          "tarifa_base": 0.198766,
+          "preco_unit": 0.198766,
+          "valor_total": 9.94,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 50,
+          "tarifa_base": -0.0011487044958500723,
+          "preco_unit": -0.0011487044958500723,
+          "valor_total": -0.05,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 43.22,
+        "total_pis_cofins": 2.94,
+        "total_base_pis_cofins": 43.22,
+        "total_pis": 0.52,
+        "total_cofins": 2.42,
+        "total_icms": 0,
+        "total_fatura": 103.81,
+        "valor_cip": 14.66,
+        "valor_fio_b": 9.94,
+        "tarifa_fio_b_unit": 0.198766,
+        "valor_escassez": -0.05,
+        "tarifa_escassez_unit": -0.0011487044958500723
+      },
+      "parametros_usados": {
+        "consumo_faturado": 50,
+        "aliquota_pis_aplicada": 0.0121,
+        "aliquota_cofins_aplicada": 0.0559,
+        "aliquota_icms_aplicada": 0
+      }
+    }
+  },
+  {
+    "nome": "FATURA REAL SP B1 bifásico, 0 kWh medido -> 50 faturados (NF-e 029.977.277, OUT/2026)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "TUSD - Consumo",
+          "unidade": "kWh",
+          "quantidade": 50,
+          "tarifa_base": 0.45667,
+          "preco_unit": 0.48560000000000003,
+          "valor_total": 24.28,
+          "base_pis_cofins": 24.28,
+          "valor_pis_cofins": 1.45,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TE - Consumo",
+          "unidade": "kWh",
+          "quantidade": 50,
+          "tarifa_base": 0.33003,
+          "preco_unit": 0.35100000000000003,
+          "valor_total": 17.55,
+          "base_pis_cofins": 17.55,
+          "valor_pis_cofins": 1.05,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "Adic.Band. Amarela",
+          "unidade": "kWh",
+          "quantidade": 18.75,
+          "tarifa_base": 0.01885,
+          "preco_unit": 0.019733333333333332,
+          "valor_total": 0.37,
+          "base_pis_cofins": 0.37,
+          "valor_pis_cofins": 0.02,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 50,
+          "tarifa_base": 0.198766,
+          "preco_unit": 0.198766,
+          "valor_total": 9.94,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 50,
+          "tarifa_base": -0.0011487044958500723,
+          "preco_unit": -0.0011487044958500723,
+          "valor_total": -0.05,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 42.199999999999996,
+        "total_pis_cofins": 2.52,
+        "total_base_pis_cofins": 42.2,
+        "total_pis": 0.45,
+        "total_cofins": 2.06,
+        "total_icms": 0,
+        "total_fatura": 56.86,
+        "valor_cip": 14.66,
+        "valor_fio_b": 9.94,
+        "tarifa_fio_b_unit": 0.198766,
+        "valor_escassez": -0.05,
+        "tarifa_escassez_unit": -0.0011487044958500723
+      },
+      "parametros_usados": {
+        "consumo_faturado": 50,
+        "aliquota_pis_aplicada": 0.0106,
+        "aliquota_cofins_aplicada": 0.0489,
+        "aliquota_icms_aplicada": 0
+      }
+    }
+  },
+  {
+    "nome": "FATURA REAL SP B3 trifásico, 120 kWh (leitura 3 x constante 40) (NF-e 027.587.974, SET/2026)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "TUSD - Consumo",
+          "unidade": "kWh",
+          "quantidade": 120,
+          "tarifa_base": 0.45667,
+          "preco_unit": 0.5975833333333332,
+          "valor_total": 71.71,
+          "base_pis_cofins": 58.8,
+          "valor_pis_cofins": 4,
+          "base_icms": 71.71,
+          "aliquota_icms": 18,
+          "valor_icms": 12.91
+        },
+        {
+          "nome": "TE - Consumo",
+          "unidade": "kWh",
+          "quantidade": 120,
+          "tarifa_base": 0.33003,
+          "preco_unit": 0.43183333333333335,
+          "valor_total": 51.82,
+          "base_pis_cofins": 42.49,
+          "valor_pis_cofins": 2.89,
+          "base_icms": 51.82,
+          "aliquota_icms": 18,
+          "valor_icms": 9.33
+        },
+        {
+          "nome": "Adic.Band. Amarela",
+          "unidade": "kWh",
+          "quantidade": 120,
+          "tarifa_base": 0.01885,
+          "preco_unit": 0.024666666666666667,
+          "valor_total": 2.96,
+          "base_pis_cofins": 2.43,
+          "valor_pis_cofins": 0.17,
+          "base_icms": 2.96,
+          "aliquota_icms": 18,
+          "valor_icms": 0.53
+        },
+        {
+          "nome": "Multa Ref.: Ago/26",
+          "unidade": "",
+          "quantidade": 1,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 4.18,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "Atualiz. Monet. IPCA Ref.: Jul/26",
+          "unidade": "",
+          "quantidade": 1,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 0.07,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "Juros de Mora Ref.: Jul/26",
+          "unidade": "",
+          "quantidade": 1,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 1.08,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 120,
+          "tarifa_base": 0.198766,
+          "preco_unit": 0.198766,
+          "valor_total": 23.85,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 120,
+          "tarifa_base": -0.0011487044958500723,
+          "preco_unit": -0.0011487044958500723,
+          "valor_total": -0.14,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 126.49,
+        "total_pis_cofins": 7.06,
+        "total_base_pis_cofins": 103.72,
+        "total_pis": 1.26,
+        "total_cofins": 5.8,
+        "total_icms": 22.770000000000003,
+        "total_fatura": 135.69,
+        "valor_cip": 3.87,
+        "valor_fio_b": 23.85,
+        "tarifa_fio_b_unit": 0.198766,
+        "valor_escassez": -0.14,
+        "tarifa_escassez_unit": -0.0011487044958500723
+      },
+      "parametros_usados": {
+        "consumo_faturado": 120,
+        "aliquota_pis_aplicada": 0.0121,
+        "aliquota_cofins_aplicada": 0.0559,
+        "aliquota_icms_aplicada": 0.18
+      }
+    }
+  },
+  {
+    "nome": "FATURA REAL SP B3 trifásico, 40 kWh medido -> 100 faturados (NF-e 029.977.285, OUT/2026)",
+    "resultado": {
+      "detalhes": [
+        {
+          "nome": "TUSD - Consumo",
+          "unidade": "kWh",
+          "quantidade": 100,
+          "tarifa_base": 0.45667,
+          "preco_unit": 0.5922,
+          "valor_total": 59.22,
+          "base_pis_cofins": 48.56,
+          "valor_pis_cofins": 2.88,
+          "base_icms": 59.22,
+          "aliquota_icms": 18,
+          "valor_icms": 10.66
+        },
+        {
+          "nome": "TE - Consumo",
+          "unidade": "kWh",
+          "quantidade": 100,
+          "tarifa_base": 0.33003,
+          "preco_unit": 0.428,
+          "valor_total": 42.8,
+          "base_pis_cofins": 35.1,
+          "valor_pis_cofins": 2.09,
+          "base_icms": 42.8,
+          "aliquota_icms": 18,
+          "valor_icms": 7.7
+        },
+        {
+          "nome": "Adic.Band. Amarela",
+          "unidade": "kWh",
+          "quantidade": 37.5,
+          "tarifa_base": 0.01885,
+          "preco_unit": 0.02426666666666667,
+          "valor_total": 0.91,
+          "base_pis_cofins": 0.75,
+          "valor_pis_cofins": 0.05,
+          "base_icms": 0.91,
+          "aliquota_icms": 18,
+          "valor_icms": 0.16
+        },
+        {
+          "nome": "Multa Ref.: Set/26",
+          "unidade": "",
+          "quantidade": 1,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 2.53,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "Juros de Mora Ref.: Ago/26",
+          "unidade": "",
+          "quantidade": 1,
+          "tarifa_base": 0,
+          "preco_unit": 0,
+          "valor_total": 1.67,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0
+        },
+        {
+          "nome": "TUSD - Fio B (Item Informativo)",
+          "unidade": "kWh",
+          "quantidade": 100,
+          "tarifa_base": 0.198766,
+          "preco_unit": 0.198766,
+          "valor_total": 19.88,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        },
+        {
+          "nome": "Informativo: Encargo CDE - Escassez Hídrica",
+          "unidade": "kWh",
+          "quantidade": 100,
+          "tarifa_base": -0.0011487044958500723,
+          "preco_unit": -0.0011487044958500723,
+          "valor_total": -0.12,
+          "base_pis_cofins": 0,
+          "valor_pis_cofins": 0,
+          "base_icms": 0,
+          "aliquota_icms": 0,
+          "valor_icms": 0,
+          "is_informativo": true
+        }
+      ],
+      "resumo": {
+        "total_energia": 102.92999999999999,
+        "total_pis_cofins": 5.02,
+        "total_base_pis_cofins": 84.41,
+        "total_pis": 0.89,
+        "total_cofins": 4.13,
+        "total_icms": 18.52,
+        "total_fatura": 110.31,
+        "valor_cip": 3.18,
+        "valor_fio_b": 19.88,
+        "tarifa_fio_b_unit": 0.198766,
+        "valor_escassez": -0.12,
+        "tarifa_escassez_unit": -0.0011487044958500723
+      },
+      "parametros_usados": {
+        "consumo_faturado": 100,
+        "aliquota_pis_aplicada": 0.0106,
+        "aliquota_cofins_aplicada": 0.0489,
+        "aliquota_icms_aplicada": 0.18
+      }
+    }
+  },
+  {
     "nome": "FATURA REAL SP Baixa Renda Inst. 151389514 (perda de 1,5% no ramal)",
     "resultado": {
       "detalhes": [
@@ -1985,7 +2439,7 @@
           "quantidade": 50,
           "tarifa_base": -0.0011487044958500723,
           "preco_unit": -0.0011487044958500723,
-          "valor_total": -0.06,
+          "valor_total": -0.05,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
           "base_icms": 0,
@@ -2005,7 +2459,7 @@
         "valor_cip": 0,
         "valor_fio_b": 9.94,
         "tarifa_fio_b_unit": 0.198766,
-        "valor_escassez": -0.06,
+        "valor_escassez": -0.05,
         "tarifa_escassez_unit": -0.0011487044958500723
       },
       "parametros_usados": {
@@ -2131,7 +2585,7 @@
           "quantidade": 657,
           "tarifa_base": -0.0011487044958500723,
           "preco_unit": -0.0011487044958500723,
-          "valor_total": -0.75,
+          "valor_total": -0.76,
           "base_pis_cofins": 0,
           "valor_pis_cofins": 0,
           "base_icms": 0,
@@ -2151,7 +2605,7 @@
         "valor_cip": 0,
         "valor_fio_b": 125.39,
         "tarifa_fio_b_unit": 0.19085880174640546,
-        "valor_escassez": -0.75,
+        "valor_escassez": -0.76,
         "tarifa_escassez_unit": -0.0011487044958500723
       },
       "parametros_usados": {

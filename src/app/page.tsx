@@ -4,6 +4,12 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { MUNICIPIOS_ES_CIP, NOMES_MUNICIPIOS_ES, CIP_MUNICIPIOS_ES, calcular_cip_municipio } from '@/lib/motor/cip-municipios.js';
 
+// Constante do medidor: vazio, zero ou inválido valem 1 (sem multiplicar).
+function constanteDoMedidor(valor: string): number {
+  const n = parseFloat(String(valor ?? '').replace(',', '.'));
+  return Number.isFinite(n) && n > 0 ? n : 1;
+}
+
 // Ambiente do build ('production' | 'preview' | 'local') e versão (commit),
 // gravados em tempo de build por next.config.ts.
 const AMBIENTE = process.env.NEXT_PUBLIC_AMBIENTE ?? 'local';
@@ -39,6 +45,7 @@ export default function Home() {
     fase: 'monofasico',
     data_leitura_anterior: '',
     data_leitura_atual: '',
+    constante_medidor: '1',
     consumo_kwh: '100',
     consumo_reservado: '',
     consumo_ponta: '',
@@ -142,11 +149,12 @@ export default function Home() {
     const dataAtu = new Date(form.data_leitura_atual + 'T00:00:00Z');
     if (isNaN(dataAnt.getTime()) || isNaN(dataAtu.getTime())) return;
 
+    const constMedidor = constanteDoMedidor(form.constante_medidor);
     const consumo = form.categoria.endsWith('_TB')
-      ? aplicarPerdaBT(parseFloat(String(form.consumo_ponta).replace(',', '.')) || 0, false)
+      ? ((parseFloat(String(form.consumo_ponta).replace(',', '.')) || 0)
         + (parseFloat(String(form.consumo_fora_ponta).replace(',', '.')) || 0)
-        + (parseFloat(String(form.consumo_intermediario).replace(',', '.')) || 0)
-      : aplicarPerdaBT(parseFloat(String(form.consumo_kwh).replace(',', '.')) || 0, descontoBT);
+        + (parseFloat(String(form.consumo_intermediario).replace(',', '.')) || 0)) * constMedidor
+      : aplicarPerdaBT((parseFloat(String(form.consumo_kwh).replace(',', '.')) || 0) * constMedidor, descontoBT);
 
     const cip = calcular_cip_municipio(municipioCip, form.categoria, consumo, dataAnt, dataAtu);
     if (cip !== null) {
@@ -157,6 +165,7 @@ export default function Home() {
     municipioCip,
     form.distribuidora,
     form.categoria,
+    form.constante_medidor,
     form.consumo_kwh,
     form.consumo_ponta,
     form.consumo_fora_ponta,
@@ -195,11 +204,16 @@ export default function Home() {
       // consumo com decimais informado à mão continua passando como está.
       const aplicaBT = (valor: number) => aplicarPerdaBT(valor, descontoBT);
 
-      const rawKwh = parseFloat(String(form.consumo_kwh).replace(',', '.')) || 0;
-      const rawReservado = parseFloat(String(form.consumo_reservado).replace(',', '.')) || 0;
-      const rawPonta = parseFloat(String(form.consumo_ponta).replace(',', '.')) || 0;
-      const rawForaPonta = parseFloat(String(form.consumo_fora_ponta).replace(',', '.')) || 0;
-      const rawInterm = parseFloat(String(form.consumo_intermediario).replace(',', '.')) || 0;
+      // Constante do medidor (ex.: 40 em medição indireta): a fatura imprime a
+      // diferença de leitura e a constante; o consumo é o produto. Com 1 (o
+      // padrão) nada muda. O consumo mínimo (30/50/100 kWh) é aplicado pelo
+      // motor depois, sobre o resultado já multiplicado.
+      const constMedidor = constanteDoMedidor(form.constante_medidor);
+      const rawKwh = (parseFloat(String(form.consumo_kwh).replace(',', '.')) || 0) * constMedidor;
+      const rawReservado = (parseFloat(String(form.consumo_reservado).replace(',', '.')) || 0) * constMedidor;
+      const rawPonta = (parseFloat(String(form.consumo_ponta).replace(',', '.')) || 0) * constMedidor;
+      const rawForaPonta = (parseFloat(String(form.consumo_fora_ponta).replace(',', '.')) || 0) * constMedidor;
+      const rawInterm = (parseFloat(String(form.consumo_intermediario).replace(',', '.')) || 0) * constMedidor;
 
       const payload = {
         ...form,
@@ -491,6 +505,17 @@ export default function Home() {
               </div>
             </div>
 
+            {/* Constante do medidor - só aparece como campo comum; "1" = sem efeito. */}
+            <div>
+              <label className="block text-xs font-semibold text-black mb-1">Constante do medidor (opcional)</label>
+              <input type="text" inputMode="decimal" name="constante_medidor" value={form.constante_medidor} onChange={handleChange} className="w-full" />
+              {constanteDoMedidor(form.constante_medidor) !== 1 && (
+                <p className="text-[11px] text-blue-800 bg-blue-50 border border-blue-200 rounded px-2 py-1 mt-1">
+                  Constante {constanteDoMedidor(form.constante_medidor)}: lance abaixo a diferença de leitura (atual − anterior) - o simulador multiplica pela constante antes de calcular.
+                </p>
+              )}
+            </div>
+
             {/* Consumo Ativo e Injetável (em cima do botão de MMGD) */}
             {!form.categoria.endsWith("TB") ? (
               <div className={`grid ${gdAtivo || form.categoria.startsWith("B2RUIRRG") ? (gdAtivo && form.categoria.startsWith("B2RUIRRG") ? 'grid-cols-3' : 'grid-cols-2') : 'grid-cols-1'} gap-4`}>
@@ -644,7 +669,7 @@ export default function Home() {
                   <span className="text-xs font-bold text-slate-800">Desconto BT (-1,5% kWh)</span>
                   <span className="text-[11px] text-slate-500 font-medium">
                     {descontoBT
-                      ? `✓ Aplicado: ${Math.round((parseFloat(form.consumo_kwh || '0') || 0) * 0.985)} kWh`
+                      ? `✓ Aplicado: ${Math.round((parseFloat(form.consumo_kwh || '0') || 0) * constanteDoMedidor(form.constante_medidor) * 0.985)} kWh`
                       : 'Reduz a quantidade de kWh faturada em 1,5%'}
                   </span>
                 </div>

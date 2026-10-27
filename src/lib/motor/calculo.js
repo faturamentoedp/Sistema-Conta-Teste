@@ -30,6 +30,7 @@ import {
     ICMS_FAIXAS_RESIDENCIAL,
     ENCARGO_ESCASSEZ_HIDRICA,
     ESCASSEZ_SO_TE_NA_FAIXA_SOCIAL,
+    ESCASSEZ_ARREDONDA_POR_COMPONENTE,
     FIO_B_TUSD,
     SUDENE_CONFIG
 } from './tarifas-aneel.js';
@@ -1128,6 +1129,9 @@ export function calcular_fatura(params, dbRows) {
     // 413 kWh (-0,26); ver ENCARGO_ESCASSEZ_HIDRICA.
     let kwh_escassez = Math.max(consumo_faturado_total - consumo_br_total, 0);
     let valor_escassez_bruto = encargo_escassez ? kwh_escassez * tarifa_escassez_unit : 0;
+    // kWh sobre os quais incide cada parcela do encargo (TUSD e TE).
+    let kwh_escassez_tusd = kwh_escassez;
+    let kwh_escassez_te = kwh_escassez;
 
     // SP, tarifa social (B1CDE e Baixa Renda): nos kWh com desconto só o TE do
     // encargo entra; no B1CDE, acima de 120 kWh volta o tusd + te. Ver
@@ -1138,12 +1142,19 @@ export function calcular_fatura(params, dbRows) {
             : Math.min(consumo_faturado_total, FAIXA_DESCONTO_SOCIAL_KWH);
         const kwh_cheio = is_baixa_renda ? 0 : Math.max(consumo_faturado_total - FAIXA_DESCONTO_SOCIAL_KWH, 0);
         kwh_escassez = kwh_social + kwh_cheio;
+        kwh_escassez_te = kwh_social + kwh_cheio;
+        kwh_escassez_tusd = kwh_cheio;
         valor_escassez_bruto = kwh_social * encargo_escassez.te + kwh_cheio * (encargo_escassez.tusd + encargo_escassez.te);
         tarifa_escassez_unit = kwh_escassez > 0 ? valor_escassez_bruto / kwh_escassez : 0;
     }
 
+    // SP: as duas parcelas (TUSD e TE) saem arredondadas cada uma - ver
+    // ESCASSEZ_ARREDONDA_POR_COMPONENTE em tarifas-aneel.js.
+    const valor_escassez_arredondado = (encargo_escassez && ESCASSEZ_ARREDONDA_POR_COMPONENTE[distribuidora])
+        ? Math.round((Math.round(kwh_escassez_tusd * encargo_escassez.tusd * 100) / 100 + Math.round(kwh_escassez_te * encargo_escassez.te * 100) / 100) * 100) / 100
+        : Math.round(valor_escassez_bruto * 100) / 100;
     const valor_escassez_calc = encargo_escassez && kwh_escassez > 0
-        ? Math.round(valor_escassez_bruto * 100) / 100
+        ? valor_escassez_arredondado
         : 0;
 
     if (encargo_escassez && kwh_escassez > 0) {
