@@ -262,6 +262,20 @@ export const ENCARGO_ESCASSEZ_HIDRICA = {
 export const ESCASSEZ_SO_TE_NA_FAIXA_SOCIAL = { SP: true };
 
 /**
+ * Em SP a fatura imprime o informativo de Escassez Hidrica como a soma de duas
+ * parcelas ARREDONDADAS separadamente (a do TUSD, positiva, e a do TE,
+ * negativa) - nao como consumo x (tusd + te) arredondado uma vez so. Nas quatro
+ * faturas de SP conferidas em 27/10/2026 (B1 bifasico 50 kWh faturados, B3
+ * trifasico 100 e 120 kWh) o arredondamento unico errava um centavo em duas:
+ *   B1 50 kWh:  +0,01 (tusd) -0,06 (te) = -0,05 impresso; unico dava -0,06;
+ *   B3 100 kWh: +0,01 (tusd) -0,13 (te) = -0,12 impresso; unico dava -0,11.
+ * Com as parcelas separadas as quatro batem, e as duas ancoras de tarifa social
+ * (B1CDE -0,37 e Baixa Renda -0,35) continuam batendo. O ES segue como estava
+ * (consumo x (tusd + te)), calibrado em outras faturas.
+ */
+export const ESCASSEZ_ARREDONDA_POR_COMPONENTE = { SP: true };
+
+/**
  * TUSD Fio B publicado pela ANEEL - o item "TUSD - Fio B (Item Informativo)".
  *
  * Até aqui o motor estimava o Fio B como 45% da TUSD de consumo (número

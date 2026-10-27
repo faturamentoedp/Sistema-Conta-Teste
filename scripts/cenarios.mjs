@@ -165,6 +165,76 @@ export const CENARIOS = [
             ]
         }
     },
+    // ---------------------------------------------------------------------
+    // Quatro faturas de SP trazidas pela verificação (Lara, 27/10/2026). O motor
+    // já fechava o total em até R$ 0,01; o que não batia era o informativo de
+    // Escassez Hídrica (um centavo a mais/menos em duas delas) - ver
+    // ESCASSEZ_ARREDONDA_POR_COMPONENTE em tarifas-aneel.js.
+    // ---------------------------------------------------------------------
+    {
+        // UC 0.000.133.313.004-97, B1 residencial bifásico. Medidor 4.466 -> 4.467
+        // = 1 kWh, faturados 50 (consumo mínimo do bifásico). ICMS zero (até 90
+        // kWh). Amarela os 31 dias. "Valor referente à fatura de Agosto" 45,93.
+        nome: 'FATURA REAL SP B1 bifásico, 1 kWh medido -> 50 faturados (NF-e 027.587.971, SET/2026)',
+        fatura_real: 103.80,
+        escassez_impressa: -0.05,
+        params: {
+            distribuidora: 'SP', categoria: 'B1C', fase: 'bifasico',
+            data_leitura_anterior: '2026-08-18', data_leitura_atual: '2026-09-18',
+            consumo_kwh: 1, bandeira_mes1: 'AMARELA', bandeira_mes2: 'AMARELA',
+            valor_cip: 14.66,
+            ajustes: [{ nome: 'Valor referente à fatura de Agosto / 2026', valor: 45.93 }]
+        }
+    },
+    {
+        // Mesma UC, ciclo seguinte: medidor 4.467 -> 4.467 (0 kWh), 50 faturados.
+        // Amarela 19/09 a 30/09 (12 dias, Mês 1) e verde 01/10 a 20/10 (20 dias).
+        nome: 'FATURA REAL SP B1 bifásico, 0 kWh medido -> 50 faturados (NF-e 029.977.277, OUT/2026)',
+        fatura_real: 56.86,
+        escassez_impressa: -0.05,
+        params: {
+            distribuidora: 'SP', categoria: 'B1C', fase: 'bifasico',
+            data_leitura_anterior: '2026-09-18', data_leitura_atual: '2026-10-20',
+            consumo_kwh: 0, bandeira_mes1: 'AMARELA', bandeira_mes2: 'VERDE',
+            valor_cip: 14.66, ajustes: []
+        }
+    },
+    {
+        // UC 0.001.269.719.004-53, B3 comercial trifásico. Medidor 164 -> 167 com
+        // constante 40 = 120 kWh: o formulário pede o consumo JÁ multiplicado pela
+        // constante. ICMS 18%.
+        nome: 'FATURA REAL SP B3 trifásico, 120 kWh (leitura 3 x constante 40) (NF-e 027.587.974, SET/2026)',
+        fatura_real: 135.69,
+        escassez_impressa: -0.14,
+        params: {
+            distribuidora: 'SP', categoria: 'B3', fase: 'trifasico',
+            data_leitura_anterior: '2026-08-18', data_leitura_atual: '2026-09-18',
+            consumo_kwh: 120, bandeira_mes1: 'AMARELA', bandeira_mes2: 'AMARELA',
+            valor_cip: 3.87,
+            ajustes: [
+                { nome: 'Multa Ref.: Ago/26', valor: 4.18 },
+                { nome: 'Atualiz. Monet. IPCA Ref.: Jul/26', valor: 0.07 },
+                { nome: 'Juros de Mora Ref.: Jul/26', valor: 1.08 }
+            ]
+        }
+    },
+    {
+        // Mesma UC: medidor 167 -> 168 x 40 = 40 kWh, faturados 100 (consumo
+        // mínimo do trifásico). Amarela 12 dias, verde 20.
+        nome: 'FATURA REAL SP B3 trifásico, 40 kWh medido -> 100 faturados (NF-e 029.977.285, OUT/2026)',
+        fatura_real: 110.31,
+        escassez_impressa: -0.12,
+        params: {
+            distribuidora: 'SP', categoria: 'B3', fase: 'trifasico',
+            data_leitura_anterior: '2026-09-18', data_leitura_atual: '2026-10-20',
+            consumo_kwh: 40, bandeira_mes1: 'AMARELA', bandeira_mes2: 'VERDE',
+            valor_cip: 3.18,
+            ajustes: [
+                { nome: 'Multa Ref.: Set/26', valor: 2.53 },
+                { nome: 'Juros de Mora Ref.: Ago/26', valor: 1.67 }
+            ]
+        }
+    },
     {
         // Baixa Renda de SP com a perda de 1,5% do ramal ("Desconto BT").
         // O consumo medido foi 394 kWh; a perda derruba para 388,09, que a
