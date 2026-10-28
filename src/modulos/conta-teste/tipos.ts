@@ -67,6 +67,10 @@ export interface FormularioContaTeste {
   bandeira_mes1: string;
   bandeira_mes2: string;
   bandeira_mes3: string;
+  /** Dias de cada bandeira como a fatura imprime (vazio = segue a ordem das datas). */
+  dias_bandeira1: string;
+  dias_bandeira2: string;
+  dias_bandeira3: string;
   valor_cip: string;
   icms_opcao: string;
 }

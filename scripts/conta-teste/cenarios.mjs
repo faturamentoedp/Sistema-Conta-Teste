@@ -629,5 +629,19 @@ export const CENARIOS = [
             consumo_kwh: 351, bandeira_mes1: 'AMARELA', bandeira_mes2: 'VERDE',
             valor_cip: 22.26, ajustes: []
         }
+    },
+    {
+        // A mesma fatura (Inst. 30875, Lote 31) digitada NA ORDEM EM QUE A FATURA
+        // IMPRIME - Verde (2 dias) antes de Amarela (28 dias) - com os dias de
+        // cada bandeira. Tem que dar o mesmo total do cenário cronológico acima.
+        nome: 'FATURA REAL ES B1 bifásico 351 kWh, Lote 31 na ordem da fatura (Verde 2 dias, Amarela 28 dias)',
+        fatura_real: 410.48,
+        params: {
+            distribuidora: 'ES', categoria: 'B1C', fase: 'bifasico',
+            data_leitura_anterior: '2026-09-02', data_leitura_atual: '2026-10-02',
+            consumo_kwh: 351, bandeira_mes1: 'VERDE', bandeira_mes2: 'AMARELA',
+            bandeiras_dias: [{ bandeira: 'VERDE', dias: 2 }, { bandeira: 'AMARELA', dias: 28 }],
+            valor_cip: 22.26, ajustes: []
+        }
     }
 ];

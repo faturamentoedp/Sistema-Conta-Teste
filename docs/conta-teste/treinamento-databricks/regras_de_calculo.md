@@ -1,8 +1,8 @@
 # Regras de cálculo da fatura — EDP ES e EDP SP (Grupo B)
 
 > **Origem:** transcrição fiel do motor de cálculo do simulador "Conta Teste"
-> (`src/modulos/conta-teste/motor/calculo.js` e módulos vizinhos), conferida contra 48 cenários
-> de regressão: 15 ancorados no total impresso de faturas reais, 8 em modelos
+> (`src/modulos/conta-teste/motor/calculo.js` e módulos vizinhos), conferida contra 49 cenários
+> de regressão: 16 ancorados no total impresso de faturas reais, 8 em modelos
 > oficiais da EDP (7 de total e 1 de linha do SUDENE) e 25 que apenas travam o
 > comportamento atual. Estado do código em **27/10/2026**.
 > **Escopo:** Grupo B (baixa tensão), distribuidoras **ES** e **SP**.
@@ -53,7 +53,8 @@ subvenção, retenções) são negativos nas linhas.
 | `consumo_kwh` | número ≥ 0 | Categorias sem posto. |
 | `consumo_ponta`, `consumo_fora_ponta`, `consumo_intermediario` | número ≥ 0 | Só categorias `*_TB` (Tarifa Branca). |
 | `consumo_reservado` | número ≥ 0 | Só B2 irrigante (`B2RUIRRG`/`B2RUIRRG_TB`). |
-| `bandeira_mes1`, `bandeira_mes2`, `bandeira_mes3` | `VERDE`, `AMARELA`, `VERMELHA_P1`, `VERMELHA_P2`, `ESCASSEZ` (mês 3: ou vazio) | Mês 3 é opcional. |
+| `bandeira_mes1`, `bandeira_mes2`, `bandeira_mes3` | `VERDE`, `AMARELA`, `VERMELHA_P1`, `VERMELHA_P2`, `ESCASSEZ` (mês 3: ou vazio) | Mês 3 é opcional. Em ordem **cronológica** (Mês 1 = mês do 1º dia faturado). |
+| `bandeiras_dias` | `[{bandeira, dias}]` | Opcional. Dias de cada bandeira como a **fatura imprime** (ela lista por tipo, não por data). Quando presente, substitui `bandeira_mes1/2/3`; a soma dos dias tem que ser igual aos dias do período, senão o motor devolve erro. |
 | `valor_cip` | R$ | CIP (iluminação pública) já calculada/informada. |
 | `ajustes` | `[{nome, valor}]` | Multas, juros, devoluções… Somam ao total, sem tributo. |
 | `valor_ajuste` | R$ | Ajuste único legado. Linha só aparece se > 0; entra no total sempre. |
@@ -371,6 +372,8 @@ bandeira proporcionalmente aos dias de cada mês.
 * `dias_totais = dias_mes1 + dias_mes2 + dias_mes3` (mínimo 1).
 
 ### 9.2 Linha de bandeira
+
+Se `bandeiras_dias` vier no corpo, o fator de cada bandeira é `Σ dias das entradas dessa bandeira / dias_totais` e a ordem dos campos não importa (os dias precisam somar `dias_totais`). Sem `bandeiras_dias`, vale a regra por mês abaixo.
 
 Para cada bandeira *B* com tarifa `t_B`:
 
@@ -767,7 +770,7 @@ Bandeira: mês 1 amarela, mês 2 verde; juros 0,56 e multa 4,79.
 
 ## 18. Validação: faturas reais e modelos oficiais usados como âncora
 
-Diferença máxima aceita: **R$ 0,03**. Os 48 cenários completos, com as saídas
+Diferença máxima aceita: **R$ 0,03**. Os 49 cenários completos, com as saídas
 linha a linha, estão em `dados/exemplos_resolvidos.jsonl`.
 
 | Âncora | Caso | Fatura real / modelo | Simulador |

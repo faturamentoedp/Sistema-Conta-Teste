@@ -21,10 +21,12 @@ interface OpcoesCsv {
   form: FormularioContaTeste;
   descontoBT: boolean;
   sudeneAtivo: boolean;
+  /** Bandeiras com os dias da fatura, quando o usuário os informou. */
+  bandeirasDias?: { bandeira: string; dias: number }[];
 }
 
 /** Monta o CSV (UTF-8 com BOM, separador ";") e dispara o download. */
-export function exportarCSV({ resultado, form, descontoBT, sudeneAtivo }: OpcoesCsv) {
+export function exportarCSV({ resultado, form, descontoBT, sudeneAtivo, bandeirasDias }: OpcoesCsv) {
   let csv = "﻿"; // UTF-8 BOM
 
   csv += "=== REGISTRO DA SIMULAÇÃO DE ENERGIA ===\n";
@@ -35,7 +37,11 @@ export function exportarCSV({ resultado, form, descontoBT, sudeneAtivo }: Opcoes
   csv += `Fase;${form.fase}\n`;
   csv += `Período de Leitura;${form.data_leitura_anterior} a ${form.data_leitura_atual}\n`;
   csv += `Tributação de ICMS;${form.icms_opcao || 'auto'}\n`;
-  csv += `Bandeiras (mês 1 / 2 / 3);${form.bandeira_mes1} / ${form.bandeira_mes2} / ${form.bandeira_mes3 || 'Nenhum'}\n`;
+  if (bandeirasDias && bandeirasDias.length > 0) {
+    csv += `Bandeiras (dias na fatura);${bandeirasDias.map((b) => `${b.bandeira} ${b.dias} ${b.dias === 1 ? 'dia' : 'dias'}`).join(' / ')}\n`;
+  } else {
+    csv += `Bandeiras (mês 1 / 2 / 3);${form.bandeira_mes1} / ${form.bandeira_mes2} / ${form.bandeira_mes3 || 'Nenhum'}\n`;
+  }
   csv += `Desconto BT (-1.5% kWh);${descontoBT ? 'SIM (Ativado)' : 'NÃO'}\n`;
   csv += `Redutor SUDENE (-R$ 7,81/MWh);${sudeneAtivo ? 'SIM (Ativado)' : 'NÃO'}\n`;
   csv += `TOTAL FATURA;${formatBRL(resultado.resumo.total_fatura)}\n\n`;

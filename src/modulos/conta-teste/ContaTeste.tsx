@@ -16,6 +16,13 @@ import {
 import type { FormularioContaTeste, ResultadoCalculo } from './tipos';
 
 
+// Campos de cada bandeira no formulário (a ordem é a da tela, não a das datas).
+const CAMPOS_BANDEIRA = [
+  { bandeira: 'bandeira_mes1', dias: 'dias_bandeira1' },
+  { bandeira: 'bandeira_mes2', dias: 'dias_bandeira2' },
+  { bandeira: 'bandeira_mes3', dias: 'dias_bandeira3' },
+] as const;
+
 export default function ContaTeste() {
   const [form, setForm] = useState<FormularioContaTeste>({
     instalacao: '',
@@ -37,6 +44,9 @@ export default function ContaTeste() {
     bandeira_mes1: 'VERDE',
     bandeira_mes2: 'AMARELA',
     bandeira_mes3: '',
+    dias_bandeira1: '',
+    dias_bandeira2: '',
+    dias_bandeira3: '',
     valor_cip: '0.00',
     icms_opcao: 'auto',
   });
@@ -60,6 +70,18 @@ export default function ContaTeste() {
 
   const qtdMeses = mesesNoPeriodo(form.data_leitura_anterior, form.data_leitura_atual);
   const trechosBandeira = trechosDeBandeira(form.data_leitura_anterior, form.data_leitura_atual);
+
+  // Bandeiras escolhidas (a 3ª é opcional) e os dias que o usuário digitou da
+  // fatura. A fatura imprime as bandeiras por TIPO (Verde, Amarela...) e não por
+  // data, então a ordem dos campos não casa com os períodos; os dias casam.
+  const bandeirasEscolhidas = CAMPOS_BANDEIRA
+    .filter((c, i) => i < 2 || form[c.bandeira] !== '')
+    .map((c) => ({ bandeira: form[c.bandeira], dias: form[c.dias].trim() }));
+  const usaDiasDaFatura = bandeirasEscolhidas.some((b) => b.dias !== '');
+  const faltamDias = usaDiasDaFatura && bandeirasEscolhidas.some((b) => b.dias === '');
+  const diasDaFatura = bandeirasEscolhidas.map((b) => ({ bandeira: b.bandeira, dias: parseFloat(b.dias.replace(',', '.')) || 0 }));
+  const somaDiasDaFatura = diasDaFatura.reduce((acc, b) => acc + b.dias, 0);
+  const diasDoPeriodo = trechosBandeira.reduce((acc, t) => acc + t.dias, 0);
 
   const [loading, setLoading] = useState(false);
   const [resultado, setResultado] = useState<ResultadoCalculo | null>(null);
@@ -125,8 +147,12 @@ export default function ContaTeste() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
     setError(null);
+    if (faltamDias) {
+      setError('Informe os dias de todas as bandeiras escolhidas (ou deixe todos em branco para seguir a ordem das datas).');
+      return;
+    }
+    setLoading(true);
     try {
       // A perda de 1,5% do ramal incide sobre o consumo medido e o resultado é
       // arredondado para kWh INTEIRO antes de qualquer outra regra. Conferido
@@ -162,6 +188,8 @@ export default function ContaTeste() {
         inj_intermediario: parseFloat(String(form.inj_intermediario || '').replace(',', '.')) || 0,
         valor_cip: parseFloat(String(form.valor_cip).replace(',', '.')) || 0,
         ajustes: ajustes.filter(a => a.valor !== '').map(a => ({ nome: a.nome || 'Ajustes / Outros Valores', valor: parseFloat(a.valor.replace(',', '.')) || 0 })),
+        // Só vai quando algum dia foi digitado; sem isso o motor usa a ordem das datas.
+        bandeiras_dias: usaDiasDaFatura ? diasDaFatura : undefined,
         sudene: sudeneAtivo,
         gd_ativo: gdAtivo,
         gd_papel: gdPapel,
@@ -195,7 +223,7 @@ export default function ContaTeste() {
 
   const baixarCSV = () => {
     if (!resultado) return;
-    exportarCSV({ resultado, form, descontoBT, sudeneAtivo });
+    exportarCSV({ resultado, form, descontoBT, sudeneAtivo, bandeirasDias: usaDiasDaFatura ? diasDaFatura : undefined });
   };
 
   return (
@@ -265,19 +293,18 @@ export default function ContaTeste() {
             </select>
           </div>
 
-          {/* Bandeiras Tarifárias (embaixo de Fase). Cada "Mês" é um trecho do
-              período de leitura: embaixo do campo vão as datas e a quantidade de
-              dias dele, para quem confere conta saber qual bandeira da fatura vai
-              em qual campo. */}
+          {/* Bandeiras Tarifárias (embaixo de Fase). Cada campo tem a bandeira e,
+              opcionalmente, os dias que a FATURA imprime para ela. Em branco, a
+              ordem é a das datas (Bandeira 1 = 1º período); preenchido, vale o
+              número de dias de cada uma e a ordem não importa. */}
           <div className="grid grid-cols-3 gap-3">
-            {([1, 2, 3] as const).map((n) => {
-              const campo = `bandeira_mes${n}` as 'bandeira_mes1' | 'bandeira_mes2' | 'bandeira_mes3';
-              const trecho = trechosBandeira[n - 1];
+            {CAMPOS_BANDEIRA.map((c, i) => {
+              const n = i + 1;
               return (
-                <div key={n}>
-                  <label className="block text-xs font-semibold text-black mb-1">Bandeira Mês {n}</label>
-                  <select name={campo} value={form[campo]} onChange={handleChange} className="w-full">
-                    {/* Padrão do mês 3: fatura com três bandeiras é rara, então o
+                <div key={c.bandeira}>
+                  <label className="block text-xs font-semibold text-black mb-1">Bandeira {n}</label>
+                  <select name={c.bandeira} value={form[c.bandeira]} onChange={handleChange} className="w-full">
+                    {/* Padrão da 3ª: fatura com três bandeiras é rara, então o
                         campo nasce desligado e só entra no cálculo se for escolhido. */}
                     {n === 3 && <option value="">Nenhum</option>}
                     <option value="VERDE">Verde</option>
@@ -286,44 +313,74 @@ export default function ContaTeste() {
                     <option value="VERMELHA_P2">Vermelha P2</option>
                     <option value="ESCASSEZ">Escassez</option>
                   </select>
-                  <p className="mt-1 min-h-[2rem] text-[11px] leading-tight text-slate-600" data-testid={`dias-bandeira-${n}`}>
-                    {trecho ? (
-                      <>
-                        {trecho.ini} a {trecho.fim}
-                        <br />
-                        <strong>{trecho.dias} {trecho.dias === 1 ? 'dia' : 'dias'}</strong>
-                      </>
-                    ) : trechosBandeira.length > 0 ? (
-                      'Sem este mês no período'
-                    ) : (
-                      'Informe as datas de leitura'
-                    )}
-                  </p>
+                  <label className="block text-[11px] text-slate-600 mt-1">Dias na fatura</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    inputMode="numeric"
+                    name={c.dias}
+                    value={form[c.dias]}
+                    onChange={handleChange}
+                    disabled={n === 3 && form.bandeira_mes3 === ''}
+                    placeholder={trechosBandeira[i] ? `${trechosBandeira[i].dias} (datas)` : 'dias'}
+                    className="w-full disabled:bg-slate-100 disabled:text-slate-500"
+                  />
                 </div>
               );
             })}
           </div>
 
-          {/* A fatura impressa nem sempre lista as bandeiras em ordem de data. */}
           {trechosBandeira.length > 0 && (
-            <p className="text-[11px] text-slate-600 -mt-2">
-              Preencha cada Mês pelo período indicado embaixo dele. A fatura impressa pode listar as bandeiras fora de ordem
-              (ex.: a Verde de outubro antes da Amarela de setembro) — vale a data, não a posição na fatura.
+            <p className="text-[11px] text-slate-600 -mt-2" data-testid="periodos-bandeira">
+              Pelas datas: {trechosBandeira.map((t, i) => (
+                <span key={t.rotulo}>
+                  {i > 0 && ' · '}
+                  {t.ini} a {t.fim} (<strong>{t.dias} {t.dias === 1 ? 'dia' : 'dias'}</strong>)
+                </span>
+              ))} = {diasDoPeriodo} dias.
             </p>
           )}
 
-          {qtdMeses > 0 && qtdMeses < 3 && form.bandeira_mes3 !== '' && (
+          {/* Sem dias digitados: segue a ordem das datas. A fatura nem sempre lista
+              as bandeiras nessa ordem (imprime por tipo), então o aviso explica. */}
+          {!usaDiasDaFatura && trechosBandeira.length > 1 && (
+            <p className="text-[11px] text-slate-600 -mt-2">
+              Dias em branco = Bandeira 1 é o 1º período e Bandeira 2 o 2º. A fatura imprime as bandeiras por tipo
+              (Verde, Amarela…), não por data: se a ordem dela for diferente, digite em cada bandeira os dias que a
+              fatura mostra (ex.: Verde 2 dias, Amarela 28 dias).
+            </p>
+          )}
+
+          {usaDiasDaFatura && faltamDias && (
+            <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 -mt-2">
+              Informe os dias de todas as bandeiras escolhidas.
+            </p>
+          )}
+          {usaDiasDaFatura && !faltamDias && diasDoPeriodo > 0 && (
+            Math.abs(somaDiasDaFatura - diasDoPeriodo) < 0.0001 ? (
+              <p className="text-[11px] text-emerald-700 -mt-2" data-testid="soma-dias-bandeira">
+                ✓ Dias da fatura: {diasDaFatura.map((b) => b.dias).join(' + ')} = {somaDiasDaFatura}, confere com as datas.
+              </p>
+            ) : (
+              <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 -mt-2" data-testid="soma-dias-bandeira">
+                Os dias das bandeiras somam {somaDiasDaFatura}, mas o período tem {diasDoPeriodo}. Confira a fatura e as datas.
+              </p>
+            )
+          )}
+
+          {!usaDiasDaFatura && qtdMeses > 0 && qtdMeses < 3 && form.bandeira_mes3 !== '' && (
             <p className="text-[11px] text-slate-500 -mt-2">
-              O período informado cruza {qtdMeses === 1 ? 'apenas 1 mês' : '2 meses'} — a Bandeira Mês 3 não será aplicada.
+              O período informado cruza {qtdMeses === 1 ? 'apenas 1 mês' : '2 meses'} — a Bandeira 3 não será aplicada.
             </p>
           )}
 
           {/* O contrário também precisa de aviso: se o ciclo cruza três meses
                 e a bandeira 3 ficou em "Nenhum", os dias do terceiro mês saem
                 sem bandeira nenhuma e a conta fica menor que a real. */}
-          {qtdMeses >= 3 && form.bandeira_mes3 === '' && (
+          {!usaDiasDaFatura && qtdMeses >= 3 && form.bandeira_mes3 === '' && (
             <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 -mt-2">
-              Este período cruza {qtdMeses} meses. Com a Bandeira Mês 3 em &quot;Nenhum&quot;, os dias do último mês ficam sem bandeira.
+              Este período cruza {qtdMeses} meses. Com a Bandeira 3 em &quot;Nenhum&quot;, os dias do último mês ficam sem bandeira.
             </p>
           )}
 

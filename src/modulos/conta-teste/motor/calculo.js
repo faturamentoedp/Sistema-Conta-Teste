@@ -638,6 +638,27 @@ export function calcular_fatura(params, dbRows) {
     const band_mes3 = (params.bandeira_mes3 || "").toUpperCase();
     const { dias_mes1, dias_mes2, dias_mes3, dias_totais } = calcular_proporcionalidade_dias(data_anterior, data_atual);
 
+    // Modo "dias da fatura": a fatura imprime cada bandeira com o seu número de
+    // dias, mas em ordem de TIPO (Verde, Amarela, Vermelha...) e não de data -
+    // na Inst. 30875 saiu "Verde 01/10 a 02/10 - 02 dias" antes de "Amarela
+    // 03/09 a 30/09 - 28 dias". Quem informa os dias de cada bandeira dispensa a
+    // ordem cronológica de bandeira_mes1/2/3: o que pesa na conta é só quantos
+    // dias cada bandeira teve. Sem o campo, vale o comportamento de sempre.
+    const bandeiras_dias = Array.isArray(params.bandeiras_dias)
+        ? params.bandeiras_dias
+            .filter((b) => b && b.bandeira)
+            .map((b) => ({ bandeira: String(b.bandeira).toUpperCase(), dias: parseFloat(b.dias) || 0 }))
+        : [];
+    if (bandeiras_dias.length > 0) {
+        const soma_dias = bandeiras_dias.reduce((acc, b) => acc + b.dias, 0);
+        if (Math.abs(soma_dias - dias_totais) > 0.0001) {
+            return {
+                erro: `Os dias das bandeiras (${soma_dias}) não somam os ${dias_totais} dias do período de leitura. ` +
+                      `Confira os dias de cada bandeira na fatura e as datas de leitura.`
+            };
+        }
+    }
+
     const consumo_faturado_liquido = bases.filter((b) => b.nome.startsWith("TUSD - Consumo") && !b.nome.includes("Reservado") && b.tarifa > 0).reduce((acc, b) => acc + b.qtd, 0);
     const consumo_total_bandeira = consumo_faturado_liquido + consumo_reservado + consumo_br_total;
 
@@ -655,9 +676,15 @@ export function calcular_fatura(params, dbRows) {
         }
 
         let fator_mes = 0;
-        if (band_mes1 === nome) fator_mes += (dias_mes1 / dias_totais);
-        if (band_mes2 === nome) fator_mes += (dias_mes2 / dias_totais);
-        if (band_mes3 === nome) fator_mes += (dias_mes3 / dias_totais);
+        if (bandeiras_dias.length > 0) {
+            for (const b of bandeiras_dias) {
+                if (b.bandeira === nome) fator_mes += (b.dias / dias_totais);
+            }
+        } else {
+            if (band_mes1 === nome) fator_mes += (dias_mes1 / dias_totais);
+            if (band_mes2 === nome) fator_mes += (dias_mes2 / dias_totais);
+            if (band_mes3 === nome) fator_mes += (dias_mes3 / dias_totais);
+        }
 
         if (fator_mes > 0) {
             tarifa_bandeira_efetiva += tarifa_padrao * fator_mes;
