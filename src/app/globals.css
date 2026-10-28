@@ -1,12 +1,27 @@
 @import "tailwindcss";
 
+/*
+ * Tema claro = os valores abaixo (o visual de sempre).
+ * Tema escuro = bloco ".dark" mais adiante, que só troca as variáveis e
+ * algumas classes; o claro não depende dele. A classe "dark" é posta no <html>
+ * pelo botão de tema (src/plataforma/componentes/BotaoTema.tsx).
+ */
 :root {
-  --bg-color: #ffffff;
+  --bg-color: #ffffff;        /* fundo da página */
+  --cabecalho: #2f364b;       /* barra do topo (igual nos dois temas) */
+  --texto-base: #333333;
+  --campo-bg: #ffffff;
+  --campo-texto: #2f364b;
+  --campo-borda: #d1d5db;
+  --campo-foco: #2f364b;
+  --linha-bg: rgba(0, 0, 0, 0.04); /* cinza puramente neutro transparente */
+  --linha-texto: #1e293b;
+  --linha-borda: #d1d5db;
 }
 
 body {
   background-color: var(--bg-color);
-  color: #333333;
+  color: var(--texto-base);
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
 }
@@ -27,9 +42,9 @@ body {
 }
 
 .modern-table tbody tr {
-  background-color: rgba(0, 0, 0, 0.04); /* cinza puramente neutro transparente */
-  color: #1e293b; 
-  border-bottom: 1px solid #d1d5db; /* borda cinza neutra */
+  background-color: var(--linha-bg);
+  color: var(--linha-texto);
+  border-bottom: 1px solid var(--linha-borda); /* borda cinza neutra */
 }
 
 .modern-table td {
@@ -47,15 +62,88 @@ input[type="text"],
 input[type="number"],
 input[type="date"],
 select {
-  background-color: #ffffff;
-  color: #2f364b;
-  border: 1px solid #d1d5db;
+  background-color: var(--campo-bg);
+  color: var(--campo-texto);
+  border: 1px solid var(--campo-borda);
   border-radius: 4px;
   padding: 0.5rem;
 }
 
 input:focus,
 select:focus {
-  border-color: #2f364b;
+  border-color: var(--campo-foco);
   outline: none;
 }
+
+/* ==========================================================================
+   TEMA ESCURO - mesma paleta da barra do topo (#2f364b / #1f2536)
+   ========================================================================== */
+
+.dark {
+  color-scheme: dark; /* calendário, setas dos selects e barras de rolagem escuros */
+
+  --bg-color: #1f2536;
+  --texto-base: #e6e9f2;
+  --campo-bg: #2a3146;
+  --campo-texto: #e6e9f2;
+  --campo-borda: #46506c;
+  --campo-foco: #8f9bc0;
+  --linha-bg: rgba(255, 255, 255, 0.04);
+  --linha-texto: #dfe4f0;
+  --linha-borda: #3a4259;
+
+  /* Escala de cinzas do Tailwind, remapeada: fundos de painel e bordas ficam
+     na família do #2f364b, e os textos ficam claros. */
+  --color-slate-50: #262d41;
+  --color-slate-100: #2c3449;
+  --color-slate-200: #38415a;
+  --color-slate-300: #46506c;
+  --color-slate-400: #8892ad;
+  --color-slate-500: #a0a9c1;
+  --color-slate-600: #b6bdd1;
+  --color-slate-700: #cdd3e3;
+  --color-slate-800: #e2e6f0;
+
+  /* Fundos e bordas de destaque (avisos, cartões de totais, linhas injetadas) */
+  --color-amber-50: #373020;
+  --color-amber-100: #433a1d;
+  --color-amber-200: #574a20;
+  --color-amber-300: #6c5a22;
+  --color-blue-50: #1e2f52;
+  --color-blue-200: #2f4a7c;
+  --color-emerald-50: #1c3a33;
+  --color-emerald-200: #2b5a4d;
+  --color-purple-50: #2c2750;
+  --color-cyan-50: #17394a;
+  --color-rose-50: #40222f;
+  --color-red-50: #40222f;
+}
+
+/* Superfícies e textos que o Tailwind fixa em branco/preto/azul-marinho */
+.dark .bg-white { background-color: #2a3146; }
+.dark .text-black { color: #e6e9f2; }
+.dark .text-\[\#2f364b\] { color: #cdd5ee; }
+
+/* Controles na cor da marca: um tom acima, para não sumirem no fundo escuro */
+.dark .bg-\[\#2f364b\] { background-color: #3b4670; }
+.dark .hover\:bg-\[\#1f2536\]:hover { background-color: #4a5788; }
+.dark .hover\:border-\[\#2f364b\]:hover { border-color: #8f9bc0; }
+.dark [role="switch"][aria-checked="true"] { background-color: #6f7fb5; }
+
+/* Textos coloridos dos cartões, avisos e tabelas, em tons claros */
+.dark .text-blue-600 { color: #82b1ff; }
+.dark .text-blue-800 { color: #a5c4ff; }
+.dark .text-orange-600 { color: #ffa563; }
+.dark .text-emerald-700 { color: #6ee0b0; }
+.dark .text-emerald-800 { color: #7be6b9; }
+.dark .text-emerald-900 { color: #a7f0cf; }
+.dark .text-amber-700 { color: #f6c768; }
+.dark .text-amber-900 { color: #fbdc9c; }
+.dark .text-rose-700 { color: #ff9fb6; }
+.dark .text-rose-900 { color: #ffc7d4; }
+.dark .text-purple-700 { color: #c4b1ff; }
+.dark .text-purple-900 { color: #ddd1ff; }
+.dark .text-cyan-700 { color: #5fd3ea; }
+.dark .text-cyan-900 { color: #b0ebf6; }
+.dark .text-red-500 { color: #ff8080; }
+.dark .text-red-600 { color: #ff8f8f; }
