@@ -1,0 +1,71 @@
+municipio_chave;municipio;metodo;lei;vigencia_lei;nota;isenta_rural;isenta_irrigante;isenta_ppf;isenta_ppe
+AFONSO CLAUDIO;Afonso Cláudio;percentual;1626/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA, PODER PÚBLICO - MUNICIPAL e RURAL;true;true;false;false
+AGUA DOCE DO NORTE;Água Doce do Norte;percentual;144/2021;Março de 2022;Classes Isentas: SERVIÇO PÚBLICO - AES, CONSUMO PRÓPRIO, ILUMINAÇÃO PÚBLICA, PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL, PODER PÚBLICO - MUNICIPAL e RURAL;true;true;true;true
+ALEGRE;Alegre;percentual;2582/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+ALFREDO CHAVES;Alfredo Chaves;percentual;635/2017;Março de 2018;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL IRRIGANTE;false;true;false;false
+ANCHIETA;Anchieta;percentual;110/2021;Fevereiro de 2022;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+APIACA;Apiacá;fixo;5125/2019;Dezembro de 2019;;false;false;false;false
+ARACRUZ;Aracruz;percentual;3870/2014;Setembro de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+ATILIO VIVACQUA;Atílio Vivácqua;percentual;583/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+BAIXO GUANDU;Baixo Guandu;percentual;2.141/2002;Julho de 2017;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+BARRA DE SAO FRANCISCO;Barra de São Francisco;percentual;05/2004;Fevereiro de 2005;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+BOA ESPERANCA;Boa Esperança;percentual;1191/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+BOM JESUS DO NORTE;Bom Jesus do Norte;fixo;006/2017;Dezembro de 2017;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+BREJETUBA;Brejetuba;percentual;235/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+CACHOEIRO DE ITAPEMIRIM;Cachoeiro de Itapemirim;fixo;7.800/2019;Janeiro de 2026;Classes Isentas: ILUMINAÇÃO PÚBLICA, PODER PÚBLICO - MUNICIPAL e RURAL;true;true;false;false
+CARIACICA;Cariacica;percentual;4376/2006;Janeiro de 2021;Classes Isentas: SERVIÇO PÚBLICO- AES, CONSUMO PROPRIO, ILUMINAÇÃO PÚBLICA, PODER PÚBLICO - MUNICIPAL, PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL e RURAL;true;true;true;true
+CASTELO;Castelo;percentual;3131/2011;Fevereiro de 2012;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+COLATINA;Colatina;percentual;4813/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA;false;false;false;false
+CONCEICAO DA BARRA;Conceição da Barra;percentual;2.806/2018;Janeiro de 2019;Classes Isentas: ILUMINAÇÃO PÚBLICA, PODER PÚBLICO - MUNICIPAL e RURAL;true;true;false;false
+CONCEICAO DO CASTELO;Conceição do Castelo;percentual;1034/2005;Abril de 2006;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+DIVINO DE SAO LOURENCO;Divino de São Lourenço;percentual;124/2002;Março de 2018;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+DOMINGOS MARTINS;Domingos Martins;fixo;3337/2018;Março de 2019;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+DORES DO RIO PRETO;Dores do Rio Preto;percentual;1078/2025;Junho de 2026;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+ECOPORONGA;Ecoporonga;fixo;1109/2004;Novembro de 2015;Classes Isentas: SERVIÇO PÚBLICO - AES, CONSUMO PRÓPRIO, PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL, PODER PÚBLICO - MUNICIPAL, ILUMINAÇÃO PÚBLICA e RURAL;true;true;true;true
+FUNDAO;Fundão;percentual;1372/2022;Janeiro de 2023;Classes Isentas: PODER PÚBLICO - MUNICIPAL, ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+GUACUI;Guaçuí;percentual;3061/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+GUARAPARI;Guarapari;percentual;2370/2004;Dezembro de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA;false;false;false;false
+IBATIBA;Ibatiba;percentual;417/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+IBIRACU;Ibiraçu;percentual;2743/2006;Setembro de 2004;Classes Isentas: PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL, PODER PÚBLICO - MUNICIPAL, ILUMINAÇÃO PÚBLICA e RURAL;true;true;true;true
+IBITIRAMA;Ibitirama;percentual;452/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+ICONHA;Iconha;percentual;038/2017;Abril de 2018;Classes Isentas: ILUMINAÇÃO PÚBLICA e PODER PÚBLICO - MUNICIPAL;false;false;false;false
+IRUPI;Irupi;percentual;012/2025;Janeiro de 2026;Classes Isentas: SERVIÇO PÚBLICO - AES, CONSUMO PRÓPRIO, PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL, PODER PÚBLICO - MUNICIPAL, ILUMINAÇÃO PÚBLICA;false;false;true;true
+ITAGUACU;Itaguaçu;percentual;800/1998;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+ITAPEMIRIM;Itapemirim;percentual;1718/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+ITARANA;Itarana;fixo;1105/2018;Março de 2019;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+IUNA;Iúna;fixo;1847/2002;Julho de 2003;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+JAGUARE;Jaguaré;percentual;680/2006;Agosto de 2017;Classes Isentas: SERVIÇO PÚBLICO -AES, PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL, PODER PÚBLICO - MUNICIPAL, ILUMINAÇÃO PÚBLICA e RURAL;true;true;true;true
+JERONIMO MONTEIRO;Jerônimo Monteiro;fixo;1060/2003;Março de 2016;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+JOAO NEIVA;João Neiva;percentual;3827/2025;Abril de 2026;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+LARANJA DA TERRA;Laranja da Terra;percentual;372/2003;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+LINHARES;Linhares;fixo;2331/2002;Julho de 2016;Classes Isentas: SERVIÇO PÚBLICO - AES, CONSUMO PRÓPRIO, PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL, PODER PÚBLICO - MUNICIPAL, ILUMINAÇÃO PÚBLICA e RURAL;true;true;true;true
+MANTENOPOLIS;Mantenópolis;percentual;954/2004;Abril de 2005;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+MARATAIZES;Marataízes;percentual;741/2003;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA, PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL e PODER PÚBLICO - MUNICIPAL;false;false;true;true
+MARECHAL FLORIANO;Marechal Floriano;fixo;457/2002;Novembro de 2015;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+MIMOSO DO SUL;Mimoso do Sul;percentual;1482/2002;Novembro de 2011;;false;false;false;false
+MONTANHA;Montanha;percentual;547/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+MUCURICI;Mucurici;percentual;399/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+MUNIZ FREIRE;Muniz Freire;percentual;7842/2018;Abril de 2019;Classes Isentas: ILUMINAÇÃO PUBLICA e RURAL;true;true;false;false
+MUQUI;Muqui;percentual;296/2006;Julho de 2006;Classes Isentas: SERVIÇO PUBLICO - AES, CONSUMO PROPRIO, PODER PUBLICO - ESTADUAL, PODER PUBLICO - FEDERAL, PODER PUBLICO - MUNICIPAL, ILUMINAÇÃO PUBLICA e RURAL;true;true;true;true
+NOVA VENECIA;Nova Venécia;percentual;2569/2002;Maio de 2010;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+PEDRO CANARIO;Pedro Canário;fixo;;Dezembro de 2022;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+PINHEIROS;Pinheiros;percentual;824/2005;Janeiro de 2006;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+PIUMA;Piúma;fixo;1024/2002;Dezembro de 2018;Classes Isentas: ILUMINAÇÃO PÚBLICA;false;false;false;false
+PONTO BELO;Ponto Belo;percentual;467/2016;Junho de 2017;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+PRESIDENTE KENNEDY;Presidente Kennedy;percentual;578/2002;Agosto de 2004;Classes Isentas: PODER PÚBLICO - MUNICIPAL, ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+RIO BANANAL;Rio Bananal;percentual;1358/2017;Dezembro de 2017;Classes Isentas: SERVIÇO PÚBLICO - AES, CONSUMO PRÓPRIO, PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL, PODER PÚBLICO - MUNICIPAL, ILUMINAÇÃO PÚBLICA e RURAL;true;true;true;true
+RIO NOVO DO SUL;Rio Novo do Sul;percentual;353/2008;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+SANTA LEOPOLDINA;Santa Leopoldina;fixo;1028/2002;Abril de 2026;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+SANTA MARIA DE JETIBA;Santa Maria do Jetibá;percentual;698/2003;Agosto de 2004;Classes Isentas: PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL, PODER PÚBLICO - MUNICIPAL, ILUMINAÇÃO PÚBLICA e RURAL;true;true;true;true
+SANTA TERESA;Santa Teresa;fixo;1492/2002;Maio de 2017;Classes Isentas: SERVIÇO PÚBLICO - AES, PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL, PODER PÚBLICO - MUNICIPAL, ILUMINAÇÃO PÚBLICA e RURAL;true;true;true;true
+SAO JOSE DO CALCADO;São José do Calçado;incompativel;;;CIP = alíquota (%) sobre o valor total da fatura, não sobre a Tarifa B4a por faixa de kWh.;false;false;false;false
+SAO MATEUS;São Mateus;percentual;351/2005;Março de 2006;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+SERRA;Serra;fixo;5125/2019;Dezembro de 2019;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+SOORETAMA;Sooretama;percentual;070/2003;Agosto de 2004;Classes Isentas: SERVIÇO PÚBLICO - AES, CONSUMO PRÓPRIO, PODER PÚBLICO - ESTADUAL, PODER PÚBLICO - FEDERAL, PODER PÚBLICO - MUNICIPAL, ILUMINAÇÃO PÚBLICA e RURAL;true;true;true;true
+VARGEM ALTA;Vargem Alta;percentual;052/2018;Abril de 2019;Classes Isentas: ILUMINAÇÃO PÚBLICA e PODER PÚBLICO - MUNICIPAL;false;false;false;false
+VENDA NOVA DO IMIGRANTE;Venda Nova de Imigrante;percentual;;Abril de 2023;Classes Isentas: PODER PÚBLICO — ESTADUAL, PODER PÚBLICO — FEDERAL, PODER PÚBLICO — MUNICIPAL, ILUMINAÇÃO PÚBLICA e ENTIDADES FILANTRÓPICAS;false;false;true;true
+VIANA;Viana;percentual;2508/2012;Junho de 2009;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+VILA PAVAO;Vila Pavão;percentual;006/2002;Agosto de 2004;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+VILA VALERIO;Vila Valério;fixo;224/2002;Março de 2003;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+VILA VELHA;Vila Velha;fixo;72/2019;Janeiro de 2026;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false
+VITORIA;Vitória;fixo;9156/2017;Fevereiro de 2026;Classes Isentas: ILUMINAÇÃO PÚBLICA e RURAL;true;true;false;false

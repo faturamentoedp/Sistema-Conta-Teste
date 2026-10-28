@@ -1,0 +1,12 @@
+distribuidora;regra;consumo_faturado_de_kwh_exclusivo;consumo_faturado_ate_kwh_inclusivo;aliquota_icms
+ES;residencial_convencional_por_faixa;0;50;0
+ES;residencial_convencional_por_faixa;50;;0.17
+SP;residencial_convencional_por_faixa;0;90;0
+SP;residencial_convencional_por_faixa;90;200;0.12
+SP;residencial_convencional_por_faixa;200;;0.18
+ES;padrao_demais_categorias;;;0.17
+SP;padrao_demais_categorias;;;0.18
+ES;rural_e_irrigante;;;0.04
+SP;rural_e_irrigante;;;0.12
+ES;b3_cp_isento;;;0
+*;b3_ppe_isento;;;0

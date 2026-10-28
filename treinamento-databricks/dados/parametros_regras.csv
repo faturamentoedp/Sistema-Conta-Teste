@@ -1,0 +1,26 @@
+parametro;distribuidora;valor;descricao
+FAIXA_TARIFA_SOCIAL_KWH;*;80;kWh isentos na Baixa Renda (MP 1300)
+FAIXA_DESCONTO_SOCIAL_KWH;*;120;kWh com tarifa reduzida no B1CDE (Lei 15.235/2025)
+CATEGORIA_DESCONTO_SOCIAL;*;B1CDE;categoria do formulário tratada como Desconto Social
+REPRODUZIR_FALLBACK_POSTO;*;false;true = Intermediário/Reservado da Tarifa Branca cobrados com tarifa de Ponta (comportamento antigo)
+PERDA_RAMAL_BT;*;0.015;toggle Desconto BT: consumo x 0,985 arredondado para kWh inteiro (feito na tela, antes de chamar o motor)
+SUBVENCAO_INCLUI_BANDEIRA;ES;true;bandeira entra na base da Subvenção/Valor Baixa Renda
+SUBVENCAO_INCLUI_BANDEIRA;SP;false;bandeira entra na base da Subvenção/Valor Baixa Renda
+BENEFICIO_TARIFA_SOCIAL_INFORMATIVO;ES;true;mostra o informativo Benefício Tarifa Social
+BENEFICIO_TARIFA_SOCIAL_INFORMATIVO;SP;false;mostra o informativo Benefício Tarifa Social
+ESCASSEZ_SO_TE_NA_FAIXA_SOCIAL;SP;true;tarifa social: só o TE do encargo nos kWh com desconto
+ESCASSEZ_ARREDONDA_POR_COMPONENTE;SP;true;arredonda TUSD e TE do encargo separadamente
+SUDENE_TARIFA_BASE_KWH;ES;0.00781;redutor SUDENE em R$/kWh (R$ 7,81/MWh)
+SUDENE_INICIO_VIGENCIA;ES;2026-08-30;início da vigência do redutor
+CONSUMO_MINIMO_MONOFASICO_KWH;*;30;consumo mínimo faturado (não vale para B4A/B4B)
+CONSUMO_MINIMO_BIFASICO_KWH;*;50;idem
+CONSUMO_MINIMO_TRIFASICO_KWH;*;100;idem
+RESERVADO_IRRIGANTE_FATOR_TARIFA;*;0.4;consumo reservado do B2 irrigante paga 40% da tarifa
+RETENCAO_PPF_PIS;*;0.0065;sobre a energia faturada (Poder Público Federal)
+RETENCAO_PPF_CSLL;*;0.01;idem
+RETENCAO_PPF_IR;*;0.012;idem
+RETENCAO_PPF_COFINS;*;0.03;idem
+RETENCAO_IR_PPE_E_B4A_SP;*;0.012;"só Imposto de Renda (B3 PPE; B4A apenas em SP)"
+FIO_B_ESTIMATIVA_FRACAO_TUSD;*;0.45;usado quando não há TUSD Fio B publicada
+TARIFA_B4A_ATUAL;ES;464.04;base da CIP percentual, a partir de 2026-08-07
+TARIFA_B4A_ANTERIOR;ES;434.13;base da CIP percentual, até a véspera da troca
