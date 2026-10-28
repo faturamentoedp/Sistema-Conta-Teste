@@ -3,7 +3,7 @@
  *  PARÂMETROS E EXCEÇÕES DA BASE TARIFÁRIA
  * ============================================================================
  *
- *  A base em si é gerada por scripts/exportar-vigencias.py a partir do export
+ *  A base em si é gerada por scripts/conta-teste/exportar-vigencias.py a partir do export
  *  oficial da ANEEL e vive em vigencias.js. Aqui ficam só as constantes de
  *  regra e as exceções que não saem da planilha.
  * ============================================================================

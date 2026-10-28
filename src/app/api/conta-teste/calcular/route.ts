@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
-import { calcular_fatura, normalizar_tarifas, resolver_tarifas } from '@/lib/motor/calculo.js';
+import { calcular_fatura, normalizar_tarifas, resolver_tarifas } from '@/modulos/conta-teste/motor/calculo.js';
 
-// O motor de cálculo vive em src/lib/motor/calculo.js, compartilhado com a
-// versão publicada. As tarifas vêm de src/lib/motor/vigencias.js, gerado do
-// export oficial da ANEEL por scripts/exportar-vigencias.py - a rota só recebe
+// O motor de cálculo vive em src/modulos/conta-teste/motor/calculo.js, compartilhado com a
+// versão publicada. As tarifas vêm de src/modulos/conta-teste/motor/vigencias.js, gerado do
+// export oficial da ANEEL por scripts/conta-teste/exportar-vigencias.py - a rota só recebe
 // os parâmetros e devolve o resultado.
 
 export async function POST(request: Request) {

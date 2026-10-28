@@ -3,7 +3,7 @@
  * https://www.edp.com.br/tabela-de-calculo-cip/ (conferida em 22/10/2026) e
  * cruzada com a planilha da área "Atualização valores CIP no site Agosto 2026".
  *
- * Os dados são gerados por scripts/importar-cip-site.py + gerar-cip-municipios.py
+ * Os dados são gerados por scripts/conta-teste/importar-cip-site.py + gerar-cip-municipios.py
  * - não edite o bloco de dados à mão. A planilha trazia 51 municípios; a página
  * traz 70 (faltavam Vitória, Serra, Vila Velha, Linhares, Cachoeiro de Itapemirim
  * e outros 14). Nos 51 em comum os números batem (a página arredonda a alíquota

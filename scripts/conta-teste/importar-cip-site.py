@@ -13,9 +13,9 @@ console do navegador:
 (o site já traz os 70 municípios no HTML, escondidos; o filtro 'd-md-none'
 descarta a versão mobile, que repete a mesma tabela.) Salve a saída num arquivo.
 
-Uso:  python scripts/importar-cip-site.py entrada.json saida.json
+Uso:  python scripts/conta-teste/importar-cip-site.py entrada.json saida.json
 
-A saída alimenta src/lib/motor/cip-municipios.js. Layouts que o site mistura
+A saída alimenta src/modulos/conta-teste/motor/cip-municipios.js. Layouts que o site mistura
 (e este script resolve):
   - cabeçalho "Grupo" ou "Grupos", em qualquer caixa;
   - coluna GRUPO mesclada (A/B só na 1ª linha do bloco);

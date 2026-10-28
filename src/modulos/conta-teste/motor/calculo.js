@@ -4,16 +4,16 @@
  * ============================================================================
  *
  *  Usado por dois consumidores:
- *    1. a API do Next (src/app/api/calcular/route.ts), com as tarifas vindas
- *       do SQL Server;
- *    2. a versão autônoma em HTML, com as tarifas embutidas por
- *       scripts/exportar-tarifas.mjs.
+ *    1. a API do Next (src/app/api/conta-teste/calcular/route.ts), com as
+ *       tarifas de vigencias.js (export oficial da ANEEL);
+ *    2. os scripts de regressão e de documentação (scripts/conta-teste/ e
+ *       docs/conta-teste/treinamento-databricks/), que importam este arquivo.
  *
- *  Por isso este arquivo é JavaScript puro, sem tipos e sem importar nada:
- *  o gerador do HTML injeta o conteúdo dele direto na página.
+ *  Por isso este arquivo é JavaScript puro, sem tipos e sem importar nada
+ *  além dos módulos irmãos desta pasta.
  *
- *  NÃO altere as regras aqui sem rodar `npm run verificar`, que compara os dois
- *  caminhos linha a linha.
+ *  NÃO altere as regras aqui sem rodar `npm run verificar`, que compara o resultado com
+ *  scripts/conta-teste/referencia.json, linha a linha.
  * ============================================================================
  */
 

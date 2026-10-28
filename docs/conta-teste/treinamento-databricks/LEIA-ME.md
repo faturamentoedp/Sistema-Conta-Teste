@@ -70,9 +70,9 @@ exemplos = spark.read.json(f"{base}/exemplos_resolvidos.jsonl")
 Na raiz do projeto:
 
 ```bash
-node treinamento-databricks/gerar_dados.mjs
+node docs/conta-teste/treinamento-databricks/gerar_dados.mjs
 ```
 
 Regera os CSVs e o `.jsonl` a partir do motor. O `regras_de_calculo.md` é texto
-escrito à mão: se uma regra mudar em `src/lib/motor/`, atualize o documento
+escrito à mão: se uma regra mudar em `src/modulos/conta-teste/motor/`, atualize o documento
 também (os números das tabelas ficam sempre nos CSVs).

@@ -1,7 +1,7 @@
 # Regras de cálculo da fatura — EDP ES e EDP SP (Grupo B)
 
 > **Origem:** transcrição fiel do motor de cálculo do simulador "Conta Teste"
-> (`src/lib/motor/calculo.js` e módulos vizinhos), conferida contra 47 cenários
+> (`src/modulos/conta-teste/motor/calculo.js` e módulos vizinhos), conferida contra 47 cenários
 > de regressão: 14 ancorados no total impresso de faturas reais, 8 em modelos
 > oficiais da EDP (7 de total e 1 de linha do SUDENE) e 25 que apenas travam o
 > comportamento atual. Estado do código em **27/10/2026**.

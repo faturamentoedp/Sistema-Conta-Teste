@@ -1,8 +1,8 @@
 /**
  * Roda a bateria de cenários contra a API que estiver no ar e grava o
- * resultado em scripts/referencia.json.
+ * resultado em scripts/conta-teste/referencia.json.
  *
- * Uso: node scripts/capturar-referencia.mjs [porta]
+ * Uso: node scripts/conta-teste/capturar-referencia.mjs [porta]
  *
  * Serve para congelar o comportamento atual antes de mexer no motor e depois
  * comparar com `npm run verificar`.
@@ -12,13 +12,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CENARIOS } from './cenarios.mjs';
 
-const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const porta = process.argv[2] || '3020';
 
 const referencia = [];
 
 for (const cenario of CENARIOS) {
-    const resposta = await fetch(`http://127.0.0.1:${porta}/api/calcular`, {
+    const resposta = await fetch(`http://127.0.0.1:${porta}/api/conta-teste/calcular`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(cenario.params)
@@ -36,6 +36,6 @@ for (const cenario of CENARIOS) {
     console.log(`ok  ${cenario.nome}  -> total R$ ${corpo.resumo.total_fatura}`);
 }
 
-const destino = path.join(raiz, 'scripts', 'referencia.json');
+const destino = path.join(raiz, 'scripts', 'conta-teste', 'referencia.json');
 fs.writeFileSync(destino, JSON.stringify(referencia, null, 2), 'utf8');
 console.log(`\n${referencia.length} cenários gravados em ${path.relative(raiz, destino)}`);

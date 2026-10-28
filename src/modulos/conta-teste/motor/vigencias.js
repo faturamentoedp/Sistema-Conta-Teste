@@ -1,4 +1,4 @@
-// GERADO AUTOMATICAMENTE por scripts/exportar-vigencias.py - não edite à mão.
+// GERADO AUTOMATICAMENTE por scripts/conta-teste/exportar-vigencias.py - não edite à mão.
 // Fonte: export oficial da ANEEL, linhas "Tarifa de Aplicação", em R$/kWh.
 //
 // Cada distribuidora tem uma lista de vigências ordenada por data. Quando o

@@ -1,43 +1,23 @@
 'use client';
 
 import React, { useState } from 'react';
-import Image from 'next/image';
-import { MUNICIPIOS_ES_CIP, NOMES_MUNICIPIOS_ES, CIP_MUNICIPIOS_ES, calcular_cip_municipio } from '@/lib/motor/cip-municipios.js';
+import { MUNICIPIOS_ES_CIP, calcular_cip_municipio } from './motor/cip-municipios.js';
+import TituloSecao from '@/plataforma/componentes/TituloSecao';
+import ResultadoFatura from './ResultadoFatura';
+import { exportarCSV } from './exportarCsv';
+import {
+  aplicarPerdaBT,
+  cipManualNoMunicipio,
+  constanteDoMedidor,
+  mesesNoPeriodo,
+  nomeMunicipio,
+  trechosDeBandeira,
+} from './utilitarios';
+import type { FormularioContaTeste, ResultadoCalculo } from './tipos';
 
-// Constante do medidor: vazio, zero ou inválido valem 1 (sem multiplicar).
-function constanteDoMedidor(valor: string): number {
-  const n = parseFloat(String(valor ?? '').replace(',', '.'));
-  return Number.isFinite(n) && n > 0 ? n : 1;
-}
 
-// Ambiente do build ('production' | 'preview' | 'local') e versão (commit),
-// gravados em tempo de build por next.config.ts.
-const AMBIENTE = process.env.NEXT_PUBLIC_AMBIENTE ?? 'local';
-const VERSAO = process.env.NEXT_PUBLIC_VERSAO ?? '';
-
-// Perda de 1,5% no ramal de ligação (toggle "Desconto BT"), arredondada para
-// kWh inteiro. Extraída para função de módulo porque tanto o cálculo final
-// (handleSubmit) quanto a CIP automática por município (que precisa do
-// consumo já faturado, não o medido) têm que aplicar exatamente a mesma
-// regra - ver desconto-bt-perda-ramal na memória do projeto.
-function aplicarPerdaBT(valor: number, descontoBT: boolean): number {
-  return descontoBT ? Math.round(valor * 0.985) : valor;
-}
-
-// Nome de exibição (com acento, como na página da EDP) do município da lista
-// de CIP. A chave interna é sem acento e em caixa alta (ex.: "SAO MATEUS").
-function nomeMunicipio(chave: string): string {
-  return (NOMES_MUNICIPIOS_ES as Record<string, string>)[chave] ?? chave;
-}
-
-// Município em que a CIP não é por faixa de kWh (hoje, São José do Calçado: é
-// um percentual sobre o valor da fatura) - o campo de CIP segue manual.
-function cipManualNoMunicipio(chave: string): boolean {
-  return !!(CIP_MUNICIPIOS_ES as Record<string, { incompativel?: string }>)[chave]?.incompativel;
-}
-
-export default function Home() {
-  const [form, setForm] = useState({
+export default function ContaTeste() {
+  const [form, setForm] = useState<FormularioContaTeste>({
     instalacao: '',
     documento_impressao: '',
     distribuidora: 'ES',
@@ -78,51 +58,11 @@ export default function Home() {
 
   const brOuTb = form.categoria.startsWith('B1BR') || form.categoria.endsWith('_TB');
 
-  // Quantos meses-calendário o período de leitura cruza. Usado só para avisar
-  // quando a Bandeira Mês 3 não vai ter efeito - a conta de verdade é feita
-  // por calcular_proporcionalidade_dias no motor.
-  const mesesNoPeriodo = (() => {
-    if (!form.data_leitura_anterior || !form.data_leitura_atual) return 0;
-    const ant = new Date(form.data_leitura_anterior + 'T00:00:00Z');
-    const atu = new Date(form.data_leitura_atual + 'T00:00:00Z');
-    if (isNaN(ant.getTime()) || isNaN(atu.getTime()) || atu <= ant) return 0;
-    const inicio = new Date(ant.getTime() + 86400000);
-    return (atu.getUTCFullYear() - inicio.getUTCFullYear()) * 12
-      + (atu.getUTCMonth() - inicio.getUTCMonth()) + 1;
-  })();
-
-  // Em que dias cai cada "Mês" de bandeira - o mesmo critério do motor
-  // (calcular_proporcionalidade_dias): conta a partir do DIA SEGUINTE à leitura
-  // anterior, e o Mês 1 é o mês desse primeiro dia faturado, que NÃO é
-  // necessariamente o mês da leitura anterior (leitura em 30/09 -> Mês 1 =
-  // outubro). Espelha o "Nº dias Fat. Bandeira ... dd/mm a dd/mm" que a fatura
-  // imprime, pra quem confere conta saber qual bandeira vai em qual campo.
-  const trechosBandeira = (() => {
-    if (!form.data_leitura_anterior || !form.data_leitura_atual) return [] as { rotulo: string; ini: string; fim: string; dias: number }[];
-    const ant = new Date(form.data_leitura_anterior + 'T00:00:00Z');
-    const atu = new Date(form.data_leitura_atual + 'T00:00:00Z');
-    if (isNaN(ant.getTime()) || isNaN(atu.getTime()) || atu <= ant) return [];
-    const DIA = 86400000;
-    const primeiro = ant.getTime() + DIA;
-    const fmt = (t: number) => {
-      const d = new Date(t);
-      return `${String(d.getUTCDate()).padStart(2, '0')}/${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
-    };
-    const trechos: { rotulo: string; ini: string; fim: string; dias: number }[] = [];
-    let cursor = Date.UTC(new Date(primeiro).getUTCFullYear(), new Date(primeiro).getUTCMonth(), 1);
-    while (cursor <= atu.getTime() && trechos.length < 6) {
-      const c = new Date(cursor);
-      const proximo = Date.UTC(c.getUTCFullYear(), c.getUTCMonth() + 1, 1);
-      const ini = Math.max(cursor, primeiro);
-      const fim = Math.min(proximo - DIA, atu.getTime());
-      if (fim >= ini) trechos.push({ rotulo: `Mês ${trechos.length + 1}`, ini: fmt(ini), fim: fmt(fim), dias: Math.round((fim - ini) / DIA) + 1 });
-      cursor = proximo;
-    }
-    return trechos;
-  })();
+  const qtdMeses = mesesNoPeriodo(form.data_leitura_anterior, form.data_leitura_atual);
+  const trechosBandeira = trechosDeBandeira(form.data_leitura_anterior, form.data_leitura_atual);
 
   const [loading, setLoading] = useState(false);
-  const [resultado, setResultado] = useState<any>(null);
+  const [resultado, setResultado] = useState<ResultadoCalculo | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   // Qualquer mudança de parâmetro descarta o resultado que está na tela.
@@ -158,9 +98,12 @@ export default function Home() {
 
     const cip = calcular_cip_municipio(municipioCip, form.categoria, consumo, dataAnt, dataAtu);
     if (cip !== null) {
+      // Intencional: o campo de CIP é um input normal que esta sugestão
+      // preenche; o usuário pode sobrescrever e só é recalculada na próxima
+      // mudança de uma das dependências abaixo.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setForm((prev) => ({ ...prev, valor_cip: cip.toFixed(2) }));
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     municipioCip,
     form.distribuidora,
@@ -178,14 +121,6 @@ export default function Home() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  const formatBRL = (val: number) => {
-    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
-  };
-
-  const formatNum = (val: number, decimals: number) => {
-    return new Intl.NumberFormat('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }).format(val);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -241,7 +176,7 @@ export default function Home() {
           : [],
       };
 
-      const res = await fetch('/api/calcular', {
+      const res = await fetch('/api/conta-teste/calcular', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -251,119 +186,24 @@ export default function Home() {
         throw new Error(data.erro || 'Erro na simulação');
       }
       setResultado(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Erro na simulação');
     } finally {
       setLoading(false);
     }
   };
 
-  const exportarCSV = () => {
+  const baixarCSV = () => {
     if (!resultado) return;
-
-    let csv = "\uFEFF"; // UTF-8 BOM
-
-    csv += "=== REGISTRO DA SIMULAÇÃO DE ENERGIA ===\n";
-    csv += `Instalação;${form.instalacao || 'Não informada'}\n`;
-    csv += `Documento de Impressão;${form.documento_impressao || 'Não informado'}\n`;
-    csv += `Geografia;EDP ${form.distribuidora}\n`;
-    csv += `Tarifas;${form.categoria}\n`;
-    csv += `Fase;${form.fase}\n`;
-    csv += `Período de Leitura;${form.data_leitura_anterior} a ${form.data_leitura_atual}\n`;
-    csv += `Tributação de ICMS;${form.icms_opcao || 'auto'}\n`;
-    csv += `Bandeiras (mês 1 / 2 / 3);${form.bandeira_mes1} / ${form.bandeira_mes2} / ${form.bandeira_mes3 || 'Nenhum'}\n`;
-    csv += `Desconto BT (-1.5% kWh);${descontoBT ? 'SIM (Ativado)' : 'NÃO'}\n`;
-    csv += `Redutor SUDENE (-R$ 7,81/MWh);${sudeneAtivo ? 'SIM (Ativado)' : 'NÃO'}\n`;
-    csv += `TOTAL FATURA;${formatBRL(resultado.resumo.total_fatura)}\n\n`;
-
-    csv += "=== RESUMO DE TOTAIS ===\n";
-    csv += `Total Energia;${formatBRL(resultado.resumo.total_energia)}\n`;
-    csv += `PIS/COFINS Total;${formatBRL(resultado.resumo.total_pis_cofins)}\n`;
-    csv += `ICMS Total;${formatBRL(resultado.resumo.total_icms)}\n`;
-    csv += `Fio B (Informativo);${formatBRL(resultado.resumo.valor_fio_b || 0)}\n`;
-    if (resultado.resumo.valor_escassez) {
-      csv += `Escassez Hídrica (Informativo);${formatBRL(resultado.resumo.valor_escassez)}\n`;
-    }
-    if (resultado.resumo.valor_beneficio_tarifa_social) {
-      csv += `Benefício Tarifa Social (Informativo);${formatBRL(resultado.resumo.valor_beneficio_tarifa_social)}\n`;
-    }
-    csv += `CIP;${formatBRL(resultado.resumo.valor_cip)}\n`;
-    csv += `TOTAL FATURA;${formatBRL(resultado.resumo.total_fatura)}\n\n`;
-
-    csv += "=== DETALHAMENTO DA NOTA FISCAL (NFe) ===\n";
-    csv += "Descrição;Unid;Quantidade;Preço Unit (R$) com tributos;Valor Total R$;PIS/COFINS;Base Calc. ICMS (R$);Alíquota ICMS (%);ICMS (R$);Tarifa Unit. (R$)\n";
-
-    resultado.detalhes.forEach((l: any) => {
-      const baseIcmsVal = l.base_icms !== undefined ? l.base_icms : (l.valor_icms > 0 ? (form.categoria.startsWith('B2') && resultado.parametros_usados?.aliquota_icms_aplicada === 0.04 ? l.valor_total / 3 : l.valor_total) : 0);
-      const aliquotaIcmsVal = l.aliquota_icms !== undefined ? l.aliquota_icms : (l.valor_icms > 0 ? (resultado.parametros_usados?.aliquota_icms_aplicada ? resultado.parametros_usados.aliquota_icms_aplicada * 100 : (form.categoria.startsWith('B2') ? 12 : 17)) : 0);
-
-      csv += `"${l.nome}";"${l.unidade}";"${formatNum(l.quantidade, 4)}";"${formatNum(l.preco_unit, 8)}";"${formatBRL(l.valor_total)}";"${l.is_informativo ? '-' : formatBRL(l.valor_pis_cofins)}";"${l.is_informativo || baseIcmsVal === 0 ? '0,00' : formatBRL(baseIcmsVal)}";"${l.is_informativo || aliquotaIcmsVal === 0 ? '0,000' : formatNum(aliquotaIcmsVal, 3)}";"${l.is_informativo ? '-' : formatBRL(l.valor_icms)}";"${formatNum(l.tarifa_base || 0, 8)}"\n`;
-    });
-
-    if (resultado.resumo.valor_cip > 0) {
-      csv += `"Contribuição de Ilum. Pública - Lei Municipal";"";"1,0000";"${formatNum(resultado.resumo.valor_cip, 8)}";"${formatBRL(resultado.resumo.valor_cip)}";"-";"0,00";"0,000";"-";"0,00000000"\n`;
-    }
-
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.setAttribute("href", url);
-    const fileName = `simulacao_fatura_${form.instalacao || 'registro'}_${form.categoria}.csv`;
-    link.setAttribute("download", fileName);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    exportarCSV({ resultado, form, descontoBT, sudeneAtivo });
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Header */}
-      <nav className="bg-[#2f364b] px-6 py-4 flex items-center shadow-md">
-        <Image
-          src="/images/logo.png"
-          alt="Logo EDP"
-          width={80}
-          height={30}
-          className="object-contain"
-          priority
-        />
-        <span className="text-slate-500 mx-3 text-2xl font-light">|</span>
-        <h1 className="text-lg font-bold text-white">
-          Simulador de Energia
-        </h1>
-      </nav>
-
-      {/* Faixa de ambiente: a produção (validada) não mostra nada; qualquer
-          outro ambiente avisa. Definida em next.config.ts. */}
-      {AMBIENTE !== 'production' && (
-        <div
-          role="status"
-          className={`px-6 py-2 text-xs font-semibold flex flex-wrap items-center gap-x-3 gap-y-1 ${
-            AMBIENTE === 'preview'
-              ? 'bg-amber-100 text-amber-900 border-b border-amber-300'
-              : 'bg-slate-100 text-slate-700 border-b border-slate-300'
-          }`}
-        >
-          <span className="uppercase tracking-wide">
-            {AMBIENTE === 'preview' ? 'Ambiente de teste' : 'Ambiente local'}
-          </span>
-          <span className="font-normal">
-            {AMBIENTE === 'preview'
-              ? 'Pode conter regras ainda não validadas pela área. Para conferir uma conta oficial, use o link de produção.'
-              : 'Execução na máquina do desenvolvedor.'}
-          </span>
-          {VERSAO && <span className="font-mono font-normal opacity-70">versão {VERSAO}</span>}
-        </div>
-      )}
-
-      <main className="w-full max-w-[95%] mx-auto px-4 mt-8 pb-12 flex flex-col xl:flex-row gap-12">
+    <div className="w-full flex flex-col xl:flex-row gap-12">
 
         {/* Formulário com os Parâmetros de Entrada */}
         <div className="w-full xl:w-[400px] shrink-0">
-          <div className="mb-4">
-            <h2 className="text-sm font-bold text-black uppercase tracking-wide">Parâmetros de Entrada</h2>
-            <hr className="mt-2 border-slate-200" />
-          </div>
+          <TituloSecao>Parâmetros de Entrada</TituloSecao>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Registro de Cálculo */}
@@ -478,18 +318,18 @@ export default function Home() {
               </p>
             )}
 
-            {mesesNoPeriodo > 0 && mesesNoPeriodo < 3 && form.bandeira_mes3 !== '' && (
+            {qtdMeses > 0 && qtdMeses < 3 && form.bandeira_mes3 !== '' && (
               <p className="text-[11px] text-slate-500 -mt-2">
-                O período informado cruza {mesesNoPeriodo === 1 ? 'apenas 1 mês' : '2 meses'} — a Bandeira Mês 3 não será aplicada.
+                O período informado cruza {qtdMeses === 1 ? 'apenas 1 mês' : '2 meses'} — a Bandeira Mês 3 não será aplicada.
               </p>
             )}
 
             {/* O contrário também precisa de aviso: se o ciclo cruza três meses
                 e a bandeira 3 ficou em "Nenhum", os dias do terceiro mês saem
                 sem bandeira nenhuma e a conta fica menor que a real. */}
-            {mesesNoPeriodo >= 3 && form.bandeira_mes3 === '' && (
+            {qtdMeses >= 3 && form.bandeira_mes3 === '' && (
               <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded px-2 py-1 -mt-2">
-                Este período cruza {mesesNoPeriodo} meses. Com a Bandeira Mês 3 em &quot;Nenhum&quot;, os dias do último mês ficam sem bandeira.
+                Este período cruza {qtdMeses} meses. Com a Bandeira Mês 3 em &quot;Nenhum&quot;, os dias do último mês ficam sem bandeira.
               </p>
             )}
 
@@ -806,210 +646,15 @@ export default function Home() {
         {/* Resultados */}
         <div className="w-full flex-1">
           {resultado && (
-            <div className="space-y-8">
-
-              {/* Dado faltando para o período (tarifa fora de vigência, PIS/COFINS
-                  do mês): o motor segue calculando com o último valor conhecido,
-                  então o resultado vem junto de um aviso em vez de parecer certo. */}
-              {Array.isArray(resultado.avisos) && resultado.avisos.length > 0 && (
-                <div role="alert" className="border border-amber-300 bg-amber-50 text-amber-900 rounded px-4 py-3 text-xs space-y-1">
-                  <p className="font-bold uppercase tracking-wide">Atenção - resultado pode divergir da fatura</p>
-                  {resultado.avisos.map((a: string, i: number) => <p key={i}>{a}</p>)}
-                </div>
-              )}
-
-              {/* Cards com os Valores Totais */}
-              <div className="flex flex-wrap md:flex-nowrap items-stretch gap-0 border-b border-slate-200 pb-4">
-
-                <div className="flex-1 pl-4 border-l-4 border-blue-600 py-1">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">TOTAL ENERGIA</span>
-                  <span className="text-xl font-bold text-black">{formatBRL(resultado.resumo.total_energia)}</span>
-                </div>
-
-                <div className="flex-1 pl-4 border-l-4 border-orange-500 py-1">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">PIS/COFINS</span>
-                  <span className="text-xl font-bold text-black">{formatBRL(resultado.resumo.total_pis_cofins)}</span>
-                </div>
-
-                <div className="flex-1 pl-4 border-l-4 border-yellow-500 py-1">
-                  <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">ICMS</span>
-                  <span className="text-xl font-bold text-black">{formatBRL(resultado.resumo.total_icms)}</span>
-                </div>
-
-                <div className="flex-1 pl-4 border-l-4 border-purple-500 py-1 bg-purple-50/40">
-                  <span className="text-[10px] text-purple-700 font-bold uppercase tracking-wider block">FIO B (INFORMATIVO)</span>
-                  <span className="text-xl font-bold text-purple-900">{formatBRL(resultado.resumo.valor_fio_b || 0)}</span>
-                </div>
-
-                {!!resultado.resumo.valor_escassez && (
-                  <div className="flex-1 pl-4 border-l-4 border-cyan-600 py-1 bg-cyan-50/40">
-                    <span className="text-[10px] text-cyan-700 font-bold uppercase tracking-wider block">ESCASSEZ HÍDRICA (INFORMATIVO)</span>
-                    <span className="text-xl font-bold text-cyan-900">{formatBRL(resultado.resumo.valor_escassez)}</span>
-                  </div>
-                )}
-
-                {/* Mensagem "Benefício Tarifário obtido com a Tarifa Social" da
-                    fatura Baixa Renda (80 kWh isentos x TUSD+TE). Informativo:
-                    não entra no total. Só aparece em Baixa Renda de ES. */}
-                {!!resultado.resumo.valor_beneficio_tarifa_social && (
-                  <div className="flex-1 pl-4 border-l-4 border-rose-500 py-1 bg-rose-50/40">
-                    <span className="text-[10px] text-rose-700 font-bold uppercase tracking-wider block">BENEFÍCIO TARIFA SOCIAL (INFORMATIVO)</span>
-                    <span className="text-xl font-bold text-rose-900">{formatBRL(resultado.resumo.valor_beneficio_tarifa_social)}</span>
-                  </div>
-                )}
-
-                <div className="flex-1 pl-4 border-l-4 border-emerald-600 py-1 bg-emerald-50/50">
-                  <span className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider block">TOTAL FATURA</span>
-                  <span className="text-2xl font-bold text-emerald-800">{formatBRL(resultado.resumo.total_fatura)}</span>
-                </div>
-
-              </div>
-
-              {/* Representação da Tabela NFe */}
-              <div>
-                <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-                  <span className="inline-flex items-center bg-slate-100 border border-slate-200 text-[#2f364b] font-bold text-sm px-4 py-2 rounded-md">
-                    Detalhamento NFe
-                    <span className="mx-3 w-px h-4 bg-slate-300"></span>
-                    {form.categoria}
-                    {form.instalacao && (
-                      <>
-                        <span className="mx-3 w-px h-4 bg-slate-300"></span>
-                        Inst: {form.instalacao}
-                      </>
-                    )}
-                  </span>
-
-                  <button
-                    type="button"
-                    onClick={exportarCSV}
-                    className="flex items-center gap-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-4 py-2 rounded shadow transition-colors cursor-pointer"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                    </svg>
-                    Baixar Tabela (CSV / Excel)
-                  </button>
-                </div>
-
-                <div className="w-full overflow-x-auto">
-                  <table className="modern-table w-full text-xs">
-                    <thead>
-                      <tr className="bg-slate-200 text-slate-700 font-bold border-b border-slate-300">
-                        <th className="p-2 text-left">Descrição</th>
-                        <th className="p-2 text-center">Unid</th>
-                        <th className="p-2 text-right">Quantidade</th>
-                        <th className="p-2 text-right">Preço Unit (R$) com tributos</th>
-                        <th className="p-2 text-right">Valor Total R$</th>
-                        <th className="p-2 text-right">PIS/COFINS</th>
-                        <th className="p-2 text-right">Base Calc. ICMS (R$)</th>
-                        <th className="p-2 text-right">Alíquota ICMS (%)</th>
-                        <th className="p-2 text-right">ICMS (R$)</th>
-                        <th className="p-2 text-right">Tarifa Unit. (R$)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {resultado.detalhes.filter((l: any) => !l.is_informativo).map((l: any, i: number) => {
-                        const baseIcmsVal = l.base_icms !== undefined ? l.base_icms : (l.valor_icms > 0 ? (form.categoria.startsWith('B2') && resultado.parametros_usados?.aliquota_icms_aplicada === 0.04 ? l.valor_total / 3 : l.valor_total) : 0);
-                        const aliquotaIcmsVal = l.aliquota_icms !== undefined ? l.aliquota_icms : (l.valor_icms > 0 ? (resultado.parametros_usados?.aliquota_icms_aplicada ? resultado.parametros_usados.aliquota_icms_aplicada * 100 : (form.categoria.startsWith('B2') ? 12 : 17)) : 0);
-
-                        return (
-                          <tr key={i} className={l.is_injetada ? "bg-emerald-50/60 text-emerald-900 border-b border-slate-200" : "border-b border-slate-200"}>
-                            <td className="p-2 font-semibold flex items-center gap-2">
-                              {l.nome}
-                              {l.is_injetada && (
-                                <span className="text-[9px] uppercase font-bold bg-emerald-200 text-emerald-800 px-1.5 py-0.5 rounded">Injetada</span>
-                              )}
-                            </td>
-                            <td className="p-2 text-center">{l.unidade}</td>
-                            <td className="p-2 text-right font-mono">{formatNum(l.quantidade, 4)}</td>
-                            <td className="p-2 text-right font-mono">{formatNum(l.preco_unit, 8)}</td>
-                            <td className="p-2 text-right font-bold font-mono">{formatBRL(l.valor_total)}</td>
-                            <td className="p-2 text-right font-mono">{formatBRL(l.valor_pis_cofins)}</td>
-                            <td className="p-2 text-right font-mono">{baseIcmsVal === 0 ? "0,00" : formatBRL(baseIcmsVal)}</td>
-                            <td className="p-2 text-right font-mono">{aliquotaIcmsVal === 0 ? "0,000" : formatNum(aliquotaIcmsVal, 3)}</td>
-                            <td className="p-2 text-right font-mono">{formatBRL(l.valor_icms)}</td>
-                            <td className="p-2 text-right font-mono">{formatNum(l.tarifa_base || 0, 8)}</td>
-                          </tr>
-                        );
-                      })}
-
-                      {/* Linha da Contribuição de Iluminação Pública (CIP) */}
-                      {resultado.resumo.valor_cip > 0 && (
-                        <tr className="border-b border-slate-200">
-                          <td className="p-2 font-semibold">Contribuição de Ilum. Pública - Lei Municipal</td>
-                          <td className="p-2 text-center"></td>
-                          <td className="p-2 text-right font-mono">1,0000</td>
-                          <td className="p-2 text-right font-mono">{formatNum(resultado.resumo.valor_cip, 8)}</td>
-                          <td className="p-2 text-right font-bold font-mono">{formatBRL(resultado.resumo.valor_cip)}</td>
-                          <td className="p-2 text-right font-mono">-</td>
-                          <td className="p-2 text-right font-mono">0,00</td>
-                          <td className="p-2 text-right font-mono">0,000</td>
-                          <td className="p-2 text-right font-mono">-</td>
-                          <td className="p-2 text-right font-mono">0,00000000</td>
-                        </tr>
-                      )}
-
-                      <tr className="bg-slate-100 font-bold border-t-2 border-slate-400 text-slate-800">
-                        <td colSpan={4} className="p-2 text-left uppercase">TOTAL</td>
-                        <td className="p-2 text-right font-mono">
-                          {formatBRL(resultado.resumo.total_fatura)}
-                        </td>
-                        <td className="p-2 text-right font-mono">{formatBRL(resultado.resumo.total_pis_cofins)}</td>
-                        <td className="p-2 text-right font-mono">
-                          {formatBRL(resultado.detalhes.filter((l: any) => !l.is_informativo).reduce((acc: number, l: any) => acc + (l.base_icms || (l.valor_icms > 0 ? (form.categoria.startsWith('B2') ? l.valor_total / 3 : l.valor_total) : 0)), 0))}
-                        </td>
-                        <td className="p-2 text-right font-mono">-</td>
-                        <td className="p-2 text-right font-mono">{formatBRL(resultado.resumo.total_icms)}</td>
-                        <td className="p-2 text-right font-mono">-</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-              {/* Tabela de Tributos (PIS/COFINS) */}
-              <div className="mt-8">
-                <div className="mb-4">
-                  <span className="inline-flex items-center bg-slate-100 border border-slate-200 text-[#2f364b] font-bold text-sm px-4 py-2 rounded-md">
-                    Resumo de Tributos
-                    <span className="mx-3 w-px h-4 bg-slate-300"></span>
-                    PIS / COFINS
-                  </span>
-                </div>
-
-                <div className="w-full xl:w-1/2">
-                  <table className="modern-table">
-                    <thead>
-                      <tr>
-                        <th>TRIBUTOS</th>
-                        <th className="text-right">BASE DE CALC. (R$)</th>
-                        <th className="text-right">ALIQUOTA (%)</th>
-                        <th className="text-right">VALOR (R$)</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr>
-                        <td className="font-semibold text-blue-800">PIS</td>
-                        <td className="currency text-orange-600">{formatBRL(resultado.resumo.total_base_pis_cofins)}</td>
-                        <td className="currency text-blue-600">{(resultado.parametros_usados.aliquota_pis_aplicada * 100).toFixed(3).replace('.', ',')}</td>
-                        <td className="currency font-semibold">{formatBRL(resultado.resumo.total_pis)}</td>
-                      </tr>
-                      <tr>
-                        <td className="font-semibold text-blue-800">COFINS</td>
-                        <td className="currency text-orange-600">{formatBRL(resultado.resumo.total_base_pis_cofins)}</td>
-                        <td className="currency text-blue-600">{(resultado.parametros_usados.aliquota_cofins_aplicada * 100).toFixed(3).replace('.', ',')}</td>
-                        <td className="currency font-semibold">{formatBRL(resultado.resumo.total_cofins)}</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-
-            </div>
+            <ResultadoFatura
+              resultado={resultado}
+              categoria={form.categoria}
+              instalacao={form.instalacao}
+              aoExportar={baixarCSV}
+            />
           )}
         </div>
-      </main>
+
     </div>
   );
 }

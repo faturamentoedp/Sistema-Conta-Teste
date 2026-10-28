@@ -1,9 +1,9 @@
 /**
- * Gera os arquivos de dados da pasta treinamento-databricks/dados a partir do
+ * Gera os arquivos de dados da pasta docs/conta-teste/treinamento-databricks/dados a partir do
  * motor de cálculo do simulador. SOMENTE LEITURA: importa os módulos de
- * src/lib/motor e scripts/cenarios.mjs, nunca escreve fora desta pasta.
+ * src/modulos/conta-teste/motor e scripts/conta-teste/cenarios.mjs, nunca escreve fora desta pasta.
  *
- * Uso (na raiz do projeto): node treinamento-databricks/gerar_dados.mjs
+ * Uso (na raiz do projeto): node docs/conta-teste/treinamento-databricks/gerar_dados.mjs
  *
  * Rode de novo sempre que o motor mudar (nova resolução da ANEEL, novo mês de
  * PIS/COFINS, nova regra) para os CSVs não ficarem velhos em relação ao código.
@@ -12,17 +12,17 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { VIGENCIAS } from '../src/lib/motor/vigencias.js';
-import { TRIBUTOS_MENSAIS, TRIBUTOS_PADRAO, ICMS_PADRAO } from '../src/lib/motor/tributos.js';
+import { VIGENCIAS } from '../../../src/modulos/conta-teste/motor/vigencias.js';
+import { TRIBUTOS_MENSAIS, TRIBUTOS_PADRAO, ICMS_PADRAO } from '../../../src/modulos/conta-teste/motor/tributos.js';
 import {
     FAIXA_TARIFA_SOCIAL_KWH, FAIXA_DESCONTO_SOCIAL_KWH, CATEGORIA_DESCONTO_SOCIAL,
     SUBVENCAO_INCLUI_BANDEIRA, BENEFICIO_TARIFA_SOCIAL_INFORMATIVO, REPRODUZIR_FALLBACK_POSTO,
     PERC_REDUCAO_GD, ICMS_FAIXAS_RESIDENCIAL, ENCARGO_ESCASSEZ_HIDRICA,
     ESCASSEZ_SO_TE_NA_FAIXA_SOCIAL, ESCASSEZ_ARREDONDA_POR_COMPONENTE, FIO_B_TUSD, SUDENE_CONFIG
-} from '../src/lib/motor/tarifas-aneel.js';
-import { BANDEIRAS, calcular_fatura, normalizar_tarifas, resolver_tarifas } from '../src/lib/motor/calculo.js';
-import { CIP_MUNICIPIOS_ES, TARIFA_B4A } from '../src/lib/motor/cip-municipios.js';
-import { CENARIOS } from '../scripts/cenarios.mjs';
+} from '../../../src/modulos/conta-teste/motor/tarifas-aneel.js';
+import { BANDEIRAS, calcular_fatura, normalizar_tarifas, resolver_tarifas } from '../../../src/modulos/conta-teste/motor/calculo.js';
+import { CIP_MUNICIPIOS_ES, TARIFA_B4A } from '../../../src/modulos/conta-teste/motor/cip-municipios.js';
+import { CENARIOS } from '../../../scripts/conta-teste/cenarios.mjs';
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
 const saida = path.join(aqui, 'dados');

@@ -1,6 +1,6 @@
 /**
  * Compara o motor compartilhado (com as tarifas locais) contra o retrato do
- * comportamento antigo gravado em scripts/referencia.json.
+ * comportamento antigo gravado em scripts/conta-teste/referencia.json.
  *
  * Uso: npm run verificar
  *      npm run verificar -- --api 3020    (compara também com a API no ar)
@@ -11,10 +11,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { CENARIOS } from './cenarios.mjs';
-import { calcular_fatura, normalizar_tarifas, resolver_tarifas } from '../src/lib/motor/calculo.js';
+import { calcular_fatura, normalizar_tarifas, resolver_tarifas } from '../../src/modulos/conta-teste/motor/calculo.js';
 
-const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const referencia = JSON.parse(fs.readFileSync(path.join(raiz, 'scripts', 'referencia.json'), 'utf8'));
+const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const referencia = JSON.parse(fs.readFileSync(path.join(raiz, 'scripts', 'conta-teste', 'referencia.json'), 'utf8'));
 
 const idx = process.argv.indexOf('--api');
 const porta_api = idx >= 0 ? process.argv[idx + 1] : null;
@@ -137,7 +137,7 @@ for (const cenario of CENARIOS) {
     }
 
     if (porta_api) {
-        const resposta = await fetch(`http://127.0.0.1:${porta_api}/api/calcular`, {
+        const resposta = await fetch(`http://127.0.0.1:${porta_api}/api/conta-teste/calcular`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(cenario.params)

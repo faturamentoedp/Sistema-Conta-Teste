@@ -46,7 +46,7 @@ function rodar(titulo, comando, argumentos) {
 }
 
 if (modo !== 'producao' && modo !== 'teste') {
-    falhar('Uso: node scripts/publicar.mjs <producao|teste> [--dry-run] [--yes]');
+    falhar('Uso: node scripts/plataforma/publicar.mjs <producao|teste> [--dry-run] [--yes]');
 }
 
 const branch = git('rev-parse --abbrev-ref HEAD');
@@ -73,13 +73,13 @@ if (modo === 'producao') {
 }
 
 // ------------------------------------------------------------ regressão
-const comRegressao = rodar('Regressão dos cenários (npm run verificar)', 'node', ['scripts/verificar.mjs']);
-const comCip = rodar('Regressão da CIP por município (npm run verificar-cip)', 'node', ['scripts/verificar-cip.mjs']);
+const comRegressao = rodar('Regressão dos cenários (npm run verificar)', 'node', ['scripts/conta-teste/verificar.mjs']);
+const comCip = rodar('Regressão da CIP por município (npm run verificar-cip)', 'node', ['scripts/conta-teste/verificar-cip.mjs']);
 const passou = comRegressao && comCip;
 
 if (!passou) {
     if (modo === 'producao') {
-        falhar('A regressão falhou - produção não será publicada. Corrija (ou, se a mudança de valor foi proposital, recapture scripts/referencia.json) e rode de novo.');
+        falhar('A regressão falhou - produção não será publicada. Corrija (ou, se a mudança de valor foi proposital, recapture scripts/conta-teste/referencia.json) e rode de novo.');
     }
     console.log('\n⚠ A regressão falhou. Para teste isso é permitido - o link vai mostrar o que está em andamento -, mas avise quem for usar.');
 }

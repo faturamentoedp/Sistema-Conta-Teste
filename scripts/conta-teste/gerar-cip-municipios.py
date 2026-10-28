@@ -1,14 +1,14 @@
 # -*- coding: utf-8 -*-
 """
-Regera o bloco de dados de src/lib/motor/cip-municipios.js (a partir de
+Regera o bloco de dados de src/modulos/conta-teste/motor/cip-municipios.js (a partir de
 "export const NOMES_MUNICIPIOS_ES") com os 70 municípios da página da EDP.
 
 Passos:
-  1. python scripts/importar-cip-site.py <saida-do-navegador> site-cip.json
+  1. python scripts/conta-teste/importar-cip-site.py <saida-do-navegador> site-cip.json
   2. node scripts/_dump...  (opcional) ou deixe o --exatas apontar para um JSON com
      os dados antigos (planilha) - as alíquotas da planilha têm 5 casas e a página
      arredonda para 4; quando os dois batem, fica a da planilha.
-  3. python scripts/gerar-cip-municipios.py site-cip.json src/lib/motor/cip-municipios.js [exatas.json]
+  3. python scripts/conta-teste/gerar-cip-municipios.py site-cip.json src/modulos/conta-teste/motor/cip-municipios.js [exatas.json]
 
 Regras de limpeza aplicadas aqui (todas por causa de inconsistências da própria
 página, e documentadas no comentário gerado no arquivo):

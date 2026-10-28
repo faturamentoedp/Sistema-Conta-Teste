@@ -2,12 +2,12 @@
  * Regressão da CIP por município (ES). Casos ancorados nos valores impressos
  * na planilha oficial "Atualização valores CIP no site Agosto 2026" -
  * conferidos um a um (aliquota x Tarifa B4a == "VALOR CIP (R$)" da planilha)
- * antes de entrar no simulador. Ver docs/cip-municipios-es-extraido.json
- * para os dados brutos e src/lib/motor/cip-municipios.js para a regra.
+ * antes de entrar no simulador. Ver docs/conta-teste/cip-municipios-es-extraido.json
+ * para os dados brutos e src/modulos/conta-teste/motor/cip-municipios.js para a regra.
  *
- * Uso: node scripts/verificar-cip.mjs
+ * Uso: node scripts/conta-teste/verificar-cip.mjs
  */
-import { calcular_cip_municipio } from '../src/lib/motor/cip-municipios.js';
+import { calcular_cip_municipio } from '../../src/modulos/conta-teste/motor/cip-municipios.js';
 
 const DATA_APOS_VIGENCIA = [new Date('2026-08-21'), new Date('2026-09-20')]; // 100% na tarifa B4a nova (464,04)
 const DATA_ANTES_VIGENCIA = [new Date('2026-06-21'), new Date('2026-07-20')]; // 100% na tarifa antiga (434,13)

@@ -12,7 +12,7 @@ import { existsSync } from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const raiz = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const PORTA = process.env.PORT || '3020';
 const SUBDOMINIO = process.env.SUBDOMINIO || 'simulador-faturas-edp';
 

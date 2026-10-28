@@ -1,16 +1,16 @@
 """
-Lê os exports oficiais da ANEEL e gera src/lib/motor/vigencias.js, a base
+Lê os exports oficiais da ANEEL e gera src/modulos/conta-teste/motor/vigencias.js, a base
 tarifária por período de vigência.
 
-Uso: python scripts/exportar-vigencias.py <export_ES.xlsx> <export_SP.xlsx>
+Uso: python scripts/conta-teste/exportar-vigencias.py <export_ES.xlsx> <export_SP.xlsx>
 
 Por padrão só entram as vigências que terminam em 2026-01-01 ou depois. Para trazer
 o histórico (contas antigas de SP, por exemplo) use --desde=AAAA-MM-DD:
-    python scripts/exportar-vigencias.py - "data (33).xlsx" --desde=2000-01-01
+    python scripts/conta-teste/exportar-vigencias.py - "data (33).xlsx" --desde=2000-01-01
 
 Use "-" no lugar de um dos arquivos para MANTER as vigências desse estado como já
-estão em src/lib/motor/vigencias.js - o caso de hoje, em que só SP tem tarifa nova:
-    python scripts/exportar-vigencias.py - "data (33).xlsx"
+estão em src/modulos/conta-teste/motor/vigencias.js - o caso de hoje, em que só SP tem tarifa nova:
+    python scripts/conta-teste/exportar-vigencias.py - "data (33).xlsx"
 
 Cada arquivo pode ser o export já filtrado (só a EDP) ou a base nacional da ANEEL
 com todas as distribuidoras (150 mil linhas): o script fica só com as linhas da
@@ -145,7 +145,7 @@ def coletar(df, sigla):
 
 def vigencias_atuais():
     """Lê o VIGENCIAS que já está no vigencias.js (é JSON depois de 'export const VIGENCIAS =')."""
-    with open('src/lib/motor/vigencias.js', encoding='utf-8') as f:
+    with open('src/modulos/conta-teste/motor/vigencias.js', encoding='utf-8') as f:
         texto = f.read()
     inicio = texto.index('export const VIGENCIAS =') + len('export const VIGENCIAS =')
     return json.loads(texto[inicio:].strip().rstrip(';'))
@@ -178,9 +178,9 @@ def main():
                   f"({len(v['tarifas'])} categorias, {len(v['tarifas_scee'])} SCEE)")
 
     corpo = json.dumps(resultado, ensure_ascii=False, indent=4)
-    destino = 'src/lib/motor/vigencias.js'
+    destino = 'src/modulos/conta-teste/motor/vigencias.js'
     with open(destino, 'w', encoding='utf-8') as f:
-        f.write('// GERADO AUTOMATICAMENTE por scripts/exportar-vigencias.py - não edite à mão.\n')
+        f.write('// GERADO AUTOMATICAMENTE por scripts/conta-teste/exportar-vigencias.py - não edite à mão.\n')
         f.write('// Fonte: export oficial da ANEEL, linhas "Tarifa de Aplicação", em R$/kWh.\n')
         f.write('//\n')
         f.write('// Cada distribuidora tem uma lista de vigências ordenada por data. Quando o\n')
