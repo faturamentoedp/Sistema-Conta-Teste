@@ -80,7 +80,7 @@ Faturas e modelos conferidos hoje:
 | Modelo oficial MMGD GD2 | R$ 145,81 | R$ 145,83 | 0,02 |
 
 ### Conferindo que o cálculo não mudou
-O motor de cálculo é um só, em `src/modulos/conta-teste/motor/calculo.js`, usado pela API (`/api/conta-teste/calcular`) e pelos scripts de regressão. O comando `npm run verificar` roda 47 cenários (convencional, tarifa branca, baixa renda, rural, irrigante com reservado, ajustes, SP) e compara centavo a centavo com `scripts/conta-teste/referencia.json`, que congelou o comportamento do sistema antes da mudança.
+O motor de cálculo é um só, em `src/modulos/conta-teste/motor/calculo.js`, usado pela API (`/api/conta-teste/calcular`) e pelos scripts de regressão. O comando `npm run verificar` roda 48 cenários (convencional, tarifa branca, baixa renda, rural, irrigante com reservado, ajustes, SP) e compara centavo a centavo com `scripts/conta-teste/referencia.json`, que congelou o comportamento do sistema antes da mudança.
 
 ---
 

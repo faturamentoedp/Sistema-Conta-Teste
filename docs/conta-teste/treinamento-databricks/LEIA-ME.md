@@ -10,7 +10,7 @@ foi alterado. Pode ser copiada, enviada ou apagada sem efeito no simulador.
 |---|---|
 | `regras_de_calculo.md` | **Documento principal.** Todas as regras de cálculo, na ordem em que o motor executa: entradas, tarifa, consumo mínimo, PIS/COFINS, ICMS, imposto por dentro, bandeiras, Baixa Renda, Desconto Social, irrigante, SUDENE, retenções, Geração Distribuída, informativos (Fio B, Escassez, Benefício), totais, CIP por município, arredondamento, exemplos resolvidos, pendências. |
 | `dados/*.csv` | As tabelas que a regra consome (tarifas ANEEL, PIS/COFINS, ICMS, bandeiras, GD, Fio B, Escassez, CIP, parâmetros). |
-| `dados/exemplos_resolvidos.jsonl` | 47 casos: `entrada` → `saida` do motor (linha a linha), mais `ancoras_reais` (total impresso na fatura real ou no modelo oficial). Serve como conjunto de teste/treino. |
+| `dados/exemplos_resolvidos.jsonl` | 48 casos: `entrada` → `saida` do motor (linha a linha), mais `ancoras_reais` (total impresso na fatura real ou no modelo oficial). Serve como conjunto de teste/treino. |
 | `gerar_dados.mjs` | Regera os arquivos de `dados/` a partir do código do motor. Somente leitura. |
 
 ## Dicionário dos CSVs

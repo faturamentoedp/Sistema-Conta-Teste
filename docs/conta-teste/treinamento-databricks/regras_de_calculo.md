@@ -1,8 +1,8 @@
 # Regras de cálculo da fatura — EDP ES e EDP SP (Grupo B)
 
 > **Origem:** transcrição fiel do motor de cálculo do simulador "Conta Teste"
-> (`src/modulos/conta-teste/motor/calculo.js` e módulos vizinhos), conferida contra 47 cenários
-> de regressão: 14 ancorados no total impresso de faturas reais, 8 em modelos
+> (`src/modulos/conta-teste/motor/calculo.js` e módulos vizinhos), conferida contra 48 cenários
+> de regressão: 15 ancorados no total impresso de faturas reais, 8 em modelos
 > oficiais da EDP (7 de total e 1 de linha do SUDENE) e 25 que apenas travam o
 > comportamento atual. Estado do código em **27/10/2026**.
 > **Escopo:** Grupo B (baixa tensão), distribuidoras **ES** e **SP**.
@@ -767,7 +767,7 @@ Bandeira: mês 1 amarela, mês 2 verde; juros 0,56 e multa 4,79.
 
 ## 18. Validação: faturas reais e modelos oficiais usados como âncora
 
-Diferença máxima aceita: **R$ 0,03**. Os 47 cenários completos, com as saídas
+Diferença máxima aceita: **R$ 0,03**. Os 48 cenários completos, com as saídas
 linha a linha, estão em `dados/exemplos_resolvidos.jsonl`.
 
 | Âncora | Caso | Fatura real / modelo | Simulador |

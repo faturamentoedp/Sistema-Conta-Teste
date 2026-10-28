@@ -265,56 +265,50 @@ export default function ContaTeste() {
             </select>
           </div>
 
-          {/* Bandeiras Tarifárias (embaixo de Fase) */}
+          {/* Bandeiras Tarifárias (embaixo de Fase). Cada "Mês" é um trecho do
+              período de leitura: embaixo do campo vão as datas e a quantidade de
+              dias dele, para quem confere conta saber qual bandeira da fatura vai
+              em qual campo. */}
           <div className="grid grid-cols-3 gap-3">
-            <div>
-              <label className="block text-xs font-semibold text-black mb-1">Bandeira Mês 1</label>
-              <select name="bandeira_mes1" value={form.bandeira_mes1} onChange={handleChange} className="w-full">
-                <option value="VERDE">Verde</option>
-                <option value="AMARELA">Amarela</option>
-                <option value="VERMELHA_P1">Vermelha P1</option>
-                <option value="VERMELHA_P2">Vermelha P2</option>
-                <option value="ESCASSEZ">Escassez</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-black mb-1">Bandeira Mês 2</label>
-              <select name="bandeira_mes2" value={form.bandeira_mes2} onChange={handleChange} className="w-full">
-                <option value="VERDE">Verde</option>
-                <option value="AMARELA">Amarela</option>
-                <option value="VERMELHA_P1">Vermelha P1</option>
-                <option value="VERMELHA_P2">Vermelha P2</option>
-                <option value="ESCASSEZ">Escassez</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-black mb-1">Bandeira Mês 3</label>
-              <select name="bandeira_mes3" value={form.bandeira_mes3} onChange={handleChange} className="w-full">
-                {/* Padrão: fatura com três bandeiras é rara, então o campo
-                      nasce desligado e só entra no cálculo se for escolhido. */}
-                <option value="">Nenhum</option>
-                <option value="VERDE">Verde</option>
-                <option value="AMARELA">Amarela</option>
-                <option value="VERMELHA_P1">Vermelha P1</option>
-                <option value="VERMELHA_P2">Vermelha P2</option>
-                <option value="ESCASSEZ">Escassez</option>
-              </select>
-            </div>
+            {([1, 2, 3] as const).map((n) => {
+              const campo = `bandeira_mes${n}` as 'bandeira_mes1' | 'bandeira_mes2' | 'bandeira_mes3';
+              const trecho = trechosBandeira[n - 1];
+              return (
+                <div key={n}>
+                  <label className="block text-xs font-semibold text-black mb-1">Bandeira Mês {n}</label>
+                  <select name={campo} value={form[campo]} onChange={handleChange} className="w-full">
+                    {/* Padrão do mês 3: fatura com três bandeiras é rara, então o
+                        campo nasce desligado e só entra no cálculo se for escolhido. */}
+                    {n === 3 && <option value="">Nenhum</option>}
+                    <option value="VERDE">Verde</option>
+                    <option value="AMARELA">Amarela</option>
+                    <option value="VERMELHA_P1">Vermelha P1</option>
+                    <option value="VERMELHA_P2">Vermelha P2</option>
+                    <option value="ESCASSEZ">Escassez</option>
+                  </select>
+                  <p className="mt-1 min-h-[2rem] text-[11px] leading-tight text-slate-600" data-testid={`dias-bandeira-${n}`}>
+                    {trecho ? (
+                      <>
+                        {trecho.ini} a {trecho.fim}
+                        <br />
+                        <strong>{trecho.dias} {trecho.dias === 1 ? 'dia' : 'dias'}</strong>
+                      </>
+                    ) : trechosBandeira.length > 0 ? (
+                      'Sem este mês no período'
+                    ) : (
+                      'Informe as datas de leitura'
+                    )}
+                  </p>
+                </div>
+              );
+            })}
           </div>
 
-          {/* A bandeira do mês 3 só tem efeito quando o período de leitura
-                cruza três meses-calendário. Sem esse aviso, quem preenchesse o
-                campo num ciclo normal acharia que o sistema ignorou. */}
+          {/* A fatura impressa nem sempre lista as bandeiras em ordem de data. */}
           {trechosBandeira.length > 0 && (
             <p className="text-[11px] text-slate-600 -mt-2">
-              Pelas datas informadas:{' '}
-              {trechosBandeira.map((t, i) => (
-                <span key={t.rotulo}>
-                  {i > 0 && ' · '}
-                  <strong>{t.rotulo}</strong> {t.ini} a {t.fim} ({t.dias} {t.dias === 1 ? 'dia' : 'dias'})
-                </span>
-              ))}
-              . Use a bandeira que a fatura traz para cada um desses trechos.
+              Preencha cada Mês pelo período indicado embaixo dele. A fatura impressa pode listar as bandeiras fora de ordem
+              (ex.: a Verde de outubro antes da Amarela de setembro) — vale a data, não a posição na fatura.
             </p>
           )}
 

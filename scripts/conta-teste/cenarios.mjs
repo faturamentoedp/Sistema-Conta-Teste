@@ -613,5 +613,21 @@ export const CENARIOS = [
             bandeira_mes1: 'VERMELHA_P2', bandeira_mes2: 'VERDE',
             valor_cip: 60, ajustes: []
         }
+    },
+    {
+        // Inst. 30875, Lote 31 (NF-e 063.607.546, OUT/2026, Vitória). A fatura
+        // imprime "VERDE 01/10 a 02/10 - 02 dias" ANTES de "AMARELA 03/09 a 30/09
+        // - 28 dias", mas a ordem do formulário é a das datas: Mês 1 = setembro
+        // (Amarela), Mês 2 = outubro (Verde). Invertido, o total cai para R$ 403,13.
+        // Escassez Hídrica: a fatura imprime -0,13 e o motor dá -0,19 (informativo,
+        // não soma no total) - por isso escassez_impressa não foi ancorada aqui.
+        nome: 'FATURA REAL ES B1 bifásico 351 kWh, Lote 31 (Amarela 28 dias, Verde 2 dias)',
+        fatura_real: 410.48,
+        params: {
+            distribuidora: 'ES', categoria: 'B1C', fase: 'bifasico',
+            data_leitura_anterior: '2026-09-02', data_leitura_atual: '2026-10-02',
+            consumo_kwh: 351, bandeira_mes1: 'AMARELA', bandeira_mes2: 'VERDE',
+            valor_cip: 22.26, ajustes: []
+        }
     }
 ];
