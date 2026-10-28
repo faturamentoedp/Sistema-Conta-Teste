@@ -9,6 +9,7 @@ foi alterado. Pode ser copiada, enviada ou apagada sem efeito no simulador.
 | Arquivo | Para quê |
 |---|---|
 | `regras_de_calculo.md` | **Documento principal.** Todas as regras de cálculo, na ordem em que o motor executa: entradas, tarifa, consumo mínimo, PIS/COFINS, ICMS, imposto por dentro, bandeiras, Baixa Renda, Desconto Social, irrigante, SUDENE, retenções, Geração Distribuída, informativos (Fio B, Escassez, Benefício), totais, CIP por município, arredondamento, exemplos resolvidos, pendências. |
+| `insumos_b1c.md` | Conferência da lista de componentes do B1C (energia, bandeira, CIP, ICMS, PIS/COFINS): o que está certo, o que faltava, lacunas dos dados e perguntas em aberto. |
 | `dados/*.csv` | As tabelas que a regra consome (tarifas ANEEL, PIS/COFINS, ICMS, bandeiras, GD, Fio B, Escassez, CIP, parâmetros). |
 | `dados/exemplos_resolvidos.jsonl` | 49 casos: `entrada` → `saida` do motor (linha a linha), mais `ancoras_reais` (total impresso na fatura real ou no modelo oficial). Serve como conjunto de teste/treino. |
 | `gerar_dados.mjs` | Regera os arquivos de `dados/` a partir do código do motor. Somente leitura. |
