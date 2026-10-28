@@ -1,0 +1,5 @@
+modalidade;vigencia_inicio;vigencia_fim;perc_compensacao_tusd;perc_compensacao_te;observacao
+GD1;2000-01-01;2099-12-31;1;1;
+GD2;2026-01-01;2026-08-06;0.739;1;
+GD2;2026-08-07;2027-08-06;0.7522;1;
+GD3;;;;;sem percentual cadastrado: o motor devolve erro

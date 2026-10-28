@@ -1,0 +1,77 @@
+# Como adicionar uma ferramenta à plataforma
+
+Toda ferramenta segue o mesmo molde, para que as páginas fiquem padronizadas: mesma casca (barra + menu), mesma moldura de página e mesmo registro. Exemplo de referência: **Conta Teste**.
+
+Use um `id` curto em minúsculas com hífen (ex.: `analise-cip`). O mesmo `id` nomeia a pasta, a rota e o registro.
+
+## 1. Crie a pasta da ferramenta
+
+```
+src/modulos/<id>/
+├── <Nome>.tsx        Componente principal da ferramenta ('use client' se tiver estado)
+└── ...               Componentes, utilitários e regras só dela
+```
+
+Regras de negócio em JavaScript puro (como o `motor/` da Conta Teste) ficam dentro dessa pasta, para poderem ser testadas por script sem subir o Next.
+
+## 2. Registre a ferramenta
+
+Em [src/plataforma/ferramentas.ts](../../src/plataforma/ferramentas.ts), acrescente à lista `FERRAMENTAS`:
+
+```ts
+{
+  id: 'analise-cip',
+  nome: 'Análise de CIP',
+  descricao: 'Uma frase dizendo o que a ferramenta faz.',
+  rota: '/analise-cip',
+  icone: 'calculadora',   // ver Icones.tsx; para um ícone novo, acrescente em IconeFerramenta e em Icones.tsx
+  status: 'ativa',        // 'em-breve' mostra no menu sem link
+}
+```
+
+Isso já coloca a ferramenta no menu lateral e na página inicial.
+
+## 3. Crie a página
+
+`src/app/<id>/page.tsx`:
+
+```tsx
+import type { Metadata } from 'next';
+import PaginaFerramenta from '@/plataforma/componentes/PaginaFerramenta';
+import AnaliseCip from '@/modulos/analise-cip/AnaliseCip';
+
+export const metadata: Metadata = { title: 'Análise de CIP' };
+
+export default function Page() {
+  return (
+    <PaginaFerramenta id="analise-cip">
+      <AnaliseCip />
+    </PaginaFerramenta>
+  );
+}
+```
+
+`PaginaFerramenta` põe o título e a descrição do registro no topo — por isso o nome da página é sempre o do menu. Dentro da ferramenta, use `TituloSecao` (de `@/plataforma/componentes/TituloSecao`) para os títulos de seção, e os estilos de `globals.css` (`modern-table`, `currency`) para tabelas.
+
+## 4. API (se precisar)
+
+`src/app/api/<id>/<acao>/route.ts`. Mantenha a rota fina: valida a entrada e chama o código de `src/modulos/<id>/`.
+
+## 5. Scripts e documentação
+
+- Testes de regressão e importadores: `scripts/<id>/` (e um script no `package.json`, como `verificar`).
+- Documentação: `docs/<id>/README.md`.
+
+## Checklist antes de publicar
+
+```bash
+npx tsc --noEmit
+```
+```bash
+npm run lint
+```
+```bash
+npm run build
+```
+
+Se a ferramenta calcula valores, entregue junto o caso de validação (fatura real ou modelo oficial) no script de regressão dela.
