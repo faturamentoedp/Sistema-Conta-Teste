@@ -1,8 +1,8 @@
 # Regras de cálculo da fatura — EDP ES e EDP SP (Grupo B)
 
 > **Origem:** transcrição fiel do motor de cálculo do simulador "Conta Teste"
-> (`src/modulos/conta-teste/motor/calculo.js` e módulos vizinhos), conferida contra 49 cenários
-> de regressão: 16 ancorados no total impresso de faturas reais, 8 em modelos
+> (`src/modulos/conta-teste/motor/calculo.js` e módulos vizinhos), conferida contra 51 cenários
+> de regressão: 18 ancorados no total impresso de faturas reais, 8 em modelos
 > oficiais da EDP (7 de total e 1 de linha do SUDENE) e 25 que apenas travam o
 > comportamento atual. Estado do código em **27/10/2026**.
 > **Escopo:** Grupo B (baixa tensão), distribuidoras **ES** e **SP**.
@@ -142,9 +142,10 @@ Vigências cadastradas:
 
 * **ES:** REH 3.508/2025 (01/01/2026 a 06/08/2026) e REH 3.600/2026
   (07/08/2026 a 06/08/2027).
-* **SP:** 20 vigências, de REH 1.072/2010 (23/10/2010) até REH 3.541/2025
-  (23/10/2025 a 22/10/2026, partida em duas linhas na virada de 01/01/2026).
-  **A resolução de 23/10/2026 (REH 3.611/2026) ainda NÃO está cadastrada.**
+* **SP:** 21 vigências, de REH 1.072/2010 (23/10/2010) até o Despacho ANEEL
+  3.611/2026 (23/10/2026 a 22/10/2027). A REH 3.541/2025 está partida em duas
+  linhas na virada de 01/01/2026. A de 23/10/2026 entrou em 29/10/2026, quando
+  a ANEEL atualizou os dados abertos.
 
 Postos: `Nao aplica` (sem posto), `Ponta`, `Intermediário`, `Fora ponta`.
 `faixa`: só B1CDE (`ate` / `acima`).
@@ -569,7 +570,9 @@ Aparecem como linhas `is_informativo`, são excluídos de `total_energia`,
   * ES: só `B1C` (0,203831 até 06/08/2026; 0,209512 a partir de 07/08/2026).
   * SP: `B1C`, `B1CDE`, Baixa Renda, `B2RURAL`, `B3`, `B3_CP`, `B3_PPF`,
     `B3_PPE` = 0,198766 (0,197693 antes de 01/01/2026); `B4A` = 0,109321;
-    `B4B` = 0,119259. Janela termina em 22/10/2026.
+    `B4B` = 0,119259. Janela termina em 22/10/2026 (sem valor para a vigência de
+    23/10/2026: o que passa dessa data usa só os dias dentro da janela, e um
+    período inteiro depois dela cai na estimativa de 45 %).
 * **Sem valor publicado** (ES fora do B1C, SP Tarifa Branca e B2 irrigante, ou
   período fora da janela): **estimativa** `tarifa = 0,45 × TUSD(Não se
   aplica)`, brutada por `divisor_fio_b` (mesmo divisor da seção 8.1) →
@@ -588,6 +591,7 @@ de tributos**: `consumo × (tusd + te)` do encargo. Arquivo
 | ES | 07/08/2026 – 06/08/2027 (REH 3.600) | 0,00018609 | −0,00072809 | −0,000542 |
 | SP | 23/10/2025 – 31/12/2025 | 0,00011506 | −0,00207315 | — |
 | SP | 01/01/2026 – 22/10/2026 | 0,00012449 | −0,00127319 | — |
+| SP | 23/10/2026 – 22/10/2027 | 0,00012449 (mantido) | −0,00054322 (derivado) | — |
 
 (Os dois valores do ES são **derivados** a partir de três pontos de fatura/modelo;
 só a soma é evidenciada. SP: sem valor antes de 23/10/2025 — nesse caso o
@@ -770,7 +774,7 @@ Bandeira: mês 1 amarela, mês 2 verde; juros 0,56 e multa 4,79.
 
 ## 18. Validação: faturas reais e modelos oficiais usados como âncora
 
-Diferença máxima aceita: **R$ 0,03**. Os 49 cenários completos, com as saídas
+Diferença máxima aceita: **R$ 0,03**. Os 51 cenários completos, com as saídas
 linha a linha, estão em `dados/exemplos_resolvidos.jsonl`.
 
 | Âncora | Caso | Fatura real / modelo | Simulador |
@@ -796,9 +800,11 @@ linha a linha, estão em `dados/exemplos_resolvidos.jsonl`.
 
 ## 19. Limitações e pendências conhecidas
 
-1. **SP — resolução de 23/10/2026 (REH 3.611/2026)** não está na base ANEEL
-   disponível: a partir dessa data a tarifa de SP usa a vigência anterior, o Fio
-   B volta à estimativa de 45 % e a Escassez some. O sistema avisa em tela.
+1. **SP — vigência de 23/10/2026**: a tarifa de consumo está na base (fonte:
+   dados abertos da ANEEL). Ficam **sem valor publicado** o TUSD Fio B e o TUSD
+   da Escassez a partir dessa data; o TE da Escassez (−0,00054322) foi derivado
+   de uma fatura de Baixa Renda (Lote 17). Períodos inteiros depois de 23/10
+   usam a estimativa de 45 % no Fio B.
 2. **GD3** sem percentual de compensação (devolve erro). **Injeção maior que o
    consumo** gera total negativo sem regra de crédito.
 3. **Fio B — SP Tarifa Branca** (a própria planilha da área sinaliza erro) e

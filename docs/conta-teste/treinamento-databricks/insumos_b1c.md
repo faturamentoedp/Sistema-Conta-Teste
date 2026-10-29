@@ -27,7 +27,7 @@ Conferido contra o motor de cálculo (`src/modulos/conta-teste/motor/`) e contra
 | Lacuna | Efeito |
 |---|---|
 | **ES só tem tarifas a partir de 01/01/2026** (duas resoluções) | Faturas do ES anteriores a 2026 não têm tarifa; o motor usa a mais recente e avisa. A base da ANEEL que recebemos não traz o subgrupo B do ES para anos anteriores. |
-| **SP termina em 22/10/2026** (falta a REH 3.611, de 23/10/2026) | Leituras depois dessa data usam a tarifa antiga e geram aviso. |
+| **SP vai até 22/10/2027** (vigência de 23/10/2026 incluída em 29/10/2026) | Sem lacuna de tarifa de consumo. Fio B e o TUSD da Escassez de SP não têm valor publicado a partir de 23/10/2026. |
 | **Bandeira sem histórico** | Os valores são os atuais, fixos; não há vigência. Também **não existe tabela "qual bandeira em cada mês"** — hoje quem usa informa a bandeira de cada mês (ou os dias que a fatura mostra). |
 | **ICMS e Tarifa B4a sem histórico** | ICMS é a regra vigente (sem vigência); a B4a só tem duas datas. |
 | **CIP de SP** | Não há tabela; é valor informado. |

@@ -67,7 +67,7 @@ Abre em `http://localhost:3020`. Não precisa de banco nem de variável de ambie
 |---|---|
 | `npm run dev` / `npm run build && npm start` | Roda em desenvolvimento / produção local (porta 3020) |
 | `npm run lint` | ESLint |
-| `npm run verificar` | Regressão dos 49 cenários da Conta Teste (centavo a centavo) |
+| `npm run verificar` | Regressão dos 51 cenários da Conta Teste (centavo a centavo) |
 | `npm run verificar-cip` | Regressão da CIP por município (37 casos) |
 | `npm run publicar:teste` | Publica o link de teste na Vercel |
 | `npm run publicar` | Publica a produção (só da `main`, com regressão passando) |

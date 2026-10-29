@@ -241,7 +241,16 @@ export const ENCARGO_ESCASSEZ_HIDRICA = {
     // 23/10/2025 (REH 3.390) - nesses casos o informativo nao aparece.
     SP: [
         { inicio: '2025-10-23', fim: '2025-12-31', tusd: 0.00011506162773328076, te: -0.0020731505487585774 },
-        { inicio: '2026-01-01', fim: '2026-10-22', tusd: 0.00012448550414992767, te: -0.00127319 }
+        { inicio: '2026-01-01', fim: '2026-10-22', tusd: 0.00012448550414992767, te: -0.00127319 },
+        // Despacho ANEEL 3.611/2026 (a partir de 23/10/2026) - VALOR DERIVADO, não
+        // lido de tabela. A fatura SP Baixa Renda Lote 17 (inst. 91649889, 25/09 a
+        // 27/10/2026, 27 dias na tarifa antiga e 5 na nova) traz o informativo com
+        // -0,00115913/kWh ponderado (114 kWh x -0,00115913 = -0,13 impresso). Daí:
+        //   (27 x -0,00127319 + 5 x te_novo) / 32 = -0,00115913  ->  te_novo = -0,00054322.
+        // Só o TE está evidenciado (em tarifa social só ele conta); o TUSD foi
+        // mantido igual ao anterior por falta de dado - confira com a próxima fatura
+        // de SP B1/B3 depois de 23/10 que trouxer o informativo.
+        { inicio: '2026-10-23', fim: '2027-10-22', tusd: 0.00012448550414992767, te: -0.00054322 }
     ]
 };
 

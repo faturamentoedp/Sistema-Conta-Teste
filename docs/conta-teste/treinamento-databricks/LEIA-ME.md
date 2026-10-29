@@ -11,7 +11,7 @@ foi alterado. Pode ser copiada, enviada ou apagada sem efeito no simulador.
 | `regras_de_calculo.md` | **Documento principal.** Todas as regras de cálculo, na ordem em que o motor executa: entradas, tarifa, consumo mínimo, PIS/COFINS, ICMS, imposto por dentro, bandeiras, Baixa Renda, Desconto Social, irrigante, SUDENE, retenções, Geração Distribuída, informativos (Fio B, Escassez, Benefício), totais, CIP por município, arredondamento, exemplos resolvidos, pendências. |
 | `insumos_b1c.md` | Conferência da lista de componentes do B1C (energia, bandeira, CIP, ICMS, PIS/COFINS): o que está certo, o que faltava, lacunas dos dados e perguntas em aberto. |
 | `dados/*.csv` | As tabelas que a regra consome (tarifas ANEEL, PIS/COFINS, ICMS, bandeiras, GD, Fio B, Escassez, CIP, parâmetros). |
-| `dados/exemplos_resolvidos.jsonl` | 49 casos: `entrada` → `saida` do motor (linha a linha), mais `ancoras_reais` (total impresso na fatura real ou no modelo oficial). Serve como conjunto de teste/treino. |
+| `dados/exemplos_resolvidos.jsonl` | 51 casos: `entrada` → `saida` do motor (linha a linha), mais `ancoras_reais` (total impresso na fatura real ou no modelo oficial). Serve como conjunto de teste/treino. |
 | `gerar_dados.mjs` | Regera os arquivos de `dados/` a partir do código do motor. Somente leitura. |
 
 ## Dicionário dos CSVs
@@ -62,9 +62,9 @@ exemplos = spark.read.json(f"{base}/exemplos_resolvidos.jsonl")
 * A **constante do medidor** e a **perda de 1,5 % no ramal** são aplicadas pela
   *tela*, antes do motor — o documento descreve as duas (seção 2.2).
 * A diferença aceita contra a fatura impressa é de **R$ 0,03**.
-* O texto foi escrito em 27/10/2026. **A resolução de SP de 23/10/2026
-  (REH 3.611) ainda não está na base**; os CSVs refletem exatamente o que o
-  sistema tem hoje.
+* O texto foi escrito em 27/10/2026 e atualizado em 29/10/2026, quando entrou
+  a tarifa de SP de 23/10/2026 (Despacho ANEEL 3.611/2026). Os CSVs refletem
+  exatamente o que o sistema tem hoje.
 
 ## Como manter atualizado
 

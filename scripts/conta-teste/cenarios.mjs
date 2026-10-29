@@ -643,5 +643,42 @@ export const CENARIOS = [
             bandeiras_dias: [{ bandeira: 'VERDE', dias: 2 }, { bandeira: 'AMARELA', dias: 28 }],
             valor_cip: 22.26, ajustes: []
         }
+    },
+    {
+        // Inst. 150671277 (SP, B4A, OUT/2026): leitura de 25/09 a 27/10 cruza a
+        // virada de tarifa de SP em 23/10/2026 (Despacho ANEEL 3.611/2026) -
+        // 27 dias na tarifa antiga e 5 na nova. Antes de cadastrar a vigência
+        // nova o simulador dava R$ 285,19 contra 286,04 impresso. A fatura
+        // imprime Verde (27 dias) antes de Amarela (5 dias); o formulário segue
+        // a ordem das datas (Amarela = mês 1). Retenção de IR de 1,2% do B4A em SP.
+        nome: 'FATURA REAL SP B4A 511 kWh, virada da tarifa em 23/10/2026 (Inst. 150671277)',
+        fatura_real: 286.04,
+        params: {
+            distribuidora: 'SP', categoria: 'B4A', fase: 'trifasico',
+            data_leitura_anterior: '2026-09-25', data_leitura_atual: '2026-10-27',
+            consumo_kwh: 511, bandeira_mes1: 'AMARELA', bandeira_mes2: 'VERDE',
+            valor_cip: 0, ajustes: []
+        }
+    },
+    {
+        // Lote 17 (SP, Baixa Renda, inst. 91649889, OUT/2026): mesma virada de
+        // 23/10. 197 kWh medidos viram 194 faturados pela perda de 1,5% no ramal
+        // (80 isentos + 114 cobrados). A Escassez impressa (-0,13) só fecha com a
+        // janela nova de Escassez de SP, derivada desta fatura - ver
+        // ENCARGO_ESCASSEZ_HIDRICA em tarifas-aneel.js.
+        nome: 'FATURA REAL SP Baixa Renda 194 kWh faturados, virada da tarifa em 23/10/2026 (Lote 17)',
+        fatura_real: 91.52,
+        escassez_impressa: -0.13,
+        params: {
+            distribuidora: 'SP', categoria: 'B1BRN/B1BPC/B1BRQ/B1BRI', fase: 'bifasico',
+            data_leitura_anterior: '2026-09-25', data_leitura_atual: '2026-10-27',
+            consumo_kwh: 194, bandeira_mes1: 'AMARELA', bandeira_mes2: 'VERDE',
+            valor_cip: 0,
+            ajustes: [
+                { nome: 'Multa Ref.: Set/26', valor: 1.59 },
+                { nome: 'Juros de Mora Ref.: Jul/26', valor: 0.50 },
+                { nome: 'Juros de Mora Ref.: Ago/26', valor: 0.45 }
+            ]
+        }
     }
 ];

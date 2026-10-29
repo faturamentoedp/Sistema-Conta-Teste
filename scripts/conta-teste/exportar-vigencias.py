@@ -12,6 +12,13 @@ Use "-" no lugar de um dos arquivos para MANTER as vigências desse estado como 
 estão em src/modulos/conta-teste/motor/vigencias.js - o caso de hoje, em que só SP tem tarifa nova:
     python scripts/conta-teste/exportar-vigencias.py - "data (33).xlsx"
 
+Para ACRESCENTAR só a vigência nova (um reajuste que acabou de sair) sem reescrever
+o histórico, passe um arquivo só com as linhas novas e --acrescentar:
+    python scripts/conta-teste/exportar-vigencias.py - novas_sp.xlsx --acrescentar
+(o CSV de dados abertos da ANEEL, tarifas-homologadas-distribuidoras-energia-eletrica.csv,
+tem colunas diferentes do export do portal: filtre a distribuidora e converta para o
+layout das COLUNAS abaixo antes - a unidade "MWh" vira "R$/MWh").
+
 Cada arquivo pode ser o export já filtrado (só a EDP) ou a base nacional da ANEEL
 com todas as distribuidoras (150 mil linhas): o script fica só com as linhas da
 distribuidora de cada estado (EDP ES / EDP SP) e avisa quando a última vigência
@@ -152,6 +159,7 @@ def vigencias_atuais():
 
 
 DESDE = next((a.split('=', 1)[1] for a in sys.argv if a.startswith('--desde=')), '2026-01-01')
+ACRESCENTAR = '--acrescentar' in sys.argv
 
 
 def main():
@@ -167,6 +175,15 @@ def main():
         vigencias = coletar(df, sigla)
         # so interessa a vigencia corrente e as futuras
         vigencias = [v for v in vigencias if v['fim'] >= DESDE]
+        if ACRESCENTAR:
+            # Soma as vigências do arquivo às que já estão em vigencias.js (uma do
+            # arquivo substitui a existente de mesmo início), sem reescrever o
+            # histórico já validado.
+            atuais = atuais or vigencias_atuais()
+            novos_inicios = {v['inicio'] for v in vigencias}
+            vigencias = sorted(
+                [v for v in atuais[sigla] if v['inicio'] not in novos_inicios] + vigencias,
+                key=lambda v: v['inicio'])
         resultado[sigla] = vigencias
         ultimo_fim = max(v['fim'] for v in vigencias)
         if ultimo_fim < str(pd.Timestamp.today().date()):

@@ -15,7 +15,7 @@ O cálculo leva em conta as regras oficiais de "imposto por dentro", detalhando 
 ## ⚡ Geografias, Categorias e GDs
 
 ### 🟢 Geografias
-- **EDP ES (Espírito Santo)** e **EDP SP (São Paulo):** tarifas da ANEEL por vigência (ES: 2 resoluções; SP: 20, de 2010 até 22/10/2026).
+- **EDP ES (Espírito Santo)** e **EDP SP (São Paulo):** tarifas da ANEEL por vigência (ES: 2 resoluções; SP: 21, de 2010 até 22/10/2027).
 
 ### 🟢 Categorias atendidas
 Todas as regras, categoria por categoria, estão em [treinamento-databricks/regras_de_calculo.md](treinamento-databricks/regras_de_calculo.md) (seção 3). Resumo:
@@ -61,7 +61,7 @@ python scripts/conta-teste/exportar-vigencias.py - "data (33).xlsx"
 ```
 O `-` mantém o ES como está (use `"export_ES.xlsx" "export_SP.xlsx"` para os dois). O script só aproveita as linhas da distribuidora de cada estado e **avisa quando a última vigência do arquivo termina antes de hoje** - sinal de que a base da ANEEL ainda não recebeu o reajuste novo. Depois: `npm run verificar`, `npm run publicar:teste`, validação da área e só então a produção.
 
-> Em 23/10/2026 (reajuste de SP, REH 3.611/2026, vigência a partir de 23/10) nem o painel nem o CSV de dados abertos da ANEEL tinham as tarifas novas - os dois terminavam em 22/10/2026. A base costuma atrasar alguns dias após a homologação; enquanto isso as tarifas só estão nos anexos da própria REH em legislacao.aneel.gov.br. O arquivo "data.xlsx" (base nacional, 150 mil linhas) não traz o subgrupo B do ES e não serve como export do ES.
+> O reajuste de SP de 23/10/2026 (Despacho ANEEL 3.611/2026) não estava nem no painel nem no CSV de dados abertos nos primeiros dias; o **CSV de dados abertos** (`tarifas-homologadas-distribuidoras-energia-eletrica.csv`, em dadosabertos.aneel.gov.br) foi atualizado em 29/10/2026 e dele saiu a vigência nova (acrescentada com `--acrescentar`). Ele tem colunas diferentes do export do portal: filtre a EDP e converta para o layout das COLUNAS do script antes. A base atrasa alguns dias após cada homologação. O arquivo "data.xlsx" (base nacional, 150 mil linhas) não traz o subgrupo B do ES e não serve como export do ES.
 
 ### Critério de aceitação
 
@@ -80,7 +80,7 @@ Faturas e modelos conferidos hoje:
 | Modelo oficial MMGD GD2 | R$ 145,81 | R$ 145,83 | 0,02 |
 
 ### Conferindo que o cálculo não mudou
-O motor de cálculo é um só, em `src/modulos/conta-teste/motor/calculo.js`, usado pela API (`/api/conta-teste/calcular`) e pelos scripts de regressão. O comando `npm run verificar` roda 49 cenários (convencional, tarifa branca, baixa renda, rural, irrigante com reservado, ajustes, SP) e compara centavo a centavo com `scripts/conta-teste/referencia.json`, que congelou o comportamento do sistema antes da mudança.
+O motor de cálculo é um só, em `src/modulos/conta-teste/motor/calculo.js`, usado pela API (`/api/conta-teste/calcular`) e pelos scripts de regressão. O comando `npm run verificar` roda 51 cenários (convencional, tarifa branca, baixa renda, rural, irrigante com reservado, ajustes, SP) e compara centavo a centavo com `scripts/conta-teste/referencia.json`, que congelou o comportamento do sistema antes da mudança.
 
 ---
 

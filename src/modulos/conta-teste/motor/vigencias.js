@@ -3487,6 +3487,277 @@ export const VIGENCIAS = {
                     }
                 ]
             }
+        },
+        {
+            "resolucao": "DESPACHO Nº 3.611, DE 16 DE OUTUBRO DE 2026",
+            "inicio": "2026-10-23",
+            "fim": "2027-10-22",
+            "tarifas": {
+                "B1C": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.46944,
+                        "te": 0.33224
+                    }
+                ],
+                "B1C_TB": [
+                    {
+                        "posto": "Fora ponta",
+                        "tusd": 0.34927,
+                        "te": 0.31663
+                    },
+                    {
+                        "posto": "Intermediário",
+                        "tusd": 0.60963,
+                        "te": 0.31663
+                    },
+                    {
+                        "posto": "Ponta",
+                        "tusd": 0.87,
+                        "te": 0.50391
+                    }
+                ],
+                "B1CDE": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.30827,
+                        "te": 0.33184,
+                        "faixa": "ate"
+                    },
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.46944,
+                        "te": 0.33224,
+                        "faixa": "acima"
+                    }
+                ],
+                "B1BRN/B1BPC/B1BRQ/B1BRI": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.30048,
+                        "te": 0.31914
+                    }
+                ],
+                "B2RURAL": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.46944,
+                        "te": 0.33224
+                    }
+                ],
+                "B2RURAL_TB": [
+                    {
+                        "posto": "Fora ponta",
+                        "tusd": 0.3743,
+                        "te": 0.31663
+                    },
+                    {
+                        "posto": "Intermediário",
+                        "tusd": 0.68474,
+                        "te": 0.31663
+                    },
+                    {
+                        "posto": "Ponta",
+                        "tusd": 0.99517,
+                        "te": 0.50391
+                    }
+                ],
+                "B2RUIRRG": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.46944,
+                        "te": 0.33224
+                    }
+                ],
+                "B2RUIRRG_TB": [
+                    {
+                        "posto": "Fora ponta",
+                        "tusd": 0.3743,
+                        "te": 0.31663
+                    },
+                    {
+                        "posto": "Intermediário",
+                        "tusd": 0.68474,
+                        "te": 0.31663
+                    },
+                    {
+                        "posto": "Ponta",
+                        "tusd": 0.99517,
+                        "te": 0.50391
+                    }
+                ],
+                "B3": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.46944,
+                        "te": 0.33224
+                    }
+                ],
+                "B3_TB": [
+                    {
+                        "posto": "Fora ponta",
+                        "tusd": 0.38432,
+                        "te": 0.31663
+                    },
+                    {
+                        "posto": "Intermediário",
+                        "tusd": 0.71478,
+                        "te": 0.31663
+                    },
+                    {
+                        "posto": "Ponta",
+                        "tusd": 1.04524,
+                        "te": 0.50391
+                    }
+                ],
+                "B4A": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.25819,
+                        "te": 0.18273
+                    }
+                ],
+                "B4B": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.28166,
+                        "te": 0.19934
+                    }
+                ]
+            },
+            "tarifas_scee": {
+                "B1C": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.46944,
+                        "te": 0.04132
+                    }
+                ],
+                "B1C_TB": [
+                    {
+                        "posto": "Fora ponta",
+                        "tusd": 0.34927,
+                        "te": 0.04132
+                    },
+                    {
+                        "posto": "Intermediário",
+                        "tusd": 0.60963,
+                        "te": 0.04132
+                    },
+                    {
+                        "posto": "Ponta",
+                        "tusd": 0.87,
+                        "te": 0.04132
+                    }
+                ],
+                "B1CDE": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.30827,
+                        "te": 0.04092,
+                        "faixa": "ate"
+                    },
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.46944,
+                        "te": 0.04132,
+                        "faixa": "acima"
+                    }
+                ],
+                "B1BRN/B1BPC/B1BRQ/B1BRI": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.30048,
+                        "te": 0.04092
+                    }
+                ],
+                "B2RURAL": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.46944,
+                        "te": 0.04132
+                    }
+                ],
+                "B2RURAL_TB": [
+                    {
+                        "posto": "Fora ponta",
+                        "tusd": 0.3743,
+                        "te": 0.04132
+                    },
+                    {
+                        "posto": "Intermediário",
+                        "tusd": 0.68474,
+                        "te": 0.04132
+                    },
+                    {
+                        "posto": "Ponta",
+                        "tusd": 0.99517,
+                        "te": 0.04132
+                    }
+                ],
+                "B2RUIRRG": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.46944,
+                        "te": 0.04132
+                    }
+                ],
+                "B2RUIRRG_TB": [
+                    {
+                        "posto": "Fora ponta",
+                        "tusd": 0.3743,
+                        "te": 0.04132
+                    },
+                    {
+                        "posto": "Intermediário",
+                        "tusd": 0.68474,
+                        "te": 0.04132
+                    },
+                    {
+                        "posto": "Ponta",
+                        "tusd": 0.99517,
+                        "te": 0.04132
+                    }
+                ],
+                "B3": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.46944,
+                        "te": 0.04132
+                    }
+                ],
+                "B3_TB": [
+                    {
+                        "posto": "Fora ponta",
+                        "tusd": 0.38432,
+                        "te": 0.04132
+                    },
+                    {
+                        "posto": "Intermediário",
+                        "tusd": 0.71478,
+                        "te": 0.04132
+                    },
+                    {
+                        "posto": "Ponta",
+                        "tusd": 1.04524,
+                        "te": 0.04132
+                    }
+                ],
+                "B4A": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.25819,
+                        "te": 0.04132
+                    }
+                ],
+                "B4B": [
+                    {
+                        "posto": "Nao aplica",
+                        "tusd": 0.28166,
+                        "te": 0.04132
+                    }
+                ]
+            }
         }
     ]
 };
