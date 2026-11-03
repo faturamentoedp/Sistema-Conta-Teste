@@ -22,7 +22,7 @@ Separador `;`, UTF-8, ponto como decimal, cabeçalho na primeira linha.
 |---|---|---|---|
 | `tarifas_aneel_vigencias.csv` | 536 | distribuidora + vigência + bloco + categoria + posto + faixa | `tusd_rs_kwh`, `te_rs_kwh` (R$/kWh **sem tributos**), `vigencia_inicio/fim`, `resolucao`. `bloco`: `tarifas` (consumo, o único usado pelo motor) ou `tarifas_scee`. |
 | `pis_cofins_mensal.csv` | 191 | distribuidora + `mes_leitura_atual` | `pis`, `cofins`, `soma`. A linha `*`/`PADRAO` é a alíquota usada quando o mês não existe. |
-| `icms_regras.csv` | 11 | distribuidora + regra | Faixas do residencial (`consumo_faturado_ate_kwh_inclusivo`), padrão por estado, rural/irrigante, isenções. |
+| `icms_regras.csv` | 45 | distribuidora + categoria (+ faixa) | **Uma linha por tarifa** (18 tarifas x ES/SP): `categoria`, `nome_da_tarifa`, `tipo_regra` (`por_faixa_de_consumo`, `aliquota_fixa` ou `isento`), faixa (`consumo_faturado_ate_kwh_inclusivo`, vazio = sem limite), `aliquota_icms` e `observacao`. Conferido contra o motor a cada geração. |
 | `bandeiras_tarifarias.csv` | 5 | bandeira | `adicional_rs_kwh`. |
 | `gd_percentual_compensacao.csv` | 4 | modalidade + vigência | `perc_compensacao_tusd/te` (GD1, GD2; GD3 sem valor). |
 | `escassez_hidrica_encargo.csv` | 4 | distribuidora + vigência | `tusd_rs_kwh`, `te_rs_kwh`, `soma_rs_kwh` (já líquido de tributos). |
@@ -30,6 +30,7 @@ Separador `;`, UTF-8, ponto como decimal, cabeçalho na primeira linha.
 | `parametros_regras.csv` | 25 | parâmetro + distribuidora | Constantes: 80 kWh isentos, 120 kWh do Desconto Social, SUDENE, retenções, consumo mínimo, chaves de comportamento por estado. |
 | `cip_es_municipios.csv` | 70 | `municipio_chave` | `metodo` (`percentual`/`fixo`/`incompativel`), lei, isenções (`isenta_rural`, `isenta_irrigante`, `isenta_ppf`, `isenta_ppe`). |
 | `cip_es_faixas.csv` | 1.772 | município + classe + faixa | `consumo_de_kwh_exclusivo`, `consumo_ate_kwh_inclusivo` (vazio = faixa aberta), `aliquota_sobre_tarifa_b4a` **ou** `valor_fixo_rs`, `isento`. |
+| `cip_es_completo.csv` | 1.773 | município + classe + faixa | **Os dois arquivos acima juntos**: uma linha por faixa, com os dados do município (método, lei, vigência, isenções, observação) repetidos na linha. Extras: `valor_rs_tarifa_b4a_atual` (valor da faixa em R$ com a Tarifa B4a vigente), `usada_pelo_sistema` (`false` nas 21 linhas que o motor nunca usa) e `observacao_linha` (o motivo). São José do Calçado entra com uma linha sem faixa (CIP manual). |
 
 Todas as faixas de consumo usam **limite superior inclusivo** (`consumo ≤ ate`).
 

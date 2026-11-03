@@ -1,12 +1,46 @@
-distribuidora;regra;consumo_faturado_de_kwh_exclusivo;consumo_faturado_ate_kwh_inclusivo;aliquota_icms
-ES;residencial_convencional_por_faixa;0;50;0
-ES;residencial_convencional_por_faixa;50;;0.17
-SP;residencial_convencional_por_faixa;0;90;0
-SP;residencial_convencional_por_faixa;90;200;0.12
-SP;residencial_convencional_por_faixa;200;;0.18
-ES;padrao_demais_categorias;;;0.17
-SP;padrao_demais_categorias;;;0.18
-ES;rural_e_irrigante;;;0.04
-SP;rural_e_irrigante;;;0.12
-ES;b3_cp_isento;;;0
-*;b3_ppe_isento;;;0
+distribuidora;categoria;nome_da_tarifa;tipo_regra;consumo_faturado_de_kwh_exclusivo;consumo_faturado_ate_kwh_inclusivo;aliquota_icms;observacao
+ES;B1C;B1 Residencial;por_faixa_de_consumo;0;50;0;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+ES;B1C;B1 Residencial;por_faixa_de_consumo;50;;0.17;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+ES;B1C_TB;B1 Residencial Tarifa Branca;aliquota_fixa;;;0.17;Tarifa Branca não tem isenção por faixa de consumo: paga a alíquota cheia do estado.
+ES;B1CDE;B1 Desconto Social;por_faixa_de_consumo;0;50;0;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+ES;B1CDE;B1 Desconto Social;por_faixa_de_consumo;50;;0.17;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+ES;B1BRN/B1BPC/B1BRQ/B1BRI;B1 Baixa Renda;por_faixa_de_consumo;0;50;0;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+ES;B1BRN/B1BPC/B1BRQ/B1BRI;B1 Baixa Renda;por_faixa_de_consumo;50;;0.17;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+ES;B2RURAL;B2 Rural;aliquota_fixa;;;0.04;Carga efetiva de 4% (a fatura imprime 12% sobre 1/3 do valor).
+ES;B2RURAL_TB;B2 Rural Tarifa Branca;aliquota_fixa;;;0.04;Carga efetiva de 4% (a fatura imprime 12% sobre 1/3 do valor).
+ES;B2RUIRRG;B2 Rural Irrigante;aliquota_fixa;;;0.04;Carga efetiva de 4% (a fatura imprime 12% sobre 1/3 do valor).
+ES;B2RUIRRG_TB;B2 Irrigante Tarifa Branca;aliquota_fixa;;;0.04;Carga efetiva de 4% (a fatura imprime 12% sobre 1/3 do valor).
+ES;B3;B3 Comercial / Demais classes;aliquota_fixa;;;0.17;Alíquota cheia do estado.
+ES;B3_TB;B3 Tarifa Branca;aliquota_fixa;;;0.17;Tarifa Branca não tem isenção por faixa de consumo: paga a alíquota cheia do estado.
+ES;B3_CP;B3 Consumo Próprio;isento;;;0;"Consumo Próprio é isento só no ES; em SP paga o ICMS normal."
+ES;B3_CP_TB;B3 Consumo Próprio Tarifa Branca;isento;;;0;"Consumo Próprio é isento só no ES; em SP paga o ICMS normal."
+ES;B3_PPF;B3 Poder Público Federal;aliquota_fixa;;;0.17;Alíquota cheia do estado.
+ES;B3_PPF_TB;B3 Poder Público Federal Tarifa Branca;aliquota_fixa;;;0.17;Tarifa Branca não tem isenção por faixa de consumo: paga a alíquota cheia do estado.
+ES;B3_PPE;B3 Poder Público Estadual;isento;;;0;Poder Público Estadual é isento de ICMS em ES e SP.
+ES;B3_PPE_TB;B3 Poder Público Estadual Tarifa Branca;isento;;;0;Poder Público Estadual é isento de ICMS em ES e SP.
+ES;B4A;B4A Iluminação Pública (rede);aliquota_fixa;;;0.17;Alíquota cheia do estado.
+ES;B4B;B4B Iluminação Pública (bulbo);aliquota_fixa;;;0.17;Alíquota cheia do estado.
+SP;B1C;B1 Residencial;por_faixa_de_consumo;0;90;0;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+SP;B1C;B1 Residencial;por_faixa_de_consumo;90;200;0.12;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+SP;B1C;B1 Residencial;por_faixa_de_consumo;200;;0.18;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+SP;B1C_TB;B1 Residencial Tarifa Branca;aliquota_fixa;;;0.18;Tarifa Branca não tem isenção por faixa de consumo: paga a alíquota cheia do estado.
+SP;B1CDE;B1 Desconto Social;por_faixa_de_consumo;0;90;0;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+SP;B1CDE;B1 Desconto Social;por_faixa_de_consumo;90;200;0.12;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+SP;B1CDE;B1 Desconto Social;por_faixa_de_consumo;200;;0.18;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+SP;B1BRN/B1BPC/B1BRQ/B1BRI;B1 Baixa Renda;por_faixa_de_consumo;0;90;0;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+SP;B1BRN/B1BPC/B1BRQ/B1BRI;B1 Baixa Renda;por_faixa_de_consumo;90;200;0.12;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+SP;B1BRN/B1BPC/B1BRQ/B1BRI;B1 Baixa Renda;por_faixa_de_consumo;200;;0.18;Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.
+SP;B2RURAL;B2 Rural;aliquota_fixa;;;0.12;Rural e irrigante pagam 12% em SP.
+SP;B2RURAL_TB;B2 Rural Tarifa Branca;aliquota_fixa;;;0.12;Rural e irrigante pagam 12% em SP.
+SP;B2RUIRRG;B2 Rural Irrigante;aliquota_fixa;;;0.12;Rural e irrigante pagam 12% em SP.
+SP;B2RUIRRG_TB;B2 Irrigante Tarifa Branca;aliquota_fixa;;;0.12;Rural e irrigante pagam 12% em SP.
+SP;B3;B3 Comercial / Demais classes;aliquota_fixa;;;0.18;Alíquota cheia do estado.
+SP;B3_TB;B3 Tarifa Branca;aliquota_fixa;;;0.18;Tarifa Branca não tem isenção por faixa de consumo: paga a alíquota cheia do estado.
+SP;B3_CP;B3 Consumo Próprio;aliquota_fixa;;;0.18;Alíquota cheia do estado.
+SP;B3_CP_TB;B3 Consumo Próprio Tarifa Branca;aliquota_fixa;;;0.18;Tarifa Branca não tem isenção por faixa de consumo: paga a alíquota cheia do estado.
+SP;B3_PPF;B3 Poder Público Federal;aliquota_fixa;;;0.18;Alíquota cheia do estado.
+SP;B3_PPF_TB;B3 Poder Público Federal Tarifa Branca;aliquota_fixa;;;0.18;Tarifa Branca não tem isenção por faixa de consumo: paga a alíquota cheia do estado.
+SP;B3_PPE;B3 Poder Público Estadual;isento;;;0;Poder Público Estadual é isento de ICMS em ES e SP.
+SP;B3_PPE_TB;B3 Poder Público Estadual Tarifa Branca;isento;;;0;Poder Público Estadual é isento de ICMS em ES e SP.
+SP;B4A;B4A Iluminação Pública (rede);aliquota_fixa;;;0.18;Alíquota cheia do estado.
+SP;B4B;B4B Iluminação Pública (bulbo);aliquota_fixa;;;0.18;Alíquota cheia do estado.

@@ -74,27 +74,118 @@ function grava_csv(nome, colunas, linhas) {
     grava_csv('pis_cofins_mensal.csv', ['distribuidora', 'mes_leitura_atual', 'pis', 'cofins', 'soma'], linhas);
 }
 
-// 3. ICMS: faixas do residencial e padrão por estado -----------------------------
+// 3. ICMS por tarifa --------------------------------------------------------------
+// Uma linha por distribuidora x tarifa (x faixa de consumo, no residencial). As
+// regras abaixo repetem as do motor (ver "ICMS" em calculo.js) e, antes de gravar,
+// CADA tarifa é conferida chamando o próprio motor em vários consumos: se uma
+// regra mudar no motor e esta tabela não, o gerador para com erro.
 {
+    const NOME = {
+        'B1C': 'B1 Residencial',
+        'B1C_TB': 'B1 Residencial Tarifa Branca',
+        'B1CDE': 'B1 Desconto Social',
+        'B1BRN/B1BPC/B1BRQ/B1BRI': 'B1 Baixa Renda',
+        'B2RURAL': 'B2 Rural',
+        'B2RURAL_TB': 'B2 Rural Tarifa Branca',
+        'B2RUIRRG': 'B2 Rural Irrigante',
+        'B2RUIRRG_TB': 'B2 Irrigante Tarifa Branca',
+        'B3': 'B3 Comercial / Demais classes',
+        'B3_TB': 'B3 Tarifa Branca',
+        'B3_CP': 'B3 Consumo Próprio',
+        'B3_CP_TB': 'B3 Consumo Próprio Tarifa Branca',
+        'B3_PPF': 'B3 Poder Público Federal',
+        'B3_PPF_TB': 'B3 Poder Público Federal Tarifa Branca',
+        'B3_PPE': 'B3 Poder Público Estadual',
+        'B3_PPE_TB': 'B3 Poder Público Estadual Tarifa Branca',
+        'B4A': 'B4A Iluminação Pública (rede)',
+        'B4B': 'B4B Iluminação Pública (bulbo)'
+    };
+
+    /** Regra de ICMS da tarifa, na ordem de decisão do motor (sem a opção manual de ICMS). */
+    function regra_icms(dist, cat) {
+        const tb = cat.endsWith('_TB');
+        const base = cat.replace(/_TB$/, '');
+        if (base === 'B3_PPE') {
+            return { tipo: 'isento', obs: 'Poder Público Estadual é isento de ICMS em ES e SP.' };
+        }
+        if (base === 'B3_CP' && dist === 'ES') {
+            return { tipo: 'isento', obs: 'Consumo Próprio é isento só no ES; em SP paga o ICMS normal.' };
+        }
+        if (!tb && (cat.startsWith('B1C') || cat.startsWith('B1BR'))) {
+            return {
+                tipo: 'por_faixa_de_consumo', faixas: ICMS_FAIXAS_RESIDENCIAL[dist],
+                obs: 'Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.'
+            };
+        }
+        if (cat.startsWith('B2RU')) {
+            return {
+                tipo: 'aliquota_fixa', aliquota: dist === 'ES' ? 0.04 : 0.12,
+                obs: dist === 'ES' ? 'Carga efetiva de 4% (a fatura imprime 12% sobre 1/3 do valor).' : 'Rural e irrigante pagam 12% em SP.'
+            };
+        }
+        return {
+            tipo: 'aliquota_fixa', aliquota: ICMS_PADRAO[dist],
+            obs: tb ? 'Tarifa Branca não tem isenção por faixa de consumo: paga a alíquota cheia do estado.' : 'Alíquota cheia do estado.'
+        };
+    }
+
     const linhas = [];
-    for (const [distribuidora, faixas] of Object.entries(ICMS_FAIXAS_RESIDENCIAL)) {
-        let anterior = 0;
-        for (const f of faixas) {
-            linhas.push({
-                distribuidora, regra: 'residencial_convencional_por_faixa',
-                consumo_faturado_de_kwh_exclusivo: anterior, consumo_faturado_ate_kwh_inclusivo: Number.isFinite(f.ate) ? f.ate : '', aliquota_icms: f.aliquota
-            });
-            anterior = f.ate;
+    const regras = [];
+    for (const dist of ['ES', 'SP']) {
+        for (const cat of Object.keys(NOME)) {
+            const r = regra_icms(dist, cat);
+            regras.push({ dist, cat, r });
+            if (r.tipo === 'por_faixa_de_consumo') {
+                let anterior = 0;
+                for (const f of r.faixas) {
+                    linhas.push({
+                        distribuidora: dist, categoria: cat, nome_da_tarifa: NOME[cat], tipo_regra: r.tipo,
+                        consumo_faturado_de_kwh_exclusivo: anterior,
+                        consumo_faturado_ate_kwh_inclusivo: Number.isFinite(f.ate) ? f.ate : '',
+                        aliquota_icms: f.aliquota, observacao: r.obs
+                    });
+                    anterior = f.ate;
+                }
+            } else {
+                linhas.push({
+                    distribuidora: dist, categoria: cat, nome_da_tarifa: NOME[cat], tipo_regra: r.tipo,
+                    consumo_faturado_de_kwh_exclusivo: '', consumo_faturado_ate_kwh_inclusivo: '',
+                    aliquota_icms: r.tipo === 'isento' ? 0 : r.aliquota, observacao: r.obs
+                });
+            }
         }
     }
-    for (const [distribuidora, aliquota] of Object.entries(ICMS_PADRAO)) {
-        linhas.push({ distribuidora, regra: 'padrao_demais_categorias', consumo_faturado_de_kwh_exclusivo: '', consumo_faturado_ate_kwh_inclusivo: '', aliquota_icms: aliquota });
+
+    // Conferência contra o motor: mesma tarifa, vários consumos, mesma alíquota.
+    const aliquota_esperada = (r, consumo) => {
+        if (r.tipo === 'isento') return 0;
+        if (r.tipo === 'aliquota_fixa') return r.aliquota;
+        return r.faixas.find((f) => consumo <= f.ate).aliquota;
+    };
+    const divergencias = [];
+    for (const { dist, cat, r } of regras) {
+        for (const consumo of [30, 50, 51, 90, 91, 200, 201, 800]) {
+            const eh_tb = cat.endsWith('_TB');
+            const params = {
+                distribuidora: dist, categoria: cat, fase: 'monofasico',
+                data_leitura_anterior: '2026-09-10', data_leitura_atual: '2026-10-10',
+                bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE', valor_cip: 0, ajustes: [],
+                ...(eh_tb ? { consumo_fora_ponta: consumo, consumo_ponta: 0, consumo_intermediario: 0 } : { consumo_kwh: consumo })
+            };
+            const tarifas = resolver_tarifas(dist, cat, new Date(params.data_leitura_anterior), new Date(params.data_leitura_atual));
+            const doMotor = calcular_fatura(params, normalizar_tarifas(tarifas, cat)).parametros_usados.aliquota_icms_aplicada;
+            const nossa = aliquota_esperada(r, consumo);
+            if (Math.abs(doMotor - nossa) > 1e-9) divergencias.push(`${dist} ${cat} ${consumo} kWh: motor ${doMotor} x tabela ${nossa}`);
+        }
     }
-    linhas.push({ distribuidora: 'ES', regra: 'rural_e_irrigante', consumo_faturado_de_kwh_exclusivo: '', consumo_faturado_ate_kwh_inclusivo: '', aliquota_icms: 0.04 });
-    linhas.push({ distribuidora: 'SP', regra: 'rural_e_irrigante', consumo_faturado_de_kwh_exclusivo: '', consumo_faturado_ate_kwh_inclusivo: '', aliquota_icms: 0.12 });
-    linhas.push({ distribuidora: 'ES', regra: 'b3_cp_isento', consumo_faturado_de_kwh_exclusivo: '', consumo_faturado_ate_kwh_inclusivo: '', aliquota_icms: 0 });
-    linhas.push({ distribuidora: '*', regra: 'b3_ppe_isento', consumo_faturado_de_kwh_exclusivo: '', consumo_faturado_ate_kwh_inclusivo: '', aliquota_icms: 0 });
-    grava_csv('icms_regras.csv', ['distribuidora', 'regra', 'consumo_faturado_de_kwh_exclusivo', 'consumo_faturado_ate_kwh_inclusivo', 'aliquota_icms'], linhas);
+    if (divergencias.length > 0) {
+        console.error('A tabela de ICMS divergiu do motor:\n - ' + divergencias.join('\n - '));
+        process.exit(1);
+    }
+    console.log(`ICMS conferido contra o motor: ${regras.length} tarifas x 8 consumos`);
+
+    grava_csv('icms_regras.csv', ['distribuidora', 'categoria', 'nome_da_tarifa', 'tipo_regra',
+        'consumo_faturado_de_kwh_exclusivo', 'consumo_faturado_ate_kwh_inclusivo', 'aliquota_icms', 'observacao'], linhas);
 }
 
 // 4. Bandeiras tarifárias ----------------------------------------------------------
@@ -192,6 +283,55 @@ grava_csv('bandeiras_tarifarias.csv', ['bandeira', 'adicional_rs_kwh'],
     }
     grava_csv('cip_es_municipios.csv', ['municipio_chave', 'municipio', 'metodo', 'lei', 'vigencia_lei', 'nota', 'isenta_rural', 'isenta_irrigante', 'isenta_ppf', 'isenta_ppe'], mun);
     grava_csv('cip_es_faixas.csv', ['municipio_chave', 'classe', 'consumo_de_kwh_exclusivo', 'consumo_ate_kwh_inclusivo', 'aliquota_sobre_tarifa_b4a', 'valor_fixo_rs', 'isento'], faixas);
+
+    // Arquivo único: uma linha por faixa, com os dados do município repetidos na
+    // própria linha (é a junção de cip_es_municipios.csv e cip_es_faixas.csv).
+    // Duas colunas extras ajudam a ler a tabela sem cair em pegadinhas:
+    //   valor_rs_tarifa_b4a_atual - o valor da faixa em R$ com a Tarifa B4a vigente;
+    //   usada_pelo_sistema        - 'false' nas linhas que o motor nunca usa (faixa
+    //     repetida na tabela da prefeitura, classe sem categoria no formulário e
+    //     classe Rural em município que isenta Rural), com o motivo em observacao_linha.
+    {
+        const campos_municipio = ['municipio_chave', 'municipio', 'metodo', 'lei', 'vigencia_lei', 'nota',
+            'isenta_rural', 'isenta_irrigante', 'isenta_ppf', 'isenta_ppe'];
+        const completo = [];
+        const ordenados = [...mun].sort((a, b) => a.municipio.localeCompare(b.municipio, 'pt-BR'));
+        for (const m of ordenados) {
+            const dele = faixas.filter((x) => x.municipio_chave === m.municipio_chave);
+            if (dele.length === 0) {
+                completo.push({
+                    ...m, classe: '', consumo_de_kwh_exclusivo: '', consumo_ate_kwh_inclusivo: '',
+                    aliquota_sobre_tarifa_b4a: '', valor_fixo_rs: '', isento: '', valor_rs_tarifa_b4a_atual: '',
+                    usada_pelo_sistema: false,
+                    observacao_linha: 'Sem tabela por faixa de kWh: a CIP é percentual do valor da fatura e fica manual no sistema'
+                });
+                continue;
+            }
+            const vistos = new Set();
+            for (const x of dele) {
+                const motivos = [];
+                const limite = `${x.classe}|${x.consumo_ate_kwh_inclusivo}`;
+                if (vistos.has(limite)) motivos.push('faixa repetida na tabela da prefeitura (o sistema usa a primeira com o mesmo limite)');
+                vistos.add(limite);
+                if (x.classe === 'INDUSTRIAL') motivos.push('classe Industrial não existe no formulário do Grupo B');
+                if (x.classe === 'RURAL' && m.isenta_rural) motivos.push('o município isenta a classe Rural (CIP = R$ 0,00)');
+                const nota = [];
+                if (x.classe === 'RURAL' && m.isenta_irrigante && !m.isenta_rural) nota.push('Rural Irrigante é isento neste município');
+                const valor = x.isento ? 0
+                    : (x.valor_fixo_rs !== '' ? x.valor_fixo_rs : Math.round(x.aliquota_sobre_tarifa_b4a * TARIFA_B4A.atual * 100) / 100);
+                completo.push({
+                    ...m, classe: x.classe,
+                    consumo_de_kwh_exclusivo: x.consumo_de_kwh_exclusivo, consumo_ate_kwh_inclusivo: x.consumo_ate_kwh_inclusivo,
+                    aliquota_sobre_tarifa_b4a: x.aliquota_sobre_tarifa_b4a, valor_fixo_rs: x.valor_fixo_rs, isento: x.isento,
+                    valor_rs_tarifa_b4a_atual: valor,
+                    usada_pelo_sistema: motivos.length === 0,
+                    observacao_linha: [...motivos, ...nota].join('; ')
+                });
+            }
+        }
+        grava_csv('cip_es_completo.csv', [...campos_municipio, 'classe', 'consumo_de_kwh_exclusivo', 'consumo_ate_kwh_inclusivo',
+            'aliquota_sobre_tarifa_b4a', 'valor_fixo_rs', 'isento', 'valor_rs_tarifa_b4a_atual', 'usada_pelo_sistema', 'observacao_linha'], completo);
+    }
 }
 
 // 9. Exemplos resolvidos (entrada -> saída do motor) --------------------------------
