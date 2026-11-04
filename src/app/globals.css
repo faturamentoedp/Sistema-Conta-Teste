@@ -159,3 +159,25 @@ select:focus {
 .dark .text-cyan-900 { color: #b0ebf6; }
 .dark .text-red-500 { color: #ff8080; }
 .dark .text-red-600 { color: #ff8f8f; }
+
+/* ==========================================================================
+   ANIMAÇÕES DOS PAINÉIS - os dados "surgem": cartões aparecem em sequência,
+   colunas sobem da base, barras crescem da esquerda. Só para quem não pediu
+   menos movimento ao sistema (prefers-reduced-motion).
+   ========================================================================== */
+@keyframes viz-surgir { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes viz-crescer-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes viz-crescer-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+
+@media (prefers-reduced-motion: no-preference) {
+  .viz-surgir { animation: viz-surgir 450ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .viz-sequencia > * { animation: viz-surgir 450ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .viz-sequencia > *:nth-child(2) { animation-delay: 60ms; }
+  .viz-sequencia > *:nth-child(3) { animation-delay: 120ms; }
+  .viz-sequencia > *:nth-child(4) { animation-delay: 180ms; }
+  .viz-sequencia > *:nth-child(5) { animation-delay: 240ms; }
+  .viz-sequencia > *:nth-child(6) { animation-delay: 300ms; }
+  .viz-sequencia > *:nth-child(n+7) { animation-delay: 360ms; }
+  .viz-crescer-x { transform-origin: left center; animation: viz-crescer-x 700ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .viz-crescer-y { transform-box: fill-box; transform-origin: center bottom; animation: viz-crescer-y 650ms cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+}

@@ -9,7 +9,43 @@
  * discreta; tooltip em toda marca; clicar numa barra ou coluna FILTRA o painel
  * inteiro (filtro cruzado) - clicar de novo desfaz.
  */
-import { useCallback, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+
+/**
+ * Assinatura dos filtros atuais. Quando muda, as barras e colunas são
+ * remontadas e a animação de "surgir" toca de novo (o painel se remodela).
+ */
+export const ChaveAnimacao = createContext('');
+
+/** Número que conta do valor anterior até o novo (~0,7 s). Sem animação para quem pediu menos movimento. */
+export function NumeroAnimado({ valor, formatar }: { valor: number; formatar: (n: number) => string }) {
+  const [mostrado, setMostrado] = useState(0);
+  // O que está na tela agora: uma contagem nova parte daqui, mesmo que a anterior não tenha terminado.
+  const naTela = useRef(0);
+  useEffect(() => {
+    const de = naTela.current;
+    const semMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let id = 0;
+    if (semMovimento || de === valor) {
+      naTela.current = valor;
+      id = requestAnimationFrame(() => setMostrado(valor));
+      return () => cancelAnimationFrame(id);
+    }
+    let inicio = -1;
+    const passo = (t: number) => {
+      // O horário do quadro pode vir antes do performance.now() de quem agendou: começa a contar no 1º quadro.
+      if (inicio < 0) inicio = t;
+      const p = Math.min(1, Math.max(0, (t - inicio) / 700));
+      const atual = p >= 1 ? valor : de + (valor - de) * (1 - Math.pow(1 - p, 3));
+      naTela.current = atual;
+      setMostrado(atual);
+      if (p < 1) id = requestAnimationFrame(passo);
+    };
+    id = requestAnimationFrame(passo);
+    return () => cancelAnimationFrame(id);
+  }, [valor]);
+  return <>{formatar(mostrado)}</>;
+}
 
 /** Largura real do elemento, para o SVG desenhar em pixels de verdade (texto não estica). */
 function useLargura(padrao: number): [(el: HTMLDivElement | null) => void, number] {
@@ -27,7 +63,7 @@ export function CartaoVisual({ titulo, subtitulo, acoes, children, className = '
   titulo: string; subtitulo?: string; acoes?: React.ReactNode; children: React.ReactNode; className?: string;
 }) {
   return (
-    <section className={`bg-white border border-slate-200 rounded-md shadow-sm p-4 min-w-0 ${className}`}>
+    <section className={`viz-surgir bg-white border border-slate-200 rounded-md shadow-sm p-4 min-w-0 ${className}`}>
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="min-w-0">
           <h3 className="text-sm font-bold text-black">{titulo}</h3>
@@ -40,11 +76,15 @@ export function CartaoVisual({ titulo, subtitulo, acoes, children, className = '
   );
 }
 
-export function Kpi({ rotulo, valor, detalhe, cor }: { rotulo: string; valor: string; detalhe?: string; cor?: string }) {
+export function Kpi({ rotulo, valor, formatar, detalhe, cor }: {
+  rotulo: string; valor: number | string; formatar?: (n: number) => string; detalhe?: string; cor?: string;
+}) {
   return (
     <div className="bg-white border border-slate-200 rounded-md shadow-sm px-4 py-3 min-w-0" style={cor ? { borderLeft: `4px solid ${cor}` } : undefined}>
       <span className="block text-[10px] font-bold uppercase tracking-wider text-slate-500">{rotulo}</span>
-      <span className="block text-2xl font-bold text-black mt-1">{valor}</span>
+      <span className="block text-2xl font-bold text-black mt-1">
+        {typeof valor === 'number' ? <NumeroAnimado valor={valor} formatar={formatar ?? ((n) => Math.round(n).toLocaleString('pt-BR'))} /> : valor}
+      </span>
       {detalhe && <span className="block text-[11px] text-slate-600 mt-0.5">{detalhe}</span>}
     </div>
   );
@@ -63,12 +103,13 @@ export interface ItemBarra {
 export function BarrasHorizontais({ itens, cor, selecionados, aoClicar, total, vazio = 'Nada para mostrar com os filtros atuais.' }: {
   itens: ItemBarra[]; cor: string; selecionados: string[]; aoClicar?: (chave: string) => void; total: number; vazio?: string;
 }) {
+  const chave = useContext(ChaveAnimacao);
   if (itens.length === 0) return <p className="text-xs text-slate-500 py-6 text-center">{vazio}</p>;
   const max = Math.max(...itens.map((i) => i.valor), 1);
   const algumSelecionado = selecionados.length > 0;
   return (
     <ul className="space-y-1">
-      {itens.map((i) => {
+      {itens.map((i, posicao) => {
         const clicavel = !!aoClicar && i.chave !== '__outros__';
         const ativo = selecionados.includes(i.chave);
         const pct = total ? (100 * i.valor / total) : 0;
@@ -78,8 +119,12 @@ export function BarrasHorizontais({ itens, cor, selecionados, aoClicar, total, v
             <span className="flex items-center gap-2 mt-0.5">
               <span className="flex-1 h-3 rounded-sm" style={{ background: 'var(--viz-trilho)' }}>
                 <span
-                  className="block h-3 rounded-r-[4px] transition-[width] duration-300"
-                  style={{ width: `${Math.max(2, 100 * i.valor / max)}%`, background: cor, opacity: algumSelecionado && !ativo ? 0.35 : 1 }}
+                  key={chave}
+                  className="viz-crescer-x block h-3 rounded-r-[4px] transition-[width] duration-300"
+                  style={{
+                    width: `${Math.max(2, 100 * i.valor / max)}%`, background: cor, opacity: algumSelecionado && !ativo ? 0.35 : 1,
+                    animationDelay: `${Math.min(posicao * 45, 450)}ms`,
+                  }}
                 />
               </span>
               <span className="w-24 shrink-0 text-right text-xs font-semibold text-black tabular-nums">
@@ -143,6 +188,7 @@ export function ColunasNoTempo({ pontos, series, selecionado, aoClicar, descrica
 }) {
   const [foco, setFoco] = useState<{ i: number; x: number; y: number } | null>(null);
   const [refLargura, W] = useLargura(860);
+  const chave = useContext(ChaveAnimacao);
   if (pontos.length === 0) return <p className="text-xs text-slate-500 py-10 text-center">Sem datas para mostrar.</p>;
 
   const totais = pontos.map((p) => series.reduce((a, s) => a + (p.valores[s.id] ?? 0), 0));
@@ -201,6 +247,7 @@ export function ColunasNoTempo({ pontos, series, selecionado, aoClicar, descrica
           return (
             <g key={p.chave} opacity={esmaecer ? 0.35 : 1}>
               {foco?.i === i && <rect x={M.esq + passo * i} y={M.topo} width={passo} height={alturaUtil} className="fill-slate-100" />}
+              <g key={chave} className="viz-crescer-y" style={{ animationDelay: `${Math.min(i * (500 / pontos.length), 500)}ms` }}>
               {series.map((s) => {
                 const v = p.valores[s.id] ?? 0;
                 if (v <= 0) return null;
@@ -218,6 +265,7 @@ export function ColunasNoTempo({ pontos, series, selecionado, aoClicar, descrica
                     d={`M${x},${y1 + h} V${y1 + r} Q${x},${y1} ${x + r},${y1} H${x + largura - r} Q${x + largura},${y1} ${x + largura},${y1 + r} V${y1 + h} Z`} />
                 );
               })}
+              </g>
               {i % cadaX === 0 && (
                 <text x={cx} y={H - 8} textAnchor="middle" className="fill-slate-500" fontSize={11}>{p.rotulo}</text>
               )}

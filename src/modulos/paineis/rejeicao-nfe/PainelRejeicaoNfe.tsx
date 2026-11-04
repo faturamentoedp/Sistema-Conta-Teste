@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Importador, MapeadorColunas } from '../comum/Importador';
 import type { Tabela } from '../comum/importar';
-import { Alternador, BarrasHorizontais, CartaoVisual, ColunasNoTempo, Kpi } from '../comum/graficos';
+import { Alternador, BarrasHorizontais, CartaoVisual, ChaveAnimacao, ColunasNoTempo, Kpi } from '../comum/graficos';
 import {
   CAMPOS, CODIGO_ERRO_NAO_CATALOGADO, faltandoNoMapeamento, mapearAutomatico, montarNotas,
   type Mapeamento, type Nota, type SituacaoNota,
@@ -172,6 +172,9 @@ function Painel({ notas, mapa, tabela, exemplo, filtros, setFiltros, aba, setAba
   filtros.distribuidoras.forEach((d) => chips.push({ rotulo: d, limpar: () => setFiltros((f) => ({ ...f, distribuidoras: f.distribuidoras.filter((x) => x !== d) })) }));
   filtros.categorias.forEach((c) => chips.push({ rotulo: `Categoria ${c}`, limpar: () => setFiltros((f) => ({ ...f, categorias: f.categorias.filter((x) => x !== c) })) }));
 
+  // Assinatura do que está na tela (sem a busca, que muda a cada tecla): mudou, os gráficos se remontam animando.
+  const chaveAnimacao = JSON.stringify({ ...filtros, busca: '' }) + gran + aba;
+
   const abas: { id: Aba; rotulo: string }[] = [
     { id: 'geral', rotulo: 'Visão geral' },
     { id: 'erro999', rotulo: 'Erro 999' },
@@ -267,13 +270,14 @@ function Painel({ notas, mapa, tabela, exemplo, filtros, setFiltros, aba, setAba
       )}
 
       {/* KPIs */}
-      <div className="grid gap-3 grid-cols-2 lg:grid-cols-5">
-        <Kpi rotulo="Notas" valor={numero(kpi.total)} detalhe={kpi.outras ? `${numero(kpi.outras)} com outra situação` : 'no filtro atual'} />
-        <Kpi rotulo="Autorizadas" valor={numero(kpi.autorizadas)} detalhe={percentual(kpi.autorizadas, kpi.total)} cor={COR_AUTORIZADA} />
-        <Kpi rotulo="Rejeitadas" valor={numero(kpi.rejeitadas)} detalhe={`Taxa de rejeição ${percentual(kpi.rejeitadas, kpi.total)}`} cor={COR_REJEITADA} />
-        <Kpi rotulo="Erro 999" valor={numero(kpi.erro999)} detalhe={`${percentual(kpi.erro999, kpi.rejeitadas)} das rejeições`} cor={COR_REJEITADA} />
+      <div className="viz-sequencia grid gap-3 grid-cols-2 lg:grid-cols-5">
+        <Kpi rotulo="Notas" valor={kpi.total} detalhe={kpi.outras ? `${numero(kpi.outras)} com outra situação` : 'no filtro atual'} />
+        <Kpi rotulo="Autorizadas" valor={kpi.autorizadas} detalhe={percentual(kpi.autorizadas, kpi.total)} cor={COR_AUTORIZADA} />
+        <Kpi rotulo="Rejeitadas" valor={kpi.rejeitadas} detalhe={`Taxa de rejeição ${percentual(kpi.rejeitadas, kpi.total)}`} cor={COR_REJEITADA} />
+        <Kpi rotulo="Erro 999" valor={kpi.erro999} detalhe={`${percentual(kpi.erro999, kpi.rejeitadas)} das rejeições`} cor={COR_REJEITADA} />
         <Kpi rotulo={temValor ? 'Valor rejeitado' : 'Códigos de rejeição'}
-          valor={temValor ? moeda(kpi.valorRejeitado ?? 0) : numero(kpi.codigosDistintos)}
+          valor={temValor ? (kpi.valorRejeitado ?? 0) : kpi.codigosDistintos}
+          formatar={temValor ? moeda : undefined}
           detalhe={temValor ? 'soma das notas rejeitadas' : 'códigos diferentes'} />
       </div>
 
@@ -287,8 +291,9 @@ function Painel({ notas, mapa, tabela, exemplo, filtros, setFiltros, aba, setAba
         ))}
       </div>
 
+      <ChaveAnimacao.Provider value={chaveAnimacao}>
       {aba === 'geral' && (
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="viz-sequencia grid gap-4 xl:grid-cols-2">
           <CartaoVisual className="xl:col-span-2" titulo="Notas por período"
             subtitulo="Autorizadas e rejeitadas. Passe o mouse para ver a taxa de rejeição."
             acoes={<Alternador opcoes={[{ id: 'dia', rotulo: 'Dia' }, { id: 'mes', rotulo: 'Mês' }]} valor={gran} aoMudar={setGranularidade} />}>
@@ -323,7 +328,7 @@ function Painel({ notas, mapa, tabela, exemplo, filtros, setFiltros, aba, setAba
       )}
 
       {aba === 'erro999' && (
-        <div className="grid gap-4 xl:grid-cols-2">
+        <div className="viz-sequencia grid gap-4 xl:grid-cols-2">
           <CartaoVisual className="xl:col-span-2" titulo="Erro 999 por período" subtitulo="Rejeição: erro não catalogado."
             acoes={<Alternador opcoes={[{ id: 'dia', rotulo: 'Dia' }, { id: 'mes', rotulo: 'Mês' }]} valor={gran} aoMudar={setGranularidade} />}>
             <ColunasNoTempo pontos={serie999} selecionado={periodoSelecionado} aoClicar={clicarPeriodo}
@@ -344,6 +349,7 @@ function Painel({ notas, mapa, tabela, exemplo, filtros, setFiltros, aba, setAba
       )}
 
       {aba === 'notas' && <TabelaNotas notas={filtradas} mapa={mapa} titulo="Notas do filtro atual" />}
+      </ChaveAnimacao.Provider>
     </div>
   );
 }
