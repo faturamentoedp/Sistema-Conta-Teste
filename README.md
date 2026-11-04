@@ -12,6 +12,7 @@ Painel único com as ferramentas de faturamento da EDP. A página inicial é o *
 | Ferramenta | Rota | O que faz | Documentação |
 |---|---|---|---|
 | **Conta Teste** | `/conta-teste` | Simula a fatura de energia do Grupo B (EDP ES e SP) | [docs/conta-teste/](docs/conta-teste/README.md) |
+| **Painéis de Análise** | `/paineis` | Painéis interativos estilo Power BI (tema inicial: rejeição de NF-e e erro 999) | [docs/paineis/](docs/paineis/README.md) |
 
 A lista que alimenta o menu e a página inicial está em [src/plataforma/ferramentas.ts](src/plataforma/ferramentas.ts). Para criar uma nova, siga [docs/plataforma/como-adicionar-ferramenta.md](docs/plataforma/como-adicionar-ferramenta.md).
 

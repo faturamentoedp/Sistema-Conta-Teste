@@ -15,34 +15,47 @@ export interface DefinicaoCampo {
   id: IdCampo;
   rotulo: string;
   ajuda: string;
-  /** Nomes de coluna reconhecidos (sem acento, minúsculos, separados por _). */
+  /** Nomes de coluna reconhecidos por inteiro (sem acento, minúsculos, separados por _). */
   nomes: string[];
+  /** Pedaços do nome que bastam quando nenhum nome inteiro bate (ex.: "msg" em msg_retorno). */
+  trechos: string[];
 }
 
 export const CAMPOS: DefinicaoCampo[] = [
   { id: 'data', rotulo: 'Data', ajuda: 'Data de emissão, envio ou processamento da nota.',
     nomes: ['data', 'dt', 'data_emissao', 'dt_emissao', 'dhemi', 'dh_emi', 'data_envio', 'dt_envio', 'data_processamento',
-      'dt_processamento', 'data_autorizacao', 'dhrecbto', 'data_retorno', 'data_rejeicao', 'dt_rejeicao', 'data_hora', 'dia'] },
+      'dt_processamento', 'data_autorizacao', 'dhrecbto', 'data_retorno', 'data_rejeicao', 'dt_rejeicao', 'data_hora', 'dia'],
+    trechos: ['data', 'dt', 'dh', 'dia'] },
   { id: 'status', rotulo: 'Status', ajuda: 'Autorizada / Aprovada ou Rejeitada. Se não houver, o código (cStat) decide.',
-    nomes: ['status', 'situacao', 'sit', 'resultado', 'status_nf', 'status_nfe', 'status_nf3e', 'status_nota', 'tipo_retorno', 'retorno'] },
+    nomes: ['status', 'situacao', 'sit', 'resultado', 'status_nf', 'status_nfe', 'status_nf3e', 'status_nota', 'tipo_retorno'],
+    trechos: ['status', 'situacao'] },
   { id: 'codigo', rotulo: 'Código de retorno (cStat)', ajuda: 'Código da SEFAZ: 100 = autorizada; demais = rejeição (999 = erro não catalogado).',
-    nomes: ['cstat', 'c_stat', 'codigo', 'cod', 'codigo_rejeicao', 'cod_rejeicao', 'codigo_erro', 'cod_erro', 'codigo_retorno', 'cod_retorno', 'erro'] },
+    nomes: ['cstat', 'c_stat', 'codigo', 'cod', 'codigo_rejeicao', 'cod_rejeicao', 'codigo_erro', 'cod_erro', 'codigo_retorno', 'cod_retorno'],
+    trechos: ['cstat', 'codigo', 'cod'] },
   { id: 'motivo', rotulo: 'Motivo / mensagem', ajuda: 'Texto do retorno (xMotivo).',
-    nomes: ['motivo', 'xmotivo', 'x_motivo', 'descricao', 'mensagem', 'msg', 'descricao_erro', 'motivo_rejeicao', 'mensagem_erro', 'mensagem_retorno'] },
+    nomes: ['motivo', 'xmotivo', 'x_motivo', 'descricao', 'mensagem', 'msg', 'descricao_erro', 'motivo_rejeicao', 'mensagem_erro', 'mensagem_retorno', 'msg_retorno', 'msg_erro', 'ds_motivo', 'ds_retorno', 'texto_retorno'],
+    trechos: ['motivo', 'xmotivo', 'mensagem', 'msg', 'descricao', 'desc', 'texto'] },
   { id: 'detalhe', rotulo: 'Característica do erro', ajuda: 'Detalhe que explica o erro (principalmente o 999). Se não houver, o painel usa o texto do motivo.',
-    nomes: ['detalhe', 'caracteristica', 'caracteristicas', 'caracteristica_erro', 'detalhe_erro', 'detalhamento', 'complemento', 'observacao', 'obs', 'causa'] },
+    nomes: ['detalhe', 'caracteristica', 'caracteristicas', 'caracteristica_erro', 'detalhe_erro', 'detalhamento', 'complemento', 'observacao', 'obs', 'causa'],
+    trechos: ['detalhe', 'detalhamento', 'caracteristica', 'caracteristicas', 'causa', 'complemento', 'observacao'] },
   { id: 'distribuidora', rotulo: 'Distribuidora / empresa', ajuda: 'Ex.: EDP ES, EDP SP.',
-    nomes: ['distribuidora', 'empresa', 'geografia', 'uf', 'estado', 'regional', 'unidade'] },
+    nomes: ['distribuidora', 'empresa', 'geografia', 'uf', 'estado', 'regional', 'unidade'],
+    trechos: ['distribuidora', 'empresa', 'geografia', 'regional'] },
   { id: 'categoria', rotulo: 'Categoria / classe', ajuda: 'Ex.: B1, B3, Grupo A.',
-    nomes: ['categoria', 'classe', 'subgrupo', 'grupo', 'tarifa', 'tipo_cliente', 'segmento'] },
+    nomes: ['categoria', 'classe', 'subgrupo', 'grupo', 'tarifa', 'tipo_cliente', 'segmento'],
+    trechos: ['categoria', 'classe', 'subgrupo', 'segmento'] },
   { id: 'lote', rotulo: 'Lote', ajuda: 'Lote ou ciclo de faturamento.',
-    nomes: ['lote', 'id_lote', 'nlote', 'n_lote', 'ciclo'] },
+    nomes: ['lote', 'id_lote', 'nlote', 'n_lote', 'ciclo'],
+    trechos: ['lote', 'ciclo'] },
   { id: 'numero', rotulo: 'Número da nota', ajuda: 'Número da NF-e / NF3e.',
-    nomes: ['numero', 'numero_nf', 'numero_nota', 'nnf', 'n_nf', 'nf', 'nota', 'num_nf'] },
+    nomes: ['numero', 'numero_nf', 'numero_nota', 'nnf', 'n_nf', 'nf', 'nota', 'num_nf'],
+    trechos: ['numero', 'nnf', 'nota'] },
   { id: 'chave', rotulo: 'Chave de acesso', ajuda: 'Chave de 44 dígitos.',
-    nomes: ['chave', 'chave_acesso', 'chnfe', 'ch_nfe', 'chnf3e', 'ch_nf3e', 'chave_nfe', 'chave_nf3e'] },
+    nomes: ['chave', 'chave_acesso', 'chnfe', 'ch_nfe', 'chnf3e', 'ch_nf3e', 'chave_nfe', 'chave_nf3e'],
+    trechos: ['chave', 'chnfe', 'chnf3e'] },
   { id: 'valor', rotulo: 'Valor (R$)', ajuda: 'Valor total da nota.',
-    nomes: ['valor', 'valor_total', 'vnf', 'v_nf', 'valor_nf', 'vl_total', 'vl_nf', 'total'] },
+    nomes: ['valor', 'valor_total', 'vnf', 'v_nf', 'valor_nf', 'vl_total', 'vl_nf', 'total'],
+    trechos: ['valor', 'vl', 'vnf'] },
 ];
 
 export type Mapeamento = Partial<Record<IdCampo, number>>;
@@ -75,21 +88,24 @@ export function normalizarNome(texto: string): string {
     .replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
 }
 
-/** Liga cada campo a uma coluna do arquivo, primeiro por nome exato, depois por nome contido. */
+/**
+ * Liga cada campo a uma coluna do arquivo: primeiro pelos nomes inteiros, depois
+ * por pedaço do nome (dt_processamento -> Data, msg_retorno -> Motivo). Uma
+ * coluna só serve a um campo.
+ */
 export function mapearAutomatico(colunas: string[]): Mapeamento {
   const normalizadas = colunas.map(normalizarNome);
+  const pedacos = normalizadas.map((n) => n.split('_'));
   const usadas = new Set<number>();
   const mapa: Mapeamento = {};
-  for (const exato of [true, false]) {
-    for (const campo of CAMPOS) {
-      if (mapa[campo.id] !== undefined) continue;
-      const idx = normalizadas.findIndex((n, i) => !usadas.has(i) && campo.nomes.some((nome) =>
-        exato ? n === nome : nome.length >= 4 && (n.startsWith(nome + '_') || n.endsWith('_' + nome) || n.includes('_' + nome + '_'))));
-      if (idx >= 0) {
-        mapa[campo.id] = idx;
-        usadas.add(idx);
-      }
-    }
+  const ligar = (campo: DefinicaoCampo, teste: (i: number) => boolean) => {
+    if (mapa[campo.id] !== undefined) return;
+    const idx = normalizadas.findIndex((_, i) => !usadas.has(i) && teste(i));
+    if (idx >= 0) { mapa[campo.id] = idx; usadas.add(idx); }
+  };
+  for (const campo of CAMPOS) ligar(campo, (i) => campo.nomes.includes(normalizadas[i]));
+  for (const campo of CAMPOS) {
+    ligar(campo, (i) => campo.trechos.some((t) => pedacos[i].includes(t) || (t.length >= 5 && normalizadas[i].startsWith(t))));
   }
   return mapa;
 }

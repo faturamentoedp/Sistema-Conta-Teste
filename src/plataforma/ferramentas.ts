@@ -6,7 +6,7 @@
  * docs/plataforma/como-adicionar-ferramenta.md.
  */
 
-export type IconeFerramenta = 'calculadora';
+export type IconeFerramenta = 'calculadora' | 'grafico';
 
 export type StatusFerramenta = 'ativa' | 'em-breve';
 
@@ -29,6 +29,14 @@ export const FERRAMENTAS: Ferramenta[] = [
     descricao: 'Simula a fatura de energia do Grupo B (EDP ES e SP): tarifas, tributos, bandeiras, CIP, Baixa Renda e Geração Distribuída.',
     rota: '/conta-teste',
     icone: 'calculadora',
+    status: 'ativa',
+  },
+  {
+    id: 'paineis',
+    nome: 'Painéis de Análise',
+    descricao: 'Indicadores e gráficos interativos, no estilo Power BI, a partir de tabelas (CSV, Excel ou export do Databricks). Escolha o tema e explore com filtros.',
+    rota: '/paineis',
+    icone: 'grafico',
     status: 'ativa',
   },
 ];

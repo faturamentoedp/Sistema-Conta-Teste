@@ -17,6 +17,13 @@
   --linha-bg: rgba(0, 0, 0, 0.04); /* cinza puramente neutro transparente */
   --linha-texto: #1e293b;
   --linha-borda: #d1d5db;
+
+  /* Gráficos dos painéis: azul = autorizada, laranja = rejeitada (validados
+     para daltonismo e contraste nos dois temas). */
+  --viz-autorizada: #2a78d6;
+  --viz-rejeitada: #eb6834;
+  --viz-grade: #e5e7eb;
+  --viz-trilho: #f1f2f5;
 }
 
 body {
@@ -91,6 +98,11 @@ select:focus {
   --linha-bg: rgba(255, 255, 255, 0.04);
   --linha-texto: #dfe4f0;
   --linha-borda: #3a4259;
+
+  --viz-autorizada: #3987e5;
+  --viz-rejeitada: #d95926;
+  --viz-grade: #38415a;
+  --viz-trilho: #262d41;
 
   /* Escala de cinzas do Tailwind, remapeada: fundos de painel e bordas ficam
      na família do #2f364b, e os textos ficam claros. */

@@ -55,8 +55,18 @@ export function IconeCalculadora({ className = 'w-5 h-5' }: PropsIcone) {
   );
 }
 
+export function IconeGrafico({ className = 'w-5 h-5' }: PropsIcone) {
+  return (
+    <svg {...base} className={className}>
+      <path d="M4 20h16" />
+      <path d="M7 16v-5M12 16V7M17 16v-8" />
+    </svg>
+  );
+}
+
 const POR_NOME: Record<IconeFerramenta, (p: PropsIcone) => React.ReactElement> = {
   calculadora: IconeCalculadora,
+  grafico: IconeGrafico,
 };
 
 export function IconeDaFerramenta({ nome, className }: { nome: IconeFerramenta } & PropsIcone) {
