@@ -171,7 +171,7 @@ regras = [
     ('B2 Rural', 'B2RURAL', 'Produtor rural.', 'Uma tarifa única B2.', '4% (aparece na fatura como 12% sobre 1/3 do valor).', '12%.',
      'Existe também a versão Tarifa Branca (B2RURAL_TB), com os três horários.', 'Rural', 'Muitos municípios isentam a classe Rural.'),
     ('B2 Rural Irrigante', 'B2RUIRRG', 'Rural com serviço de irrigação.',
-     'Consumo "ativo" paga a tarifa B2. Consumo no horário reservado paga só 40% da tarifa (desconto de 60%).', '4% (12% sobre 1/3).', '12%.',
+     'Consumo "ativo" paga a tarifa B2. Consumo no horário reservado paga só 40% da tarifa (desconto de 60%).', '17% (ICMS cheio, confirmado em fatura real).', '12%.',
      'A fatura tem linhas "Ativo" e "Reservado". Existe a versão Tarifa Branca (B2RUIRRG_TB).', 'Rural', 'Alguns municípios isentam só o Irrigante.'),
     ('B3 Comercial / Demais classes', 'B3', 'Comércio, serviços e demais classes.', 'Uma tarifa única B3.', '17%.', '18%.',
      'Existe a versão Tarifa Branca (B3_TB).', 'Demais classes', ''),

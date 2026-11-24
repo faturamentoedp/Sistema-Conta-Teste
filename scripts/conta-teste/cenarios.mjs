@@ -680,5 +680,18 @@ export const CENARIOS = [
                 { nome: 'Juros de Mora Ref.: Ago/26', valor: 0.45 }
             ]
         }
+    },
+    {
+        // UC 0.001.679.120.054-09 (ES, B2 Rural - Agropecuária - Irrigação, NOV/2026):
+        // 100 kWh, trifásico, SUDENE ligada, bandeira verde. A fatura imprime ICMS 17%
+        // (não os 4% do Rural comum): TUSD 64,25 + TE 42,81 - SUDENE 0,99 = 106,07.
+        nome: 'FATURA REAL ES B2 Irrigação 100 kWh com SUDENE (ICMS 17%, NOV/2026)',
+        fatura_real: 106.07,
+        params: {
+            distribuidora: 'ES', categoria: 'B2RUIRRG', fase: 'trifasico',
+            data_leitura_anterior: '2026-10-22', data_leitura_atual: '2026-11-23',
+            consumo_kwh: 100, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            valor_cip: 0, ajustes: [], sudene: true
+        }
     }
 ];

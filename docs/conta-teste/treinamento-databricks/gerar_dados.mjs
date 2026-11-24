@@ -117,6 +117,12 @@ function grava_csv(nome, colunas, linhas) {
                 obs: 'Residencial convencional: a alíquota depende do consumo faturado total (com o consumo mínimo), não de cada kWh.'
             };
         }
+        if (cat.startsWith('B2RUIRRG') && dist === 'ES') {
+            return {
+                tipo: 'aliquota_fixa', aliquota: 0.17,
+                obs: 'Irrigante no ES paga o ICMS cheio (17%), conforme fatura real; o 4% vale só para o Rural comum.'
+            };
+        }
         if (cat.startsWith('B2RU')) {
             return {
                 tipo: 'aliquota_fixa', aliquota: dist === 'ES' ? 0.04 : 0.12,

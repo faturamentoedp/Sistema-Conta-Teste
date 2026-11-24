@@ -545,6 +545,12 @@ export function calcular_fatura(params, dbRows) {
     } else if (categoria.startsWith("B2RUIRRG") || categoria.startsWith("B2RURAL")) {
         if (distribuidora === "SP") {
             icms = 0.12;
+        } else if (categoria.startsWith("B2RUIRRG")) {
+            // Irrigante no ES paga o ICMS cheio (17%): fatura real de OUT-NOV/2026
+            // (B2 Rural - Agropecuária - Irrigação, UC 0.001.679.120.054-09, 100 kWh)
+            // imprime alíquota 17% em todas as linhas. O 4% de carga efetiva só está
+            // comprovado em fatura para o B2 Rural comum, abaixo.
+            icms = 0.17;
         } else {
             icms = 0.04;
         }
