@@ -693,5 +693,173 @@ export const CENARIOS = [
             consumo_kwh: 100, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
             valor_cip: 0, ajustes: [], sudene: true
         }
+    },
+    // ---------------------------------------------------------------------
+    // Desconto Social (B1CDE) no ES: dez faturas reais da UC 0160793727 (Serra),
+    // de FEV a NOV/2026. Todas com Desconto BT (consumo lido x 0,985, arredondado),
+    // CIP de Serra, parcela "Art255 REN1000", multas, juros, créditos e serviço de
+    // terceiros entrando como ajustes. Dias das bandeiras como a fatura imprime.
+    // ---------------------------------------------------------------------
+    {
+        nome: 'FATURA REAL ES B1CDE UC 0160793727, FEV/26: 148 kWh cobrados',
+        fatura_real: 169.75,
+        params: {
+            distribuidora: 'ES', categoria: 'B1CDE', fase: 'monofasico',
+            data_leitura_anterior: '2026-01-14', data_leitura_atual: '2026-02-11',
+            consumo_kwh: 148, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            bandeiras_dias: [{ bandeira: 'VERDE', dias: 28 }],
+            valor_cip: 19.51,
+            ajustes: [
+                { nome: 'Art255 REN1000 25/48', valor: 21.11 },
+                { nome: 'Juros Mora Ref.: Dez/25', valor: 1.4 }
+            ]
+        }
+    },
+    {
+        nome: 'FATURA REAL ES B1CDE UC 0160793727, MAR/26: 118 kWh cobrados',
+        fatura_real: 172.60,
+        params: {
+            distribuidora: 'ES', categoria: 'B1CDE', fase: 'monofasico',
+            data_leitura_anterior: '2026-02-11', data_leitura_atual: '2026-03-13',
+            consumo_kwh: 118, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            bandeiras_dias: [{ bandeira: 'VERDE', dias: 30 }],
+            valor_cip: 19.51,
+            ajustes: [
+                { nome: 'Débito de Conta Paga a Menor', valor: 28.22 },
+                { nome: 'Art255 REN1000 26/48', valor: 21.11 },
+                { nome: 'Multa Ref.: Jan/26', valor: 3.19 },
+                { nome: 'Multa Ref.: Fev/26', valor: 2.55 },
+                { nome: 'Juros Mora Ref.: Jan/26', valor: 1.28 }
+            ]
+        }
+    },
+    {
+        nome: 'FATURA REAL ES B1CDE UC 0160793727, ABR/26: 155 kWh cobrados (a leitura mostra 120 kWh, a fatura cobra 155)',
+        fatura_real: 185.06,
+        params: {
+            distribuidora: 'ES', categoria: 'B1CDE', fase: 'monofasico',
+            data_leitura_anterior: '2026-03-13', data_leitura_atual: '2026-04-15',
+            consumo_kwh: 155, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            bandeiras_dias: [{ bandeira: 'VERDE', dias: 33 }],
+            valor_cip: 28.61,
+            ajustes: [
+                { nome: 'Art255 REN1000 27/48', valor: 21.11 },
+                { nome: 'Multa Ref.: Mar/26', valor: 1.93 },
+                { nome: 'Juros Mora Ref.: Fev/26', valor: 1.11 }
+            ]
+        }
+    },
+    {
+        nome: 'FATURA REAL ES B1CDE UC 0160793727, MAI/26: 146 kWh cobrados',
+        fatura_real: 167.17,
+        params: {
+            distribuidora: 'ES', categoria: 'B1CDE', fase: 'monofasico',
+            data_leitura_anterior: '2026-04-15', data_leitura_atual: '2026-05-14',
+            consumo_kwh: 146, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            bandeiras_dias: [{ bandeira: 'VERDE', dias: 15 }, { bandeira: 'AMARELA', dias: 14 }],
+            valor_cip: 19.51,
+            ajustes: [
+                { nome: 'Art255 REN1000 28/48', valor: 21.11 },
+                { nome: 'Multa Ref.: Abr/26', valor: 2.65 },
+                { nome: 'Juros Mora Ref.: Mar/26', valor: 1.17 }
+            ]
+        }
+    },
+    {
+        nome: 'FATURA REAL ES B1CDE UC 0160793727, JUN/26: 110 kWh cobrados',
+        fatura_real: 111.87,
+        params: {
+            distribuidora: 'ES', categoria: 'B1CDE', fase: 'monofasico',
+            data_leitura_anterior: '2026-05-14', data_leitura_atual: '2026-06-15',
+            consumo_kwh: 110, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            bandeiras_dias: [{ bandeira: 'AMARELA', dias: 32 }],
+            valor_cip: 19.51,
+            ajustes: [
+                { nome: 'Art255 REN1000 29/48', valor: 21.11 },
+                { nome: 'Crédito Conta Paga', valor: -20.1 },
+                { nome: 'Juros Mora Ref.: Abr/26', valor: 1.15 }
+            ]
+        }
+    },
+    {
+        nome: 'FATURA REAL ES B1CDE UC 0160793727, JUL/26: 117 kWh cobrados',
+        fatura_real: 140.48,
+        params: {
+            distribuidora: 'ES', categoria: 'B1CDE', fase: 'monofasico',
+            data_leitura_anterior: '2026-06-15', data_leitura_atual: '2026-07-15',
+            consumo_kwh: 117, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            bandeiras_dias: [{ bandeira: 'AMARELA', dias: 30 }],
+            valor_cip: 19.51,
+            ajustes: [
+                { nome: 'Art255 REN1000 30/48', valor: 21.11 },
+                { nome: 'Multa Ref.: Jun/26', valor: 1.4 }
+            ]
+        }
+    },
+    {
+        nome: 'FATURA REAL ES B1CDE UC 0160793727, AGO/26: 247 kWh cobrados',
+        fatura_real: 282.21,
+        params: {
+            distribuidora: 'ES', categoria: 'B1CDE', fase: 'monofasico',
+            data_leitura_anterior: '2026-07-15', data_leitura_atual: '2026-08-14',
+            consumo_kwh: 247, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            bandeiras_dias: [{ bandeira: 'AMARELA', dias: 30 }],
+            valor_cip: 34.98,
+            ajustes: [
+                { nome: 'Art255 REN1000 31/48', valor: 21.11 },
+                { nome: 'Multa Ref.: Jul/26', valor: 1.97 },
+                { nome: 'Juros Mora Ref.: Jun/26', valor: 0.65 },
+                { nome: 'Bônus de Itaipu Lei 10.438/02', valor: -14.04 }
+            ]
+        }
+    },
+    {
+        nome: 'FATURA REAL ES B1CDE UC 0160793727, SET/26: 270 kWh cobrados',
+        fatura_real: 369.28,
+        params: {
+            distribuidora: 'ES', categoria: 'B1CDE', fase: 'monofasico',
+            data_leitura_anterior: '2026-08-14', data_leitura_atual: '2026-09-15',
+            consumo_kwh: 270, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            bandeiras_dias: [{ bandeira: 'AMARELA', dias: 32 }],
+            valor_cip: 34.98,
+            ajustes: [
+                { nome: 'Art255 REN1000 32/48', valor: 21.11 },
+                { nome: 'Juros Mora Ref.: Jul/26', valor: 0.89 },
+                { nome: 'C.DE TODOS 0800 283 8916', valor: 33.4 }
+            ]
+        }
+    },
+    {
+        nome: 'FATURA REAL ES B1CDE UC 0160793727, OUT/26: 232 kWh cobrados',
+        fatura_real: 326.20,
+        params: {
+            distribuidora: 'ES', categoria: 'B1CDE', fase: 'monofasico',
+            data_leitura_anterior: '2026-09-15', data_leitura_atual: '2026-10-15',
+            consumo_kwh: 232, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            bandeiras_dias: [{ bandeira: 'VERDE', dias: 15 }, { bandeira: 'AMARELA', dias: 15 }],
+            valor_cip: 34.98,
+            ajustes: [
+                { nome: 'Art255 REN1000 33/48', valor: 21.11 },
+                { nome: 'Multa Ref.: Set/26', valor: 5.58 },
+                { nome: 'C.DE TODOS 0800 283 8916', valor: 33.4 }
+            ]
+        }
+    },
+    {
+        nome: 'FATURA REAL ES B1CDE UC 0160793727, NOV/26: 257 kWh cobrados',
+        fatura_real: 348.33,
+        params: {
+            distribuidora: 'ES', categoria: 'B1CDE', fase: 'monofasico',
+            data_leitura_anterior: '2026-10-15', data_leitura_atual: '2026-11-13',
+            consumo_kwh: 257, bandeira_mes1: 'VERDE', bandeira_mes2: 'VERDE',
+            bandeiras_dias: [{ bandeira: 'VERDE', dias: 29 }],
+            valor_cip: 34.98,
+            ajustes: [
+                { nome: 'Art255 REN1000 34/48', valor: 21.11 },
+                { nome: 'Multa Ref.: Out/26', valor: 4.62 },
+                { nome: 'Juros Mora Ref.: Set/26', valor: 1.86 },
+                { nome: 'C.DE TODOS 0800 283 8916', valor: 33.4 }
+            ]
+        }
     }
 ];
