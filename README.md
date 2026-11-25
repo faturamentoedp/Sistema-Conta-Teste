@@ -70,6 +70,7 @@ Abre em `http://localhost:3020`. Não precisa de banco nem de variável de ambie
 | `npm run lint` | ESLint |
 | `npm run verificar` | Regressão dos 62 cenários da Conta Teste (centavo a centavo) |
 | `npm run verificar-cip` | Regressão da CIP por município (37 casos) |
+| `npm run verificar-reforma` | Simulação preliminar da Reforma Tributária contra os modelos da área |
 | `npm run publicar:teste` | Publica o link de teste na Vercel |
 | `npm run publicar` | Publica a produção (só da `main`, com regressão passando) |
 | `npm run rede` / `npm run share` | Diagnóstico de rede / túnel público (alternativas à Vercel) |
