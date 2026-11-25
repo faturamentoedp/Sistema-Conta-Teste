@@ -10,6 +10,7 @@
     "share": "node scripts/plataforma/share.mjs",
     "verificar": "node scripts/conta-teste/verificar.mjs",
     "verificar-cip": "node scripts/conta-teste/verificar-cip.mjs",
+    "verificar-reforma": "node scripts/conta-teste/verificar-reforma.mjs",
     "publicar": "node scripts/plataforma/publicar.mjs producao",
     "publicar:teste": "node scripts/plataforma/publicar.mjs teste",
     "lint": "eslint"

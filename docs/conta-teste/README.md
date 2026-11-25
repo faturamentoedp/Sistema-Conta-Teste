@@ -93,7 +93,7 @@ O motor de cálculo é um só, em `src/modulos/conta-teste/motor/calculo.js`, us
 
 - **[manual-do-desenvolvedor.md](manual-do-desenvolvedor.md): manual de uso e manutenção** (como usar, onde mexer, como incluir tarifa ou mudar regra, testar e publicar). Versão para enviar: `Manual_Conta_Teste.docx`.
 - [guia-manutencao.md](guia-manutencao.md): o que pede atenção nas férias de dez/2026 a jan/2027.
-- `reforma-tributaria.md` (só na branch `reforma-tributaria`): protótipo da simulação com CBS e IBS.
+- [reforma-tributaria.md](reforma-tributaria.md): protótipo da simulação com CBS e IBS.
 - [treinamento-databricks/](treinamento-databricks/) — regras de cálculo transcritas + tabelas em CSV.
 - `faq-simulador.tex`, `Duvidas_Frequentes___Conta_Teste.pdf`, `Documentacao_Simulador.tex`, `apresentacao-simulador.txt` — material de apoio para o time.
 - `cip-municipios-es-extraido.json` — dados brutos da CIP por município (ES).

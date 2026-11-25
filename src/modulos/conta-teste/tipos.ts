@@ -34,10 +34,45 @@ export interface ResumoFatura {
   valor_beneficio_tarifa_social?: number;
 }
 
+/** Resposta da simulação preliminar da Reforma Tributária (ver motor/reforma.js). */
+export type ResultadoReforma =
+  | { indisponivel: string[] }
+  | {
+    linhas: {
+      nome: string;
+      quantidade: number;
+      tarifa_base: number;
+      preco_unit: number;
+      valor_total: number;
+      valor_cbs_ibs: number;
+      base_icms: number;
+      aliquota_icms: number;
+      valor_icms: number;
+    }[];
+    resumo: {
+      total_energia: number;
+      base_cbs_ibs: number;
+      valor_cbs: number;
+      valor_ibs: number;
+      total_icms: number;
+      valor_cip: number;
+      outros_valores: number;
+      total_fatura: number;
+      total_atual: number;
+      diferenca: number;
+      diferenca_percentual: number;
+      total_icms_sem_cbs_ibs: number;
+    };
+    aliquotas: { cbs: number; ibs: number; icms: number };
+    observacoes: string[];
+  };
+
 export interface ResultadoCalculo {
   detalhes: LinhaDetalhe[];
   resumo: ResumoFatura;
   avisos?: string[];
+  /** Só vem quando a comparação é pedida e o ambiente permite. */
+  reforma?: ResultadoReforma;
   parametros_usados: {
     consumo_faturado: number;
     aliquota_pis_aplicada: number;

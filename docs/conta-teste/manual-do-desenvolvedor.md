@@ -4,8 +4,6 @@ Para quem vai usar o Conta Teste, atualizar valores, mudar regras de cálculo ou
 
 Situação descrita: **25/11/2026**.
 
-> **Reforma Tributária:** o protótipo existe **só na branch `reforma-tributaria`**. Na `main` (produção) não há a opção na tela, os arquivos `reforma.js`, `ResultadoReforma.tsx`, `reformaDisponivel.ts` e `reforma-tributaria.md`, nem o comando `npm run verificar-reforma`. Para vê-los, rode `git switch reforma-tributaria`.
-
 **Onde está o que você procura**
 
 | Preciso de... | Vá para |
@@ -74,7 +72,7 @@ Abra o sistema, clique em **Conta Teste**, preencha os campos e clique em **Calc
 | CIP (R$) | Valor da iluminação pública |
 | Tributação de ICMS | Deixe em Automático, salvo caso específico |
 | Ajustes / Outros Valores | **Toda linha da fatura sem kWh:** parcelas, multas, juros, bônus, serviços de terceiros. Crédito entra negativo (ex.: -10,77) |
-| Comparar com a Reforma 2027 | Só na branch `reforma-tributaria` e fora da produção (parte 10) |
+| Comparar com a Reforma 2027 | Só fora da produção (parte 10) |
 
 **Como escolher a tarifa**
 
@@ -184,7 +182,7 @@ Alguns ajustes acontecem **na tela, antes de chegar ao motor**: constante do med
 | `tarifas-aneel.js` | Faixas de ICMS residencial, GD, Fio B, Escassez, SUDENE, limites de Baixa Renda e Desconto Social | Sim |
 | `vigencias.js` | **Tarifas TUSD e TE** por resolução | **Não.** É gerado por script |
 | `cip-municipios.js` | Tarifa B4a e CIP dos municípios | Só a Tarifa B4a e as regras. **O bloco de dados é gerado** |
-| `reforma.js` | Simulação CBS/IBS, preliminar (só na branch `reforma-tributaria`) | Sim, com cuidado |
+| `reforma.js` | Simulação CBS/IBS (preliminar) | Sim, com cuidado |
 
 ### 5.2 Telas (`src/modulos/conta-teste/`)
 
@@ -192,8 +190,8 @@ Alguns ajustes acontecem **na tela, antes de chegar ao motor**: constante do med
 |---|---|
 | `ContaTeste.tsx` | Formulário, lista de tarifas e o que é enviado ao cálculo |
 | `ResultadoFatura.tsx` | Cartões, tabela e resumo de tributos |
-| `ResultadoReforma.tsx` | Comparação com a reforma (só na branch `reforma-tributaria`) |
-| `reformaDisponivel.ts` | Liga ou desliga a reforma por ambiente (só na branch `reforma-tributaria`) |
+| `ResultadoReforma.tsx` | Comparação com a reforma |
+| `reformaDisponivel.ts` | Liga ou desliga a reforma por ambiente |
 | `exportarCsv.ts` | Arquivo CSV baixado |
 | `utilitarios.ts` | Desconto BT, constante do medidor, períodos das bandeiras |
 | `formatadores.ts` | Formato de moeda e números |
@@ -460,7 +458,7 @@ if (distribuidora === "SP") {
 | 3 | `ContaTeste.tsx` | Incluir a opção na lista "Tarifas" |
 | 4 | `motor/cip-municipios.js` | Definir a classe em `classe_cip_por_categoria` |
 | 5 | `motor/tarifas-aneel.js` | Fio B, se houver |
-| 6 | `motor/reforma.js` (só na branch `reforma-tributaria`) | Decidir se entra em `CATEGORIAS_SIMULAVEIS` |
+| 6 | `motor/reforma.js` | Decidir se entra em `CATEGORIAS_SIMULAVEIS` |
 | 7 | `cenarios.mjs` | Cadastrar uma fatura real |
 
 > **Atenção:** quando o motor não acha a tarifa, ele pode usar um valor reserva fixo, escrito dentro de `getTarifaConsolidada`. Confira a coluna **Tarifa Unit.** no resultado para ter certeza de que veio a tarifa certa.
@@ -503,7 +501,7 @@ Este projeto usa uma versão do Next.js com mudanças em relação a versões an
 
 ## 10. Reforma Tributária (CBS e IBS)
 
-**Situação:** protótipo que existe só na branch `reforma-tributaria` (use `git switch reforma-tributaria`). **Não está validado** e não aparece na produção. O resumo técnico está em `docs/conta-teste/reforma-tributaria.md`.
+**Situação:** protótipo. O código está no projeto, mas **não está validado** e não aparece na produção (aparece na máquina local e no ambiente de teste). O resumo técnico está em `docs/conta-teste/reforma-tributaria.md`.
 
 ### 10.1 Como usar
 
@@ -571,7 +569,7 @@ Ele reproduz os dois exemplos das planilhas da área (ES R$ 178,53 e SP R$ 243,1
 |---|---|
 | `npm run verificar` | 62 cenários, centavo a centavo |
 | `npm run verificar-cip` | 37 casos de CIP |
-| `npm run verificar-reforma` | Simulação da reforma contra os modelos (só na branch `reforma-tributaria`) |
+| `npm run verificar-reforma` | Simulação da reforma contra os modelos |
 | `npx tsc --noEmit` | Erros de código nas telas |
 | `npm run lint` | Padrão do código |
 | `npm run build` | Se o sistema compila para publicar |
@@ -626,7 +624,6 @@ git checkout -- scripts/conta-teste/referencia.json
 |---|---|
 | `main` | **Produção:** só o que a área validou |
 | `teste` | Tudo que está para validar |
-| `reforma-tributaria` | Protótipo da Reforma 2027, ainda sem validação |
 | outras | Trabalho em andamento |
 
 Em 25/11/2026 a `teste` está desatualizada em relação à `main`. Antes de usar, atualize:
