@@ -101,8 +101,9 @@ export const PERC_REDUCAO_GD = {
  * são 158 (12%) e 291 (18%). Se aparecer uma conta entre 159 e 290 kWh, vale
  * conferir.
  *
- * Fora do residencial convencional valem as alíquotas fixas: B2 Rural 0%,
- * B2 Irrigante 4%, e as demais categorias usam ICMS_PADRAO (17% ES, 18% SP) -
+ * Fora do residencial convencional: o ICMS de Rural e Irrigante está em
+ * calculo.js (ES: Rural 4%, Irrigante 17%; SP: 12%), e as demais categorias
+ * usam ICMS_PADRAO (17% ES, 18% SP), salvo as isenções tratadas lá -
  * confirmado nos modelos de B3, B4A e Tarifa Branca de SP.
  */
 export const ICMS_FAIXAS_RESIDENCIAL = {
