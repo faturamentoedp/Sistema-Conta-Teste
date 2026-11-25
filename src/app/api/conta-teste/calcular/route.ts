@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { calcular_fatura, normalizar_tarifas, resolver_tarifas } from '@/modulos/conta-teste/motor/calculo.js';
+import { calcular_reforma, REFORMA_ALIQUOTAS, REFORMA_OPCOES_CBS } from '@/modulos/conta-teste/motor/reforma.js';
+import { REFORMA_DISPONIVEL } from '@/modulos/conta-teste/reformaDisponivel';
 
 // O motor de cálculo vive em src/modulos/conta-teste/motor/calculo.js, compartilhado com a
 // versão publicada. As tarifas vêm de src/modulos/conta-teste/motor/vigencias.js, gerado do
@@ -47,12 +49,23 @@ export async function POST(request: Request) {
             new Date(params.data_leitura_atual)
         );
 
-        const resultado = calcular_fatura(params, normalizar_tarifas(linhas_tarifa, categoria));
+        const tarifas = normalizar_tarifas(linhas_tarifa, categoria);
+        const resultado = calcular_fatura(params, tarifas);
 
         // O motor devolve { erro } quando falta parâmetro regulatório - hoje,
         // o percentual de compensação do GD3.
         if (resultado.erro) {
             return NextResponse.json({ erro: resultado.erro }, { status: 400 });
+        }
+
+        // Simulação preliminar da Reforma Tributária: só quando pedida e nunca
+        // em produção. Vai num campo à parte - o cálculo atual não muda.
+        if (params.comparar_reforma && REFORMA_DISPONIVEL) {
+            const cbs = REFORMA_OPCOES_CBS.includes(Number(params.reforma_cbs))
+                ? Number(params.reforma_cbs)
+                : REFORMA_ALIQUOTAS.cbs;
+            const reforma = calcular_reforma(params, tarifas, resultado, { ...REFORMA_ALIQUOTAS, cbs });
+            return NextResponse.json({ ...resultado, reforma });
         }
 
         return NextResponse.json(resultado);

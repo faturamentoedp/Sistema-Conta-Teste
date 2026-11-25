@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import { MUNICIPIOS_ES_CIP, calcular_cip_municipio } from './motor/cip-municipios.js';
 import TituloSecao from '@/plataforma/componentes/TituloSecao';
 import ResultadoFatura from './ResultadoFatura';
+import ResultadoReforma from './ResultadoReforma';
+import { REFORMA_DISPONIVEL } from './reformaDisponivel';
+import { REFORMA_ALIQUOTAS, REFORMA_OPCOES_CBS } from './motor/reforma.js';
 import { exportarCSV } from './exportarCsv';
 import {
   aplicarPerdaBT,
@@ -52,6 +55,9 @@ export default function ContaTeste() {
   });
   const [descontoBT, setDescontoBT] = useState(false);
   const [sudeneAtivo, setSudeneAtivo] = useState(false);
+  // Reforma Tributária (preliminar, fora da produção): desligada por padrão.
+  const [compararReforma, setCompararReforma] = useState(false);
+  const [cbsReforma, setCbsReforma] = useState(String(REFORMA_ALIQUOTAS.cbs));
   // Município usado para preencher a CIP automaticamente (só ES). Vazio =
   // comportamento de sempre, CIP 100% manual - nada muda pra quem não usa.
   const [municipioCip, setMunicipioCip] = useState('');
@@ -96,7 +102,7 @@ export default function ContaTeste() {
     }
     setResultado(null);
     setError(null);
-  }, [form, ajustes, gdAtivo, gdPapel, geradoras, descontoBT, sudeneAtivo]);
+  }, [form, ajustes, gdAtivo, gdPapel, geradoras, descontoBT, sudeneAtivo, compararReforma, cbsReforma]);
 
   // CIP automática por município (só ES). Município em branco = nada muda,
   // continua 100% manual. Escolhido um município, recalcula sempre que
@@ -191,6 +197,8 @@ export default function ContaTeste() {
         // Só vai quando algum dia foi digitado; sem isso o motor usa a ordem das datas.
         bandeiras_dias: usaDiasDaFatura ? diasDaFatura : undefined,
         sudene: sudeneAtivo,
+        comparar_reforma: REFORMA_DISPONIVEL && compararReforma ? true : undefined,
+        reforma_cbs: REFORMA_DISPONIVEL && compararReforma ? Number(cbsReforma) : undefined,
         gd_ativo: gdAtivo,
         gd_papel: gdPapel,
         geradoras: gdAtivo && gdPapel === 'receptor'
@@ -682,6 +690,30 @@ export default function ContaTeste() {
             </div>
           </div>
 
+          {REFORMA_DISPONIVEL && (
+            <div className="border-t border-slate-200 pt-3 space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" checked={compararReforma} onChange={(e) => setCompararReforma(e.target.checked)} className="w-4 h-4 text-blue-600 rounded" />
+                <span className="text-xs font-bold text-black uppercase tracking-wide">Comparar com a Reforma 2027</span>
+              </label>
+              <p className="text-[11px] text-slate-500">
+                Simulação preliminar (CBS e IBS). Não aparece na produção e não muda o cálculo atual.
+              </p>
+              {compararReforma && (
+                <div>
+                  <label htmlFor="reforma-cbs" className="block text-xs font-semibold text-black mb-1">Alíquota da CBS</label>
+                  <select id="reforma-cbs" value={cbsReforma} onChange={(e) => setCbsReforma(e.target.value)} className="w-full">
+                    {REFORMA_OPCOES_CBS.map((v: number) => (
+                      <option key={v} value={String(v)}>
+                        {(v * 100).toFixed(1).replace('.', ',')}%{v === REFORMA_ALIQUOTAS.cbs ? ' (modelo da área)' : ' (com redutor de 0,1 ponto)'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+          )}
+
           {error && <div className="text-red-600 text-sm">{error}</div>}
 
           <button type="submit" disabled={loading} className="w-full mt-4 bg-[#2f364b] hover:bg-[#1f2536] text-white font-semibold py-3 px-4 rounded transition-colors">
@@ -692,6 +724,11 @@ export default function ContaTeste() {
 
       {/* Resultados */}
       <div className="w-full flex-1">
+        {resultado?.reforma && (
+          <div className="mb-8">
+            <ResultadoReforma reforma={resultado.reforma} />
+          </div>
+        )}
         {resultado && (
           <ResultadoFatura
             resultado={resultado}
