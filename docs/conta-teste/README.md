@@ -91,6 +91,7 @@ O motor de cálculo é um só, em `src/modulos/conta-teste/motor/calculo.js`, us
 
 ## 📚 Documentos desta ferramenta
 
+- **[guia-manutencao.md](guia-manutencao.md): passagem de conhecimento** (como incluir tarifa ou mudar valor, conferir e publicar).
 - [treinamento-databricks/](treinamento-databricks/) — regras de cálculo transcritas + tabelas em CSV.
 - `faq-simulador.tex`, `Duvidas_Frequentes___Conta_Teste.pdf`, `Documentacao_Simulador.tex`, `apresentacao-simulador.txt` — material de apoio para o time.
 - `cip-municipios-es-extraido.json` — dados brutos da CIP por município (ES).
