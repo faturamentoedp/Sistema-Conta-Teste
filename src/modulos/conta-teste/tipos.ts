@@ -44,7 +44,9 @@ export type ResultadoReforma =
       tarifa_base: number;
       preco_unit: number;
       valor_total: number;
-      valor_cbs_ibs: number;
+      valor_ibs_municipal: number;
+      valor_ibs_estadual: number;
+      valor_cbs: number;
       base_icms: number;
       aliquota_icms: number;
       valor_icms: number;
@@ -59,18 +61,16 @@ export type ResultadoReforma =
       base_cbs_ibs: number;
       valor_cbs: number;
       valor_ibs: number;
+      valor_ibs_estadual: number;
+      valor_ibs_municipal: number;
       total_icms: number;
       valor_cip: number;
       outros_valores: number;
       total_fatura: number;
-      total_atual: number;
-      diferenca: number;
-      diferenca_percentual: number;
       total_icms_sem_cbs_ibs: number;
     };
-    aliquotas: { cbs: number; ibs: number; icms: number };
+    aliquotas: { cbs: number; ibs_estadual: number; ibs_municipal: number; icms: number };
     observacoes: string[];
-    observacoes_comparacao: string[];
   };
 
 /** A simulação quando há regra para a fatura. */
@@ -80,7 +80,7 @@ export interface ResultadoCalculo {
   detalhes: LinhaDetalhe[];
   resumo: ResumoFatura;
   avisos?: string[];
-  /** Só vem quando a comparação é pedida e o ambiente permite. */
+  /** Só vem quando a leitura atual é a partir de 2027. */
   reforma?: ResultadoReforma;
   parametros_usados: {
     consumo_faturado: number;

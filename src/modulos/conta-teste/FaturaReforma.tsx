@@ -4,20 +4,22 @@ import type { ResultadoReforma } from './tipos';
 
 interface Props {
   reforma: ResultadoReforma;
+  categoria: string;
   instalacao: string;
   aoExportar: () => void;
 }
 
 /**
- * Tarifa "Reforma 2027": mostra SÓ a fatura nova, com as colunas na ordem da aba
- * "Modelo Reforma" das planilhas da área (CBS/IBS no lugar de PIS/COFINS).
+ * Fatura de 2027 (leitura atual a partir de 01/01/2027), no novo layout: IBS
+ * Municipal, IBS Estadual e CBS no lugar de PIS/COFINS. Simulação preliminar.
  */
-export default function FaturaReforma({ reforma, instalacao, aoExportar }: Props) {
+export default function FaturaReforma({ reforma, categoria, instalacao, aoExportar }: Props) {
   if ('indisponivel' in reforma) {
     return (
       <div role="status" className="border border-amber-300 bg-amber-50 text-amber-900 rounded px-4 py-3 text-xs space-y-1">
         <p className="font-bold uppercase tracking-wide">Reforma 2027: ainda não dá para simular esta fatura</p>
         {reforma.indisponivel.map((m, i) => <p key={i}>{m}</p>)}
+        <p>O resultado abaixo ainda usa PIS/COFINS e não vale como conta de 2027.</p>
       </div>
     );
   }
@@ -26,19 +28,22 @@ export default function FaturaReforma({ reforma, instalacao, aoExportar }: Props
 
   const cartoes = [
     { rotulo: 'Total energia', valor: resumo.total_energia, borda: 'border-blue-600' },
-    { rotulo: 'CBS/IBS', valor: resumo.total_cbs_ibs, borda: 'border-orange-500' },
+    { rotulo: 'CBS', valor: resumo.valor_cbs, borda: 'border-orange-500' },
+    { rotulo: 'IBS', valor: resumo.valor_ibs_municipal + resumo.valor_ibs_estadual, borda: 'border-rose-500' },
     { rotulo: 'ICMS', valor: resumo.total_icms, borda: 'border-yellow-500' },
     ...(resumo.valor_fio_b !== null ? [{ rotulo: 'Fio B (informativo)', valor: resumo.valor_fio_b, borda: 'border-purple-500' }] : []),
     ...(resumo.valor_escassez ? [{ rotulo: 'Escassez Hídrica (informativo)', valor: resumo.valor_escassez, borda: 'border-cyan-600' }] : []),
   ];
 
-  // Linha sem kWh (CIP, juros, multas, taxas): só descrição e valor.
+  // Linha sem kWh (CIP, juros, multas, taxas): descrição, valor e ICMS zerado.
   const linhaSemKwh = (chave: string, nome: string, valor: number) => (
     <tr key={chave} className="border-b border-slate-200">
       <td className="p-2 font-semibold">{nome}</td>
       <td colSpan={3}></td>
       <td className="p-2 text-right font-bold font-mono">{formatBRL(valor)}</td>
-      <td colSpan={5}></td>
+      <td colSpan={4}></td>
+      <td className="p-2 text-right font-mono">{formatBRL(0)}</td>
+      <td></td>
     </tr>
   );
 
@@ -51,7 +56,7 @@ export default function FaturaReforma({ reforma, instalacao, aoExportar }: Props
 
       <div className="flex flex-wrap items-stretch gap-y-3 border-b border-slate-200 pb-4">
         {cartoes.map((c) => (
-          <div key={c.rotulo} className={`flex-1 min-w-32 pl-4 border-l-4 ${c.borda} py-1`}>
+          <div key={c.rotulo} className={`flex-1 min-w-28 pl-4 border-l-4 ${c.borda} py-1`}>
             <span className="text-[10px] text-slate-500 font-bold uppercase tracking-wider block">{c.rotulo}</span>
             <span className="text-xl font-bold text-black">{formatBRL(c.valor)}</span>
           </div>
@@ -65,9 +70,9 @@ export default function FaturaReforma({ reforma, instalacao, aoExportar }: Props
       <div>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
           <span className="inline-flex items-center bg-slate-100 border border-slate-200 text-[#2f364b] font-bold text-sm px-4 py-2 rounded-md">
-            Modelo Reforma
+            Detalhes do faturamento (2027)
             <span className="mx-3 w-px h-4 bg-slate-300"></span>
-            B1 Residencial
+            {categoria}
             {instalacao && (
               <>
                 <span className="mx-3 w-px h-4 bg-slate-300"></span>
@@ -92,12 +97,13 @@ export default function FaturaReforma({ reforma, instalacao, aoExportar }: Props
                 <th className="p-2 text-center">Unidade</th>
                 <th className="p-2 text-right">Quantidade</th>
                 <th className="p-2 text-right">Preço Unit (R$) com tributos</th>
-                <th className="p-2 text-right">Valor Total (R$)</th>
-                <th className="p-2 text-right">CBS/IBS (R$)</th>
-                <th className="p-2 text-right">Base de Cálculo ICMS (R$)</th>
-                <th className="p-2 text-right">Alíquota ICMS (%)</th>
+                <th className="p-2 text-right">Valor Total R$</th>
+                <th className="p-2 text-right">IBS Municipal</th>
+                <th className="p-2 text-right">IBS Estadual</th>
+                <th className="p-2 text-right">CBS</th>
+                <th className="p-2 text-right">Base Calc ICMS (R$)</th>
                 <th className="p-2 text-right">ICMS (R$)</th>
-                <th className="p-2 text-right">Preço Unit (R$)</th>
+                <th className="p-2 text-right">Tarifa Unit. (R$)</th>
               </tr>
             </thead>
             <tbody>
@@ -108,21 +114,23 @@ export default function FaturaReforma({ reforma, instalacao, aoExportar }: Props
                   <td className="p-2 text-right font-mono">{formatNum(l.quantidade, 4)}</td>
                   <td className="p-2 text-right font-mono">{formatNum(l.preco_unit, 8)}</td>
                   <td className="p-2 text-right font-bold font-mono">{formatBRL(l.valor_total)}</td>
-                  <td className="p-2 text-right font-mono">{formatBRL(l.valor_cbs_ibs)}</td>
+                  <td className="p-2 text-right font-mono">{formatBRL(l.valor_ibs_municipal)}</td>
+                  <td className="p-2 text-right font-mono">{formatBRL(l.valor_ibs_estadual)}</td>
+                  <td className="p-2 text-right font-mono">{formatBRL(l.valor_cbs)}</td>
                   <td className="p-2 text-right font-mono">{formatBRL(l.base_icms)}</td>
-                  <td className="p-2 text-right font-mono">{formatNum(l.aliquota_icms, 3)}</td>
                   <td className="p-2 text-right font-mono">{formatBRL(l.valor_icms)}</td>
                   <td className="p-2 text-right font-mono">{formatNum(l.tarifa_base, 8)}</td>
                 </tr>
               ))}
               {ajustes.map((a, i) => linhaSemKwh(`ajuste-${i}`, a.nome, a.valor))}
-              {resumo.valor_cip > 0 && linhaSemKwh('cip', 'CIP', resumo.valor_cip)}
+              {resumo.valor_cip > 0 && linhaSemKwh('cip', 'Contribuição de Ilum. Pública - Lei Municipal', resumo.valor_cip)}
               <tr className="bg-slate-100 font-bold border-t-2 border-slate-400 text-slate-800">
                 <td colSpan={4} className="p-2 text-left uppercase">Total</td>
                 <td className="p-2 text-right font-mono">{formatBRL(resumo.total_fatura)}</td>
-                <td className="p-2 text-right font-mono">{formatBRL(resumo.total_cbs_ibs)}</td>
+                <td className="p-2 text-right font-mono">{formatBRL(resumo.valor_ibs_municipal)}</td>
+                <td className="p-2 text-right font-mono">{formatBRL(resumo.valor_ibs_estadual)}</td>
+                <td className="p-2 text-right font-mono">{formatBRL(resumo.valor_cbs)}</td>
                 <td className="p-2 text-right font-mono">{formatBRL(resumo.total_base_icms)}</td>
-                <td></td>
                 <td className="p-2 text-right font-mono">{formatBRL(resumo.total_icms)}</td>
                 <td></td>
               </tr>
@@ -135,10 +143,10 @@ export default function FaturaReforma({ reforma, instalacao, aoExportar }: Props
         <table className="modern-table">
           <thead>
             <tr>
-              <th>TRIBUTOS</th>
-              <th className="text-right">BASE DE CALC. (R$)</th>
-              <th className="text-right">ALIQUOTA (%)</th>
-              <th className="text-right">VALOR (R$)</th>
+              <th>Tributos</th>
+              <th className="text-right">Base de Calc. (R$)</th>
+              <th className="text-right">Alíquota (%)</th>
+              <th className="text-right">Valor (R$)</th>
             </tr>
           </thead>
           <tbody>

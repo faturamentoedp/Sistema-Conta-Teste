@@ -4,10 +4,9 @@ import React, { useState } from 'react';
 import { MUNICIPIOS_ES_CIP, calcular_cip_municipio } from './motor/cip-municipios.js';
 import TituloSecao from '@/plataforma/componentes/TituloSecao';
 import ResultadoFatura from './ResultadoFatura';
-import ResultadoReforma from './ResultadoReforma';
 import FaturaReforma from './FaturaReforma';
 import { REFORMA_DISPONIVEL } from './reformaDisponivel';
-import { REFORMA_ALIQUOTAS, REFORMA_OPCOES_CBS } from './motor/reforma.js';
+import { reforma_vigente } from './motor/reforma.js';
 import { exportarCSV, exportarCSVReforma } from './exportarCsv';
 import {
   aplicarPerdaBT,
@@ -26,11 +25,6 @@ const CAMPOS_BANDEIRA = [
   { bandeira: 'bandeira_mes2', dias: 'dias_bandeira2' },
   { bandeira: 'bandeira_mes3', dias: 'dias_bandeira3' },
 ] as const;
-
-// "Tarifa" que existe só na tela: o cálculo é o do B1 residencial, mostrando
-// apenas a fatura com CBS/IBS (como a aba "Modelo Reforma" da planilha).
-const TARIFA_REFORMA = 'B1C_REFORMA';
-const categoriaDoMotor = (categoria: string) => (categoria === TARIFA_REFORMA ? 'B1C' : categoria);
 
 export default function ContaTeste() {
   const [form, setForm] = useState<FormularioContaTeste>({
@@ -61,9 +55,6 @@ export default function ContaTeste() {
   });
   const [descontoBT, setDescontoBT] = useState(false);
   const [sudeneAtivo, setSudeneAtivo] = useState(false);
-  // Reforma Tributária (preliminar): a comparação começa desligada.
-  const [compararReforma, setCompararReforma] = useState(false);
-  const [cbsReforma, setCbsReforma] = useState(String(REFORMA_ALIQUOTAS.cbs));
   // Município usado para preencher a CIP automaticamente (só ES). Vazio =
   // comportamento de sempre, CIP 100% manual - nada muda pra quem não usa.
   const [municipioCip, setMunicipioCip] = useState('');
@@ -78,8 +69,8 @@ export default function ContaTeste() {
     [{ consumo: '', percentual: '100', modalidade: 'GD1' }]
   );
 
-  const somenteReforma = REFORMA_DISPONIVEL && form.categoria === TARIFA_REFORMA;
-  const simulaReforma = somenteReforma || (REFORMA_DISPONIVEL && compararReforma);
+  // A partir de 2027 (data da leitura atual) a fatura sai no layout da Reforma.
+  const leituraEm2027 = REFORMA_DISPONIVEL && reforma_vigente(form.data_leitura_atual);
 
   const brOuTb = form.categoria.startsWith('B1BR') || form.categoria.endsWith('_TB');
 
@@ -111,7 +102,7 @@ export default function ContaTeste() {
     }
     setResultado(null);
     setError(null);
-  }, [form, ajustes, gdAtivo, gdPapel, geradoras, descontoBT, sudeneAtivo, compararReforma, cbsReforma]);
+  }, [form, ajustes, gdAtivo, gdPapel, geradoras, descontoBT, sudeneAtivo]);
 
   // CIP automática por município (só ES). Município em branco = nada muda,
   // continua 100% manual. Escolhido um município, recalcula sempre que
@@ -133,7 +124,7 @@ export default function ContaTeste() {
         + (parseFloat(String(form.consumo_intermediario).replace(',', '.')) || 0)) * constMedidor
       : aplicarPerdaBT((parseFloat(String(form.consumo_kwh).replace(',', '.')) || 0) * constMedidor, descontoBT);
 
-    const cip = calcular_cip_municipio(municipioCip, categoriaDoMotor(form.categoria), consumo, dataAnt, dataAtu);
+    const cip = calcular_cip_municipio(municipioCip, form.categoria, consumo, dataAnt, dataAtu);
     if (cip !== null) {
       // Intencional: o campo de CIP é um input normal que esta sugestão
       // preenche; o usuário pode sobrescrever e só é recalculada na próxima
@@ -193,7 +184,6 @@ export default function ContaTeste() {
 
       const payload = {
         ...form,
-        categoria: categoriaDoMotor(form.categoria),
         consumo_kwh: aplicaBT(rawKwh),
         consumo_reservado: aplicaBT(rawReservado),
         consumo_ponta: aplicaBT(rawPonta),
@@ -207,8 +197,6 @@ export default function ContaTeste() {
         // Só vai quando algum dia foi digitado; sem isso o motor usa a ordem das datas.
         bandeiras_dias: usaDiasDaFatura ? diasDaFatura : undefined,
         sudene: sudeneAtivo,
-        comparar_reforma: simulaReforma ? true : undefined,
-        reforma_cbs: simulaReforma ? Number(cbsReforma) : undefined,
         gd_ativo: gdAtivo,
         gd_papel: gdPapel,
         geradoras: gdAtivo && gdPapel === 'receptor'
@@ -241,10 +229,8 @@ export default function ContaTeste() {
 
   const baixarCSV = () => {
     if (!resultado) return;
-    if (somenteReforma) {
-      if (resultado.reforma && 'linhas' in resultado.reforma) {
-        exportarCSVReforma({ reforma: resultado.reforma, form, descontoBT });
-      }
+    if (resultado.reforma && 'linhas' in resultado.reforma) {
+      exportarCSVReforma({ reforma: resultado.reforma, form, descontoBT });
       return;
     }
     exportarCSV({ resultado, form, descontoBT, sudeneAtivo, bandeirasDias: usaDiasDaFatura ? diasDaFatura : undefined });
@@ -303,11 +289,6 @@ export default function ContaTeste() {
                   <option value="B3_PPE_TB">B3 PPE Branca</option>
                   <option value="B3_CP_TB">B3CP Branca</option>
                 </optgroup>
-                {REFORMA_DISPONIVEL && (
-                  <optgroup label="Reforma 2027 (preliminar)">
-                    <option value={TARIFA_REFORMA}>Fatura B1 (Res) - Reforma 2027</option>
-                  </optgroup>
-                )}
               </select>
             </div>
           </div>
@@ -424,6 +405,12 @@ export default function ContaTeste() {
               <input type="date" name="data_leitura_atual" value={form.data_leitura_atual} onChange={handleChange} required className="w-full" />
             </div>
           </div>
+
+          {leituraEm2027 && (
+            <p className="text-[11px] text-blue-800 bg-blue-50 border border-blue-200 rounded px-2 py-1" data-testid="aviso-layout-2027">
+              Leitura atual em 2027: a fatura sai no layout da Reforma Tributária, com CBS e IBS (simulação preliminar).
+            </p>
+          )}
 
           {/* Constante do medidor - só aparece como campo comum; "1" = sem efeito. */}
           <div>
@@ -711,34 +698,6 @@ export default function ContaTeste() {
             </div>
           </div>
 
-          {REFORMA_DISPONIVEL && (
-            <div className="border-t border-slate-200 pt-3 space-y-2">
-              {!somenteReforma && (
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input type="checkbox" checked={compararReforma} onChange={(e) => setCompararReforma(e.target.checked)} className="w-4 h-4 text-blue-600 rounded" />
-                  <span className="text-xs font-bold text-black uppercase tracking-wide">Comparar com a Reforma 2027</span>
-                </label>
-              )}
-              <p className="text-[11px] text-slate-500">
-                {somenteReforma
-                  ? 'Tarifa Reforma 2027: mostra só a fatura nova, com CBS e IBS. Simulação preliminar.'
-                  : 'Simulação preliminar (CBS e IBS), ainda sem validação da área. Não muda o cálculo atual.'}
-              </p>
-              {simulaReforma && (
-                <div>
-                  <label htmlFor="reforma-cbs" className="block text-xs font-semibold text-black mb-1">Alíquota da CBS</label>
-                  <select id="reforma-cbs" value={cbsReforma} onChange={(e) => setCbsReforma(e.target.value)} className="w-full">
-                    {REFORMA_OPCOES_CBS.map((v: number) => (
-                      <option key={v} value={String(v)}>
-                        {(v * 100).toFixed(1).replace('.', ',')}%{v === REFORMA_ALIQUOTAS.cbs ? ' (modelo da área)' : ' (com redutor de 0,1 ponto)'}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              )}
-            </div>
-          )}
-
           {error && <div className="text-red-600 text-sm">{error}</div>}
 
           <button type="submit" disabled={loading} className="w-full mt-4 bg-[#2f364b] hover:bg-[#1f2536] text-white font-semibold py-3 px-4 rounded transition-colors">
@@ -749,15 +708,19 @@ export default function ContaTeste() {
 
       {/* Resultados */}
       <div className="w-full flex-1">
-        {somenteReforma && resultado?.reforma && (
-          <FaturaReforma reforma={resultado.reforma} instalacao={form.instalacao} aoExportar={baixarCSV} />
-        )}
-        {!somenteReforma && resultado?.reforma && (
+        {resultado?.reforma && (
           <div className="mb-8">
-            <ResultadoReforma reforma={resultado.reforma} />
+            <FaturaReforma
+              reforma={resultado.reforma}
+              categoria={form.categoria}
+              instalacao={form.instalacao}
+              aoExportar={baixarCSV}
+            />
           </div>
         )}
-        {!somenteReforma && resultado && (
+        {/* O resultado de sempre. Em 2027 ele só aparece quando a Reforma ainda
+            não tem regra para a fatura. */}
+        {resultado && !(resultado.reforma && 'linhas' in resultado.reforma) && (
           <ResultadoFatura
             resultado={resultado}
             categoria={form.categoria}

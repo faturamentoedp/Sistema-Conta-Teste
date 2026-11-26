@@ -87,16 +87,18 @@ function baixarArquivo(csv: string, nome: string) {
   document.body.removeChild(link);
 }
 
-/** Quadro de tributos da fatura da reforma (usado na tela e no CSV). */
+/** Quadro de tributos da fatura de 2027 (usado na tela e no CSV). */
 export function linhasDeTributosReforma({ resumo, aliquotas }: ReformaCalculada) {
-  const pct = (v: number) => `${(v * 100).toFixed(1).replace('.', ',')}%`;
+  const pct = (v: number) => `${(v * 100).toFixed(2).replace('.', ',')}%`;
   return [
+    { nome: 'ICMS', base: resumo.total_base_icms, aliquota: pct(aliquotas.icms), valor: resumo.total_icms },
     { nome: 'CBS', base: resumo.base_cbs_ibs, aliquota: pct(aliquotas.cbs), valor: resumo.valor_cbs },
-    { nome: 'IBS', base: resumo.base_cbs_ibs, aliquota: pct(aliquotas.ibs), valor: resumo.valor_ibs },
+    { nome: 'IBS Municipal', base: resumo.base_cbs_ibs, aliquota: pct(aliquotas.ibs_municipal), valor: resumo.valor_ibs_municipal },
+    { nome: 'IBS Estadual', base: resumo.base_cbs_ibs, aliquota: pct(aliquotas.ibs_estadual), valor: resumo.valor_ibs_estadual },
   ];
 }
 
-/** CSV da tarifa "Reforma 2027": só a fatura nova, nas colunas da planilha da área. */
+/** CSV da fatura de 2027, nas colunas do novo layout. */
 export function exportarCSVReforma({ reforma, form, descontoBT }: { reforma: ReformaCalculada; form: FormularioContaTeste; descontoBT: boolean }) {
   const { resumo, linhas, ajustes, observacoes } = reforma;
   let csv = "\uFEFF"; // UTF-8 BOM
@@ -106,21 +108,21 @@ export function exportarCSVReforma({ reforma, form, descontoBT }: { reforma: Ref
   csv += `Instalação;${form.instalacao || 'Não informada'}\n`;
   csv += `Documento de Impressão;${form.documento_impressao || 'Não informado'}\n`;
   csv += `Geografia;EDP ${form.distribuidora}\n`;
-  csv += "Tarifas;B1 Residencial - Reforma 2027\n";
+  csv += `Tarifas;${form.categoria}\n`;
   csv += `Período de Leitura;${form.data_leitura_anterior} a ${form.data_leitura_atual}\n`;
   csv += `Desconto BT (-1.5% kWh);${descontoBT ? 'SIM (Ativado)' : 'NÃO'}\n\n`;
 
-  csv += "Descrição;Unidade;Quantidade;Preço Unit (R$) com tributos;Valor Total (R$);CBS/IBS (R$);Base de Cálculo ICMS (R$);Alíquota ICMS (%);ICMS (R$);Preço Unit (R$)\n";
+  csv += "Descrição;Unidade;Quantidade;Preço Unit (R$) com tributos;Valor Total R$;IBS Municipal;IBS Estadual;CBS;Base Calc ICMS (R$);ICMS (R$);Tarifa Unit. (R$)\n";
   linhas.forEach((l) => {
-    csv += `"${l.nome}";"kWh";"${formatNum(l.quantidade, 4)}";"${formatNum(l.preco_unit, 8)}";"${formatBRL(l.valor_total)}";"${formatBRL(l.valor_cbs_ibs)}";"${formatBRL(l.base_icms)}";"${formatNum(l.aliquota_icms, 3)}";"${formatBRL(l.valor_icms)}";"${formatNum(l.tarifa_base, 8)}"\n`;
+    csv += `"${l.nome}";"kWh";"${formatNum(l.quantidade, 4)}";"${formatNum(l.preco_unit, 8)}";"${formatBRL(l.valor_total)}";"${formatBRL(l.valor_ibs_municipal)}";"${formatBRL(l.valor_ibs_estadual)}";"${formatBRL(l.valor_cbs)}";"${formatBRL(l.base_icms)}";"${formatBRL(l.valor_icms)}";"${formatNum(l.tarifa_base, 8)}"\n`;
   });
-  const semKwh = [...ajustes, ...(resumo.valor_cip > 0 ? [{ nome: 'CIP', valor: resumo.valor_cip }] : [])];
+  const semKwh = [...ajustes, ...(resumo.valor_cip > 0 ? [{ nome: 'Contribuição de Ilum. Pública - Lei Municipal', valor: resumo.valor_cip }] : [])];
   semKwh.forEach((a) => {
-    csv += `"${a.nome}";"";"";"";"${formatBRL(a.valor)}";"";"";"";"";""\n`;
+    csv += `"${a.nome}";"";"";"";"${formatBRL(a.valor)}";"";"";"";"";"";""\n`;
   });
-  csv += `"TOTAL";"";"";"";"${formatBRL(resumo.total_fatura)}";"${formatBRL(resumo.total_cbs_ibs)}";"${formatBRL(resumo.total_base_icms)}";"";"${formatBRL(resumo.total_icms)}";""\n\n`;
+  csv += `"TOTAL";"";"";"";"${formatBRL(resumo.total_fatura)}";"${formatBRL(resumo.valor_ibs_municipal)}";"${formatBRL(resumo.valor_ibs_estadual)}";"${formatBRL(resumo.valor_cbs)}";"${formatBRL(resumo.total_base_icms)}";"${formatBRL(resumo.total_icms)}";""\n\n`;
 
-  csv += "Tributos;Base de Cálc (R$);Alíquota;Valor (R$)\n";
+  csv += "Tributos;Base de Calc. (R$);Alíquota (%);Valor (R$)\n";
   linhasDeTributosReforma(reforma).forEach((t) => {
     csv += `${t.nome};${formatBRL(t.base)};${t.aliquota};${formatBRL(t.valor)}\n`;
   });

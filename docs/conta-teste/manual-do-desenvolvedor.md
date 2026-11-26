@@ -72,14 +72,13 @@ Abra o sistema, clique em **Conta Teste**, preencha os campos e clique em **Calc
 | CIP (R$) | Valor da iluminação pública |
 | Tributação de ICMS | Deixe em Automático, salvo caso específico |
 | Ajustes / Outros Valores | **Toda linha da fatura sem kWh:** parcelas, multas, juros, bônus, serviços de terceiros. Crédito entra negativo (ex.: -10,77) |
-| Comparar com a Reforma 2027 | Mostra a reforma ao lado do cálculo atual. Simulação preliminar (parte 10) |
 
 **Como escolher a tarifa**
 
 - Fatura com mensagem de **Desconto Social** (linhas "até 120 kWh"): **B1CDE**.
 - Fatura com **Subvenção Tarifária** ou **Valor Baixa Renda**: **B1BRN MP 1300**.
 - Residencial comum: **B1 (Res)**.
-- Para ver **só a fatura nova** de 2027: **Fatura B1 (Res) - Reforma 2027** (simulação preliminar, parte 10).
+- **Leitura atual em 2027:** não há tarifa especial. A tela mostra sozinha a fatura no layout da Reforma (parte 10).
 
 **Como ler o resultado:** os cartões mostram os totais; a tabela imita a nota fiscal; o "Resumo de Tributos" mostra as alíquotas usadas. **Fio B**, **Escassez Hídrica** e **Benefício Tarifa Social** são informativos e não somam no total. O botão **Baixar Tabela** gera o CSV.
 
@@ -191,9 +190,8 @@ Alguns ajustes acontecem **na tela, antes de chegar ao motor**: constante do med
 |---|---|
 | `ContaTeste.tsx` | Formulário, lista de tarifas e o que é enviado ao cálculo |
 | `ResultadoFatura.tsx` | Cartões, tabela e resumo de tributos |
-| `ResultadoReforma.tsx` | Comparação com a reforma |
-| `FaturaReforma.tsx` | Tarifa "Reforma 2027": só a fatura nova |
-| `reformaDisponivel.ts` | Mostra ou esconde as opções da reforma |
+| `FaturaReforma.tsx` | Fatura no layout de 2027 |
+| `reformaDisponivel.ts` | Liga ou desliga o layout de 2027 |
 | `exportarCsv.ts` | Arquivo CSV baixado |
 | `utilitarios.ts` | Desconto BT, constante do medidor, períodos das bandeiras |
 | `formatadores.ts` | Formato de moeda e números |
@@ -501,16 +499,23 @@ Este projeto usa uma versão do Next.js com mudanças em relação a versões an
 
 **Situação:** protótipo disponível **também no link oficial** (liberado em 26/11/2026), mas **ainda não validado** pela área. A tela avisa que é uma simulação preliminar. O resumo técnico está em `docs/conta-teste/reforma-tributaria.md`.
 
-### 10.1 Como usar
+### 10.1 Como funciona
 
-Há duas formas, as duas com escolha da alíquota da CBS:
+**A data da leitura atual decide o layout.** Não há opção para marcar.
 
-| Forma | Como | O que aparece | CSV |
-|---|---|---|---|
-| **Somente Reforma 2027** | Em Tarifas, escolha **Fatura B1 (Res) - Reforma 2027** | Só a fatura nova, com as colunas na ordem da aba "Modelo Reforma" (CBS/IBS no lugar de PIS/COFINS) | Da fatura nova |
-| **Comparar** | Escolha uma tarifa e marque **Comparar com a Reforma 2027** | Total atual, total com a reforma, diferença e as duas tabelas | Só do cálculo atual |
+| Leitura atual | O que aparece | CSV |
+|---|---|---|
+| Até 31/12/2026 | A tela de sempre, com PIS/COFINS | Layout atual |
+| A partir de 01/01/2027 | Só a fatura no layout novo | Layout novo |
+| A partir de 2027, em situação sem regra (10.3) | O motivo e, abaixo, o cálculo antigo, que **não vale** como conta de 2027 | Layout atual |
 
-A tarifa da reforma vale para ES e SP (campo Geografia) e usa as regras do B1 residencial. Ela não reproduz os quadros de composição da conta (energia, distribuição, transmissão e encargos) da planilha.
+**Colunas do layout de 2027:** Descrição, Unidade, Quantidade, Preço Unit (R$) com tributos, Valor Total R$, **IBS Municipal, IBS Estadual, CBS**, Base Calc ICMS, ICMS e Tarifa Unit. O quadro de tributos traz ICMS, CBS e os dois IBS, com base, alíquota e valor.
+
+**Alíquotas:** CBS 11,30%; IBS 0,05% municipal e 0,05% estadual (LC 214/2025, art. 344, para 2027 e 2028).
+
+O layout veio de faturas de exemplo em que os valores de IBS e CBS eram de preenchimento. O cálculo vem da aba "Modelo Reforma" das planilhas. Como as colunas são arredondadas separadamente, a soma pode diferir em 1 centavo do total.
+
+O exemplo das planilhas usa datas de 2026, então na tela ele aparece no layout atual. Os valores do modelo continuam conferidos por `npm run verificar-reforma`.
 
 ### 10.2 Regra aplicada
 
@@ -537,14 +542,13 @@ PIS e COFINS não entram. A CIP e os ajustes são somados sem CBS, IBS ou ICMS (
 
 | O que mudar | Onde |
 |---|---|
-| Alíquotas de CBS e IBS | `motor/reforma.js`: `REFORMA_ALIQUOTAS` e `REFORMA_OPCOES_CBS` |
+| Alíquotas de CBS e IBS | `motor/reforma.js`: `REFORMA_ALIQUOTAS` |
+| A data em que o layout passa a valer | `motor/reforma.js`: `INICIO_REFORMA` |
 | Liberar uma tarifa | `motor/reforma.js`: `CATEGORIAS_SIMULAVEIS` e `motivos_sem_simulacao` |
 | Fórmula ou base dos impostos | `motor/reforma.js`: função `calcular_reforma` |
 | Textos de aviso | `motor/reforma.js`: lista `observacoes` |
-| Tela da comparação | `ResultadoReforma.tsx` |
-| Tela da tarifa Reforma 2027 | `FaturaReforma.tsx`; CSV em `exportarCsv.ts` (`exportarCSVReforma`) |
-| Opção na lista de tarifas | `ContaTeste.tsx`: `TARIFA_REFORMA` |
-| Esconder as opções da reforma | `reformaDisponivel.ts` (`false` esconde) |
+| Tela da fatura de 2027 | `FaturaReforma.tsx`; CSV e quadro de tributos em `exportarCsv.ts` |
+| Desligar o layout de 2027 | `reformaDisponivel.ts` (`false` desliga) |
 
 Depois de mudar:
 
@@ -556,7 +560,7 @@ Ele reproduz os dois exemplos das planilhas da área (ES R$ 178,53 e SP R$ 243,1
 
 ### 10.5 Perguntas em aberto para a área
 
-1. A CBS de 2027 será 11,2% ou 11,3%?
+1. O simulador usa CBS de **11,30%**, como a planilha. Há fontes que indicam redução de 0,1 ponto em 2027: a área confirma os 11,30%?
 2. CBS e IBS entram na base do ICMS no ES e em SP? No modelo do ES, a tabela e o quadro "Fatura B1" estão diferentes.
 3. Quais itens são tributáveis: CIP, juros, multas, parcelas, serviços de terceiros, descontos, créditos e geração distribuída?
 4. Como ficam Baixa Renda, Desconto Social, Rural e Irrigante? Há devolução de CBS/IBS na fatura?

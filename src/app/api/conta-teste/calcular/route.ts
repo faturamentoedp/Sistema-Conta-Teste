@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { calcular_fatura, normalizar_tarifas, resolver_tarifas } from '@/modulos/conta-teste/motor/calculo.js';
-import { calcular_reforma, REFORMA_ALIQUOTAS, REFORMA_OPCOES_CBS } from '@/modulos/conta-teste/motor/reforma.js';
+import { calcular_reforma, reforma_vigente } from '@/modulos/conta-teste/motor/reforma.js';
 import { REFORMA_DISPONIVEL } from '@/modulos/conta-teste/reformaDisponivel';
 
 // O motor de cálculo vive em src/modulos/conta-teste/motor/calculo.js, compartilhado com a
@@ -58,14 +58,10 @@ export async function POST(request: Request) {
             return NextResponse.json({ erro: resultado.erro }, { status: 400 });
         }
 
-        // Simulação preliminar da Reforma Tributária: só quando pedida. Vai num
-        // campo à parte - o cálculo atual não muda.
-        if (params.comparar_reforma && REFORMA_DISPONIVEL) {
-            const cbs = REFORMA_OPCOES_CBS.includes(Number(params.reforma_cbs))
-                ? Number(params.reforma_cbs)
-                : REFORMA_ALIQUOTAS.cbs;
-            const reforma = calcular_reforma(params, tarifas, resultado, { ...REFORMA_ALIQUOTAS, cbs });
-            return NextResponse.json({ ...resultado, reforma });
+        // Leitura atual a partir de 2027: vai junto a fatura no layout da Reforma
+        // Tributária (preliminar), num campo à parte - o cálculo atual não muda.
+        if (REFORMA_DISPONIVEL && reforma_vigente(atu)) {
+            return NextResponse.json({ ...resultado, reforma: calcular_reforma(params, tarifas, resultado) });
         }
 
         return NextResponse.json(resultado);

@@ -5,7 +5,7 @@
  * Uso: npm run verificar-reforma
  */
 import { calcular_fatura, normalizar_tarifas, resolver_tarifas } from '../../src/modulos/conta-teste/motor/calculo.js';
-import { calcular_reforma } from '../../src/modulos/conta-teste/motor/reforma.js';
+import { calcular_reforma, reforma_vigente } from '../../src/modulos/conta-teste/motor/reforma.js';
 
 let falhas = 0;
 function conferir(nome, obtido, esperado, tolerancia = 0.005) {
@@ -14,7 +14,7 @@ function conferir(nome, obtido, esperado, tolerancia = 0.005) {
     console.log(`${ok ? 'ok   ' : 'FALHA'} ${nome}: ${obtido}${ok ? '' : ` (esperado ${esperado})`}`);
 }
 
-function simular(extra, aliquotas) {
+function simular(extra) {
     const params = {
         distribuidora: 'ES', categoria: 'B1C', fase: 'monofasico',
         data_leitura_anterior: '2026-04-07', data_leitura_atual: '2026-05-06',
@@ -26,7 +26,7 @@ function simular(extra, aliquotas) {
         params.categoria
     );
     const atual = calcular_fatura(params, rows);
-    return { atual, reforma: calcular_reforma(params, rows, atual, aliquotas) };
+    return { atual, reforma: calcular_reforma(params, rows, atual) };
 }
 
 console.log('--- Modelo ES (155 kWh, amarela em 6 de 29 dias)');
@@ -38,7 +38,11 @@ console.log('--- Modelo ES (155 kWh, amarela em 6 de 29 dias)');
     conferir('TE', valores[1], 66.72);
     conferir('Bandeira amarela', valores[2], 0.81);
     conferir('CBS', r.valor_cbs, 13.89);
-    conferir('IBS', r.valor_ibs, 0.12);
+    conferir('IBS (municipal + estadual)', r.valor_ibs, 0.12);
+    conferir('IBS Municipal (0,05%)', r.valor_ibs_municipal, 0.06);
+    conferir('IBS Estadual (0,05%)', r.valor_ibs_estadual, 0.06);
+    const [tusd] = reforma.linhas;
+    conferir('Linha TUSD: IBS Municipal / IBS Estadual / CBS', `${tusd.valor_ibs_municipal} / ${tusd.valor_ibs_estadual} / ${tusd.valor_cbs}`, '0.04 / 0.04 / 8.21');
     conferir('ICMS', r.total_icms, 28.05);
     conferir('Linha TOTAL: coluna CBS/IBS', r.total_cbs_ibs, 14.02);
     conferir('Linha TOTAL: coluna Base do ICMS', r.total_base_icms, 165.02);
@@ -78,11 +82,9 @@ console.log('--- Bandeira vermelha segue a regra nova (a planilha ainda usa a an
     conferir('Vermelha P1, 155 kWh', linha.valor_total, 9.29, 0.011);
 }
 
-console.log('--- CBS 11,2%');
-{
-    const { reforma } = simular({}, { cbs: 0.112, ibs: 0.001 });
-    // Conta à mão: 97,41 + 66,66 + 0,81 + CIP 13,51.
-    conferir('Total ES com CBS 11,2%', reforma.resumo.total_fatura, 178.39);
+console.log('--- O layout de 2027 vale pela data da leitura atual');
+for (const [data, esperado] of [['2026-12-15', false], ['2026-12-31', false], ['2027-01-01', true], ['2027-04-06', true], ['', false]]) {
+    conferir(`leitura atual ${data || '(em branco)'}`, reforma_vigente(data), esperado);
 }
 
 console.log('--- Situações sem regra definida não geram número');

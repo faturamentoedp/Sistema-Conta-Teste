@@ -7,6 +7,11 @@
  *  "EDP SP_Modelo_NFe_B1C.xlsm", recebidas em 25/11/2026. As regras ainda NÃO
  *  foram validadas pela área - ver docs/conta-teste/reforma-tributaria.md.
  *
+ *  Vale para faturas com LEITURA ATUAL A PARTIR DE 01/01/2027 (reforma_vigente).
+ *  Antes disso a tela segue com o cálculo e o layout de sempre. As colunas
+ *  (IBS Municipal, IBS Estadual e CBS) seguem as faturas de exemplo do layout
+ *  de 2027, cujos valores de IBS/CBS são de preenchimento.
+ *
  *  Este módulo NÃO altera o cálculo atual: ele pede as linhas ao motor
  *  (quantidade e tarifa sem impostos) e só troca a tributação.
  *
@@ -26,14 +31,18 @@
 import { calcular_fatura, resolver_fio_b_tusd } from './calculo.js';
 
 /**
- * Alíquotas de 2027. A planilha da área usa CBS 11,3% (alíquota de referência
- * calculada pelo TCU). Há a leitura de que a cobrada em 2027 seja 11,2%
- * (redução de 0,1 ponto). Pendente de resolução do Senado e da área fiscal.
+ * Alíquotas de 2027. CBS 11,30%, a mesma da planilha da área (mantida por
+ * definição do projeto em 26/11/2026). IBS de 2027 e 2028: 0,05% estadual e
+ * 0,05% municipal (LC 214/2025, art. 344).
  */
-export const REFORMA_ALIQUOTAS = { cbs: 0.113, ibs: 0.001 };
-export const REFORMA_OPCOES_CBS = [0.113, 0.112];
+export const REFORMA_ALIQUOTAS = { cbs: 0.113, ibs_estadual: 0.0005, ibs_municipal: 0.0005 };
 
 const INICIO_REFORMA = new Date('2027-01-01T00:00:00Z');
+
+/** O layout e o cálculo com CBS/IBS valem pela data da leitura atual. */
+export function reforma_vigente(data_leitura_atual) {
+    return new Date(data_leitura_atual) >= INICIO_REFORMA;
+}
 
 /** Categorias sem regra especial pendente. Só o B1 tem modelo da área. */
 const CATEGORIAS_SIMULAVEIS = ['B1C', 'B1C_TB', 'B3', 'B3_TB', 'B4A', 'B4B'];
@@ -68,7 +77,7 @@ function motivos_sem_simulacao(categoria, atual) {
  * @param {object} atual     resultado de calcular_fatura (calculado aqui se omitido)
  * @param {object} aliquotas { cbs, ibs }
  * @returns {object} { indisponivel: string[] } ou
- *          { linhas, ajustes, resumo, aliquotas, observacoes, observacoes_comparacao }
+ *          { linhas, ajustes, resumo, aliquotas, observacoes }
  */
 export function calcular_reforma(params, dbRows, atual = calcular_fatura(params, dbRows), aliquotas = REFORMA_ALIQUOTAS) {
     if (atual.erro) return { indisponivel: [atual.erro] };
@@ -77,7 +86,8 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
     const motivos = motivos_sem_simulacao(categoria, atual);
     if (motivos.length > 0) return { indisponivel: motivos };
 
-    const { cbs, ibs } = aliquotas;
+    const { cbs, ibs_estadual, ibs_municipal } = aliquotas;
+    const ibs = ibs_estadual + ibs_municipal;
     const icms = atual.parametros_usados.aliquota_icms_aplicada;
 
     let base_liquida = 0;
@@ -106,7 +116,10 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
                 tarifa_base: l.tarifa_base,
                 preco_unit: l.quantidade > 0 ? valor_total / l.quantidade : 0,
                 valor_total,
-                valor_cbs_ibs: r2(cbs_ibs),
+                // Colunas separadas na fatura; o total da linha usa a soma, como a planilha.
+                valor_ibs_municipal: r2(liquido * ibs_municipal),
+                valor_ibs_estadual: r2(liquido * ibs_estadual),
+                valor_cbs: r2(liquido * cbs),
                 base_icms: icms > 0 ? r2(base_icms) : 0,
                 aliquota_icms: r2(icms * 100),
                 valor_icms: r2(valor_icms)
@@ -117,6 +130,8 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
     const total_energia = r2(linhas.reduce((acc, l) => acc + l.valor_total, 0));
     const valor_cbs = r2(base_liquida * cbs);
     const valor_ibs = r2(base_liquida * ibs);
+    const valor_ibs_estadual = r2(base_liquida * ibs_estadual);
+    const valor_ibs_municipal = r2(base_liquida * ibs_municipal);
     const cip = atual.resumo.valor_cip;
     // Mesmas linhas sem kWh que o motor atual soma (Juros, Multas, Taxas etc.).
     const ajustes = (Array.isArray(params.ajustes) ? params.ajustes : [])
@@ -126,8 +141,6 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
     if (valor_ajuste_avulso !== 0) ajustes.push({ nome: 'Ajustes / Outros Valores', valor: valor_ajuste_avulso });
     const outros = r2(ajustes.reduce((acc, a) => acc + a.valor, 0));
     const total_fatura = r2(total_energia + cip + outros);
-    const total_atual = atual.resumo.total_fatura;
-    const diferenca = r2(total_fatura - total_atual);
 
     // A outra leitura possível do ICMS (CBS/IBS fora da base), que é a do quadro
     // "Fatura B1" do modelo do ES. Serve para a área decidir vendo o valor.
@@ -143,8 +156,6 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
     const fio_b_publicado = resolver_fio_b_tusd(params.distribuidora?.toUpperCase() || 'ES', categoria, data_anterior, data_atual);
     const valor_fio_b = fio_b_publicado === null ? null : r2(atual.parametros_usados.consumo_faturado * fio_b_publicado);
 
-    // O que só faz sentido quando a reforma é mostrada ao lado do cálculo atual.
-    const observacoes_comparacao = [];
     const observacoes = [
         'Simulação preliminar: alíquotas e regras ainda não validadas pela área. Não use como valor de fatura.',
         'A CIP é somada sem CBS, IBS ou ICMS.'
@@ -160,14 +171,8 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
     } else if (data_anterior < INICIO_REFORMA) {
         observacoes.push('O período cruza 2026 e 2027 e a regra de transição não está definida: CBS/IBS foram aplicados sobre a fatura inteira.');
     }
-    // Os avisos de tarifa valem para os dois cálculos; os de PIS/COFINS só para o atual.
-    for (const aviso of atual.avisos || []) {
-        if (aviso.startsWith('PIS/COFINS')) {
-            observacoes_comparacao.push('O total "Atual" usa PIS/COFINS genérico, porque o mês não está cadastrado: a diferença mostrada é só uma referência.');
-        } else {
-            observacoes.push(aviso);
-        }
-    }
+    // Os avisos de tarifa valem aqui também; os de PIS/COFINS não, pois a reforma não usa esses tributos.
+    observacoes.push(...(atual.avisos || []).filter((aviso) => !aviso.startsWith('PIS/COFINS')));
 
     return {
         linhas,
@@ -181,17 +186,15 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
             base_cbs_ibs: base_liquida,
             valor_cbs,
             valor_ibs,
+            valor_ibs_estadual,
+            valor_ibs_municipal,
             total_icms: r2(icms_sem_arredondar),
             valor_cip: cip,
             outros_valores: outros,
             total_fatura,
-            total_atual,
-            diferenca,
-            diferenca_percentual: total_atual !== 0 ? (diferenca / total_atual) * 100 : 0,
             total_icms_sem_cbs_ibs
         },
-        aliquotas: { cbs, ibs, icms },
-        observacoes,
-        observacoes_comparacao
+        aliquotas: { cbs, ibs_estadual, ibs_municipal, icms },
+        observacoes
     };
 }
