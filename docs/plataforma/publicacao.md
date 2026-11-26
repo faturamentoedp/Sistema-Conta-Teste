@@ -75,74 +75,21 @@ Digite a senha combinada quando ele pedir e publique de novo com `npx vercel --p
 
 > ❌ **Não** cadastre `DB_SERVER`, `DB_USER`, `DB_PASSWORD` ou `DB_DATABASE` na Vercel. É justamente o que mantém a publicação livre de credenciais.
 
-### Produção x Teste
+### Publicação
 
-> **Atualização de 26/11/2026:** o projeto na Vercel está ligado ao GitHub. `git push origin main` **publica o link oficial sozinho**, sem as travas do `npm run publicar`. O envio de qualquer outra branch gera uma prévia, que pode pedir login da Vercel. O endereço antigo `sistema-conta-teste-psi.vercel.app` redireciona para o oficial.
+O projeto usa **somente a branch `main`**. A Vercel está ligada ao GitHub (confirmado em 26/11/2026): **`git push origin main` publica o link oficial sozinho**.
 
-São dois ambientes, com dois links e duas branches do Git:
+- **Link oficial:** `https://edp-sistemaunificado.vercel.app`. O endereço antigo `sistema-conta-teste-psi.vercel.app` redireciona para ele.
+- **Antes de enviar:** rode `npm run verificar` e `npm run verificar-cip` (e `npm run verificar-reforma`, se mexeu na reforma) e confira na máquina com `npm run dev`.
+- **Prévia sem mexer no oficial:** `npm run publicar:teste` (exige `npx vercel login`). A prévia mostra a faixa "Ambiente de teste" e pode pedir login da Vercel.
+- **`npm run publicar`:** alternativa pela linha de comando. Recusa quando há alteração sem commit ou a regressão falha, e pede para digitar `PRODUCAO`. Essas travas não valem para o envio pelo Git.
 
-| | **Produção** | **Teste** |
-|---|---|---|
-| O que tem | só o que a área **já validou** | tudo que foi adicionado, **validado ou não** |
-| Branch | `main` | `teste` |
-| Link | oficial: `edp-sistemaunificado.vercel.app` | prévia gerada a cada envio de outra branch |
-| Na tela | nenhuma marcação | faixa amarela **"Ambiente de teste"** + versão (commit) |
-| Publicar | `npm run publicar` | `npm run publicar:teste` |
-
-**No dia a dia, trabalhe sempre na `teste`.** Toda regra nova, ajuste ou correção entra lá, vai pro link de teste, e quem for validar abre o link de teste.
-
-```bash
-git checkout teste
-```
-(faça as alterações, comite e depois)
-```bash
-npm run publicar:teste
-```
-
-O comando de teste roda a regressão, sobe um *preview* (nunca toca na produção) e aponta o endereço fixo de teste para a versão nova. Se a regressão falhar ele avisa, mas publica — teste pode estar no meio do caminho.
-
-#### Levando para produção o que foi validado
-Só depois que a área validou. Como a `teste` mistura coisas validadas e não validadas, o caminho normal é levar **só os commits validados**:
-
-```bash
-git checkout main
-```
-```bash
-git cherry-pick <commit validado> <outro commit validado>
-```
-Se **tudo** que está na `teste` foi validado, dá para levar de uma vez com `git merge teste`. Depois:
-
-```bash
-npm run publicar
-```
-```bash
-git checkout teste
-```
-
-O `npm run publicar` (produção) **recusa** publicar quando: a branch não é a `main`; há alteração não commitada; ou a regressão (`verificar` e `verificar-cip`) falha. E ainda pede para digitar `PRODUCAO` para confirmar. Para só ensaiar, sem publicar: `npm run publicar -- --dry-run`.
-
-> Todo commit que vai pra `main` deveria vir com o caso que o validou (fatura real ou modelo oficial) já em `scripts/conta-teste/cenarios.mjs`, ancorado no total — é o que o `verificar` confere em cada publicação.
+> Todo commit com mudança de cálculo deveria vir com o caso que o validou (fatura real ou modelo oficial) já em `scripts/conta-teste/cenarios.mjs`, ancorado no total. Não inclua fatura de cliente nem dado pessoal no repositório.
 
 #### Botões no Excel (sem linha de comando)
 A pasta `ferramentas/` tem o **`Painel Conta Teste.xlsx`**: botões que executam os mesmos comandos - **Publicar teste**, **Publicar produção** e **Verificar cálculos** - e uma aba "Orientações" com o passo a passo e o que fazer quando o botão recusa. Cada botão é um link para um `.bat` da mesma pasta (não usa macro, então funciona com macros bloqueadas); o Excel mostra um aviso de segurança a cada clique: responda **Sim**. Mantenha o Excel dentro de `ferramentas/`. Pré-requisitos: Node.js e `npx vercel login` feito uma vez. As travas são as mesmas do `npm run publicar`.
 
-#### Configuração única na Vercel (painel)
-A Vercel não deixa fazer isso por linha de comando sem login, então é uma vez só, no painel do projeto `sistema-conta-teste`:
-
-1. **Settings → Git → Production Branch**: `main`. (Se o projeto estiver ligado ao GitHub, `git push origin main` passa a publicar a produção e `git push origin teste` gera o preview sozinho — os comandos `npm run publicar*` continuam valendo como alternativa.)
-2. **Settings → Domains**: adicione `sistema-conta-teste-teste.vercel.app` (o `publicar:teste` aponta ele sozinho para o último deploy de teste; se estiver ligado ao GitHub, associe-o à branch `teste`).
-3. **Settings → Deployment Protection**: por padrão os previews pedem login da Vercel e os colegas **não conseguem abrir** o link de teste. Escolha: desligar a proteção só para previews, ou deixar ligada e convidar as pessoas.
-4. **Senha opcional só no teste**: `npx vercel env add APP_SENHA preview` (variável só do ambiente de teste; a produção não é afetada).
-
-> ❌ O que vale para produção vale para teste: nunca cadastre `DB_SERVER`, `DB_USER`, `DB_PASSWORD` ou `DB_DATABASE` em **nenhum** ambiente da Vercel.
-
-Fluxo recomendado quando a mudança envolve cálculo:
-```bash
-npm run verificar
-```
-```bash
-npm run publicar:teste
-```
+> ❌ Nunca cadastre `DB_SERVER`, `DB_USER`, `DB_PASSWORD` ou `DB_DATABASE` em **nenhum** ambiente da Vercel.
 
 ---
 

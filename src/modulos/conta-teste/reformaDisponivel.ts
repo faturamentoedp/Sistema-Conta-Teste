@@ -1,6 +1,8 @@
 /**
- * A simulação da Reforma Tributária é preliminar: aparece na máquina local e no
- * ambiente de teste, nunca na produção. Quando a área validar as regras, troque
- * para `true`.
+ * Liga a simulação da Reforma Tributária em todos os ambientes, inclusive no
+ * link oficial. Liberada em 26/11/2026, a pedido do responsável pelo projeto.
+ *
+ * As regras continuam SEM validação da área: a tela avisa que é uma simulação
+ * preliminar, e o cálculo atual não muda. Para esconder de novo, use `false`.
  */
-export const REFORMA_DISPONIVEL = process.env.NEXT_PUBLIC_AMBIENTE !== 'production';
+export const REFORMA_DISPONIVEL: boolean = true;

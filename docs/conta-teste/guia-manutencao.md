@@ -16,7 +16,6 @@ O passo a passo completo está no **[manual de uso e manutenção](manual-do-des
 
 - [ ] Definir quem fica responsável e quem valida na área.
 - [ ] Enviar o código ao GitHub.
-- [ ] Atualizar a branch `teste`.
 - [ ] Dar acesso ao GitHub e à Vercel com a conta de cada pessoa (sem compartilhar senha).
-- [ ] Fazer o ensaio: rodar os testes e `npm run publicar:teste -- --dry-run`.
+- [ ] Fazer o ensaio: rodar os testes e abrir o sistema com `npm run dev`, sem enviar nada (o envio publica).
 - [ ] Confirmar qual versão está na produção.

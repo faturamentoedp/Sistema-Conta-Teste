@@ -46,7 +46,7 @@ Em dúvida, **não publique**: guarde a fatura e o print e pergunte à área.
 | 06/08/2027 | Fim da tarifa vigente do ES e do percentual GD2 | Importar a nova resolução (7.2) e o novo percentual (7.4) |
 | 22/10/2027 | Fim da tarifa vigente de SP | Importar a nova (7.2) |
 
-> **Atenção para 2027:** com leitura atual em 2027, o sistema usa um PIS/COFINS genérico (0,63% + 2,89%) e mostra um aviso amarelo. Esses tributos deixam de existir com a reforma, então **não use o total "atual" para conferir fatura de 2027**. A simulação com CBS/IBS existe, mas é preliminar e não aparece na produção. A área precisa definir as regras e a transição (parte 10).
+> **Atenção para 2027:** com leitura atual em 2027, o sistema usa um PIS/COFINS genérico (0,63% + 2,89%) e mostra um aviso amarelo. Esses tributos deixam de existir com a reforma, então **não use o total "atual" para conferir fatura de 2027**. A simulação com CBS/IBS está disponível, mas é preliminar. A área precisa definir as regras e a transição (parte 10).
 
 ---
 
@@ -72,14 +72,14 @@ Abra o sistema, clique em **Conta Teste**, preencha os campos e clique em **Calc
 | CIP (R$) | Valor da iluminação pública |
 | Tributação de ICMS | Deixe em Automático, salvo caso específico |
 | Ajustes / Outros Valores | **Toda linha da fatura sem kWh:** parcelas, multas, juros, bônus, serviços de terceiros. Crédito entra negativo (ex.: -10,77) |
-| Comparar com a Reforma 2027 | Mostra a reforma ao lado do cálculo atual. Só fora da produção (parte 10) |
+| Comparar com a Reforma 2027 | Mostra a reforma ao lado do cálculo atual. Simulação preliminar (parte 10) |
 
 **Como escolher a tarifa**
 
 - Fatura com mensagem de **Desconto Social** (linhas "até 120 kWh"): **B1CDE**.
 - Fatura com **Subvenção Tarifária** ou **Valor Baixa Renda**: **B1BRN MP 1300**.
 - Residencial comum: **B1 (Res)**.
-- Para ver **só a fatura nova** de 2027: **Fatura B1 (Res) - Reforma 2027** (fora da produção, parte 10).
+- Para ver **só a fatura nova** de 2027: **Fatura B1 (Res) - Reforma 2027** (simulação preliminar, parte 10).
 
 **Como ler o resultado:** os cartões mostram os totais; a tabela imita a nota fiscal; o "Resumo de Tributos" mostra as alíquotas usadas. **Fio B**, **Escassez Hídrica** e **Benefício Tarifa Social** são informativos e não somam no total. O botão **Baixar Tabela** gera o CSV.
 
@@ -193,7 +193,7 @@ Alguns ajustes acontecem **na tela, antes de chegar ao motor**: constante do med
 | `ResultadoFatura.tsx` | Cartões, tabela e resumo de tributos |
 | `ResultadoReforma.tsx` | Comparação com a reforma |
 | `FaturaReforma.tsx` | Tarifa "Reforma 2027": só a fatura nova |
-| `reformaDisponivel.ts` | Liga ou desliga a reforma por ambiente |
+| `reformaDisponivel.ts` | Mostra ou esconde as opções da reforma |
 | `exportarCsv.ts` | Arquivo CSV baixado |
 | `utilitarios.ts` | Desconto BT, constante do medidor, períodos das bandeiras |
 | `formatadores.ts` | Formato de moeda e números |
@@ -417,11 +417,7 @@ python scripts/conta-teste/gerar-cip-municipios.py site-cip.json src/modulos/con
 Passo a passo seguro:
 
 1. **Tenha a prova:** fatura real, modelo oficial ou orientação escrita da área.
-2. Crie uma branch para o trabalho:
-
-```bash
-git switch -c ajuste-nome-curto
-```
+2. Trabalhe na `main`, a única branch do projeto. Antes de começar, rode `git pull`.
 
 3. Rode os testes **antes**.
 4. Ache a regra. No VS Code, use `Ctrl+Shift+F` com um trecho do nome da linha ou do comentário.
@@ -503,7 +499,7 @@ Este projeto usa uma versão do Next.js com mudanças em relação a versões an
 
 ## 10. Reforma Tributária (CBS e IBS)
 
-**Situação:** protótipo. O código está no projeto, mas **não está validado** e não aparece na produção (aparece na máquina local e no ambiente de teste). O resumo técnico está em `docs/conta-teste/reforma-tributaria.md`.
+**Situação:** protótipo disponível **também no link oficial** (liberado em 26/11/2026), mas **ainda não validado** pela área. A tela avisa que é uma simulação preliminar. O resumo técnico está em `docs/conta-teste/reforma-tributaria.md`.
 
 ### 10.1 Como usar
 
@@ -548,7 +544,7 @@ PIS e COFINS não entram. A CIP e os ajustes são somados sem CBS, IBS ou ICMS (
 | Tela da comparação | `ResultadoReforma.tsx` |
 | Tela da tarifa Reforma 2027 | `FaturaReforma.tsx`; CSV em `exportarCsv.ts` (`exportarCSVReforma`) |
 | Opção na lista de tarifas | `ContaTeste.tsx`: `TARIFA_REFORMA` |
-| Mostrar na produção | `reformaDisponivel.ts` (**só depois da validação**) |
+| Esconder as opções da reforma | `reformaDisponivel.ts` (`false` esconde) |
 
 Depois de mudar:
 
@@ -629,24 +625,15 @@ git checkout -- scripts/conta-teste/referencia.json
 
 4. Rode `npm run verificar` de novo.
 
-### 11.3 Branches
+### 11.3 Uma branch só
 
-| Branch | Para quê |
-|---|---|
-| `main` | **Produção:** só o que a área validou |
-| `teste` | Tudo que está para validar |
-| outras | Trabalho em andamento |
-
-Em 25/11/2026 a `teste` está desatualizada em relação à `main`. Antes de usar, atualize:
+O projeto usa **somente a `main`**. Não crie outras branches. Antes de começar qualquer mudança:
 
 ```bash
-git switch teste
-```
-```bash
-git merge main
+git pull
 ```
 
-Se aparecer conflito e você não souber resolver, cancele com `git merge --abort` e peça ajuda. Se uma branch citada aqui não aparecer para você, ela ainda não foi enviada ao GitHub: peça a quem a criou.
+O **commit** salva a mudança só no seu computador. O **envio** (`git push`) é o que publica (11.5).
 
 ### 11.4 Salvar (commit)
 
@@ -665,54 +652,33 @@ git add -A
 git commit -m "PIS/COFINS de 12/2026 (ES e SP)"
 ```
 ```bash
-git push -u origin HEAD
+git push origin main
 ```
 
-> **Atenção:** se você estiver na `main`, esse envio **publica no link oficial** (11.5).
+> **Atenção:** esse envio **publica no link oficial** (11.5).
 
 ### 11.5 Publicar
 
-**O projeto na Vercel está ligado ao GitHub** (confirmado em 26/11/2026). Enviar ao GitHub já publica:
-
-| O que você faz | O que acontece |
-|---|---|
-| Enviar a `main` (`git push origin main`) | **Publica no link oficial**, sozinho e sem pedir confirmação |
-| Enviar qualquer outra branch | Cria uma **prévia** (teste) em outro endereço. O link oficial não muda |
+**O projeto na Vercel está ligado ao GitHub** (confirmado em 26/11/2026). Ao enviar a `main` (`git push origin main`), a Vercel **publica no link oficial sozinha**, sem pedir confirmação.
 
 **Link oficial:** `https://edp-sistemaunificado.vercel.app`. O endereço antigo, `sistema-conta-teste-psi.vercel.app`, redireciona para ele.
 
-**Antes de enviar a `main`,** confira que tudo foi validado e rode os testes (11.1). No envio direto, nada testa por você.
+**Antes de enviar:**
 
-**Para mostrar algo sem mexer no oficial,** envie o seu trabalho para uma branch de prévia:
+1. Rode os testes (11.1). No envio direto, nada testa por você.
+2. Confira a mudança na sua máquina, com `npm run dev`.
+3. Envie só o que pode ir para o time. O que ainda não pode ir fica sem envio.
 
-```bash
-git push origin HEAD:previa-nome-curto
-```
+A publicação leva alguns minutos. Depois, abra o link oficial e confira a mudança.
 
-O endereço da prévia aparece no painel da Vercel, em **Deployments**. Em 26/11/2026, uma prévia testada **pedia login da Vercel**. Para outra pessoa abrir, use a opção de compartilhar da publicação (se disponível), dê acesso a ela ou ajuste **Settings → Deployment Protection**.
+**Pela linha de comando (alternativa):** os dois comandos exigem `npx vercel login` e publicam no projeto ligado à pasta.
 
-Na prévia aparecem a faixa "Ambiente de teste" e a Reforma 2027. No link oficial, não.
+| Comando | O que faz |
+|---|---|
+| `npm run publicar:teste` | Gera uma prévia em outro endereço, sem mudar o link oficial. A prévia pode pedir login da Vercel |
+| `npm run publicar` | Publica a produção. Exige mudanças com commit, testes passando e que você digite `PRODUCAO` |
 
-**Pela linha de comando (alternativa):** `npm run publicar:teste` e `npm run publicar` exigem `npx vercel login` e publicam no projeto ligado à pasta. O de produção só roda a partir da `main`, sem alteração pendente e com os testes passando, e pede para digitar `PRODUCAO`. Essas travas **não valem** para o envio pelo Git. O endereço fixo de teste antigo (`sistema-conta-teste-teste.vercel.app`) não estava ativo em 26/11/2026. Para ensaiar sem publicar:
-
-```bash
-npm run publicar:teste -- --dry-run
-```
-
-**Levar para a produção o que foi validado:** vá para a `main` e traga **só os commits validados**:
-
-```bash
-git switch main
-```
-```bash
-git cherry-pick codigo-do-commit
-```
-
-Use `git merge nome-da-branch` apenas se **tudo** naquela branch foi validado.
-
-> Publicar atualiza o link que o time usa. Faça só depois da validação.
-
-Os botões de `ferramentas/Painel Conta Teste.xlsx` executam os mesmos comandos. Mais detalhes em `docs/plataforma/publicacao.md`.
+As travas do `npm run publicar` **não valem** para o envio pelo Git. Os botões de `ferramentas/Painel Conta Teste.xlsx` executam esses comandos. Mais detalhes em `docs/plataforma/publicacao.md`.
 
 **Senha de acesso (opcional):** variável `APP_SENHA`, na Vercel ou no arquivo `.env.local`.
 
@@ -758,7 +724,7 @@ Passou de R$ 0,03 com tudo conferido? Guarde o PDF da fatura, o print da tela in
 | Erro de vírgula ou chave após editar valores | Compare com a linha de cima. Número usa **ponto**, e linhas são separadas por vírgula |
 | `FALHA motor local` | Seu ajuste mudou um resultado já validado. Veja o caso e os campos listados |
 | `SEM REFERÊNCIA` | Cenário novo ainda não capturado (11.2) |
-| Publicação de produção recusada | Leia a mensagem: branch errada, mudança sem commit ou teste falhando |
+| Publicação de produção recusada | Leia a mensagem: mudança sem commit ou teste falhando |
 
 ---
 
@@ -788,4 +754,4 @@ Passou de R$ 0,03 com tudo conferido? Guarde o PDF da fatura, o print da tela in
 | Vigência | Período em que um valor vale |
 | Cenário | Um caso de teste |
 | Commit | Uma mudança salva no Git, com descrição |
-| Branch | Uma linha de trabalho separada no Git |
+| Branch | Uma linha de trabalho no Git. Este projeto usa só a `main` |

@@ -4,7 +4,7 @@
  *
  *   npm run publicar            -> produção  (só da branch main, árvore limpa,
  *                                  com os testes de regressão passando)
- *   npm run publicar:teste      -> teste     (qualquer branch; gera um link
+ *   npm run publicar:teste      -> teste     (gera um link
  *                                  de preview, nunca mexe na produção)
  *
  * Flags (depois de "--"):  --dry-run  mostra o que faria, sem publicar
@@ -14,7 +14,10 @@
  * de qualquer branch e mesmo com alteração não commitada - bastava um
  * esquecimento para uma regra não validada ir parar no link do time.
  *
- * Ver a seção "Produção x Teste" do README.
+ * O projeto usa só a branch main. Atenção: com a Vercel ligada ao GitHub,
+ * "git push origin main" também publica a produção, sem estas travas.
+ *
+ * Ver a seção "Publicação" do README.
  */
 import { execSync, spawnSync } from 'node:child_process';
 import readline from 'node:readline/promises';
@@ -59,17 +62,12 @@ console.log(`Modo: ${modo.toUpperCase()}   branch: ${branch || '?'}   commit: ${
 if (modo === 'producao') {
     if (branch !== 'main') {
         falhar(
-            `Produção só publica da branch "main" (você está em "${branch}").\n` +
-            `  Para levar o que já foi validado: git checkout main  e depois\n` +
-            `  git cherry-pick <commit validado>  (ou git merge teste, se tudo foi validado).\n` +
-            `  Para só mostrar a versão nova ao time, use: npm run publicar:teste`
+            `Produção só publica da branch "main" (você está em "${branch}"). O projeto usa só a main: git switch main`
         );
     }
     if (sujo) {
         falhar('Há alterações não commitadas. Produção só publica o que está commitado em "main" - faça o commit (ou guarde com git stash) e rode de novo.');
     }
-} else if (branch === 'main') {
-    console.log('\n⚠ Você está na "main" (produção). Um deploy de teste daqui só mostra o que já está validado - o trabalho novo fica na branch "teste".');
 }
 
 // ------------------------------------------------------------ regressão

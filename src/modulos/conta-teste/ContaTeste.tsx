@@ -61,7 +61,7 @@ export default function ContaTeste() {
   });
   const [descontoBT, setDescontoBT] = useState(false);
   const [sudeneAtivo, setSudeneAtivo] = useState(false);
-  // Reforma Tributária (preliminar, fora da produção): desligada por padrão.
+  // Reforma Tributária (preliminar): a comparação começa desligada.
   const [compararReforma, setCompararReforma] = useState(false);
   const [cbsReforma, setCbsReforma] = useState(String(REFORMA_ALIQUOTAS.cbs));
   // Município usado para preencher a CIP automaticamente (só ES). Vazio =
@@ -722,7 +722,7 @@ export default function ContaTeste() {
               <p className="text-[11px] text-slate-500">
                 {somenteReforma
                   ? 'Tarifa Reforma 2027: mostra só a fatura nova, com CBS e IBS. Simulação preliminar.'
-                  : 'Simulação preliminar (CBS e IBS). Não aparece na produção e não muda o cálculo atual.'}
+                  : 'Simulação preliminar (CBS e IBS), ainda sem validação da área. Não muda o cálculo atual.'}
               </p>
               {simulaReforma && (
                 <div>

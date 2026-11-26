@@ -71,13 +71,13 @@ Abre em `http://localhost:3020`. Não precisa de banco nem de variável de ambie
 | `npm run verificar` | Regressão dos 62 cenários da Conta Teste (centavo a centavo) |
 | `npm run verificar-cip` | Regressão da CIP por município (37 casos) |
 | `npm run verificar-reforma` | Simulação preliminar da Reforma Tributária contra os modelos da área |
-| `npm run publicar:teste` | Publica o link de teste na Vercel |
+| `npm run publicar:teste` | Gera uma prévia na Vercel, sem mudar o link oficial |
 | `npm run publicar` | Publica a produção (só da `main`, com regressão passando) |
 | `npm run rede` / `npm run share` | Diagnóstico de rede / túnel público (alternativas à Vercel) |
 
-## Produção x Teste
+## Publicação
 
-`main` = só o que a área validou (produção). `teste` = tudo (preview, com faixa amarela "Ambiente de teste"). Passo a passo em [docs/plataforma/publicacao.md](docs/plataforma/publicacao.md).
+Só existe a branch `main`. **`git push origin main` publica o link oficial** (`https://edp-sistemaunificado.vercel.app`). Passo a passo em [docs/plataforma/publicacao.md](docs/plataforma/publicacao.md).
 
 ---
 *Equipe de Desenvolvimento | EDP - 2026*

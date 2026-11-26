@@ -58,8 +58,8 @@ export async function POST(request: Request) {
             return NextResponse.json({ erro: resultado.erro }, { status: 400 });
         }
 
-        // Simulação preliminar da Reforma Tributária: só quando pedida e nunca
-        // em produção. Vai num campo à parte - o cálculo atual não muda.
+        // Simulação preliminar da Reforma Tributária: só quando pedida. Vai num
+        // campo à parte - o cálculo atual não muda.
         if (params.comparar_reforma && REFORMA_DISPONIVEL) {
             const cbs = REFORMA_OPCOES_CBS.includes(Number(params.reforma_cbs))
                 ? Number(params.reforma_cbs)
