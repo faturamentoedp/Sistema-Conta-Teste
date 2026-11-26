@@ -58,7 +58,9 @@ export const TRIBUTOS_MENSAIS = {
         '2026-10': { pis: 0.0110, cofins: 0.0508 },
         // Comunicado EDP ES: mês de referência setembro/2026, uso em novembro/2026
         // (transação ZCCS_PISCOFINS, Mês Lanc 11/2026).
-        '2026-11': { pis: 0.0090, cofins: 0.0416 }
+        '2026-11': { pis: 0.0090, cofins: 0.0416 },
+        // Comunicado EDP ES: mês de referência outubro/2026, uso em dezembro/2026.
+        '2026-12': { pis: 0.0105, cofins: 0.0481 }
     },
 
     // Tabela oficial de SP (exercício/período K4/MM.AAAA).
@@ -166,6 +168,8 @@ export const TRIBUTOS_MENSAIS = {
         // mesma convenção de defasagem dos demais meses dessa tabela.
         '2026-10': { pis: 0.0106, cofins: 0.0489 },
         // Comunicado EDP SP: mês de referência setembro/2026, uso em novembro/2026.
-        '2026-11': { pis: 0.0089, cofins: 0.0412 }
+        '2026-11': { pis: 0.0089, cofins: 0.0412 },
+        // Comunicado EDP SP: mês de referência outubro/2026, uso em dezembro/2026.
+        '2026-12': { pis: 0.0074, cofins: 0.0342 }
     }
 };

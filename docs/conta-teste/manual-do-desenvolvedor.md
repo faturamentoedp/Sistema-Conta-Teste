@@ -2,7 +2,7 @@
 
 Para quem vai usar o Conta Teste, atualizar valores, mudar regras de cálculo ou acrescentar funções. Siga na ordem na primeira vez; depois, use como consulta.
 
-Situação descrita: **25/11/2026**.
+Situação descrita: **26/11/2026**.
 
 **Onde está o que você procura**
 
@@ -40,7 +40,7 @@ Em dúvida, **não publique**: guarde a fatura e o print e pergunte à área.
 
 | Quando | Item | O que fazer |
 |---|---|---|
-| Leitura atual em 12/2026 | PIS/COFINS de 12/2026 não cadastrado (vai só até 11/2026) | Cadastrar quando o comunicado chegar (7.1) |
+| Leitura atual em 12/2026 | PIS/COFINS de 12/2026 **já cadastrado** em 26/11/2026 (ES 5,86% e SP 4,16%) | Nada a fazer |
 | A partir de 2027 | Reforma Tributária: CBS e IBS substituem PIS e COFINS | Ver parte 10. **O cálculo atual ainda não vale para faturas de 2027** |
 | Janeiro | CIP de municípios pode mudar (tabela conferida em 22/10/2026) | Conferir se alguma fatura divergir só na CIP (7.6) |
 | 06/08/2027 | Fim da tarifa vigente do ES e do percentual GD2 | Importar a nova resolução (7.2) e o novo percentual (7.4) |

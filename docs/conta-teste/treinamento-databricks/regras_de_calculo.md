@@ -237,7 +237,7 @@ Alíquotas **efetivas mensais**, por distribuidora, vindas do comunicado da EDP
 (Nota Técnica 115-SFF/SRE/ANEEL, transação SAP `ZCCS_PISCOFINS`). A chave é o
 **mês da leitura atual**. Arquivo: `dados/pis_cofins_mensal.csv`.
 
-* ES: de 2024-01 a 2026-11. SP: de 2014-01 a 2026-11.
+* ES: de 2024-01 a 2026-12. SP: de 2014-01 a 2026-12.
 * Mês não cadastrado → alíquota padrão `PIS 0,63 % + COFINS 2,89 %` e **aviso**.
 * Só a **soma** (`pis + cofins`) entra no imposto por dentro; PIS e COFINS são
   separados apenas no detalhamento, calculados sobre a mesma base.
