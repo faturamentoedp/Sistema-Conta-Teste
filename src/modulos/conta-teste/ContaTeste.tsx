@@ -5,9 +5,10 @@ import { MUNICIPIOS_ES_CIP, calcular_cip_municipio } from './motor/cip-municipio
 import TituloSecao from '@/plataforma/componentes/TituloSecao';
 import ResultadoFatura from './ResultadoFatura';
 import ResultadoReforma from './ResultadoReforma';
+import FaturaReforma from './FaturaReforma';
 import { REFORMA_DISPONIVEL } from './reformaDisponivel';
 import { REFORMA_ALIQUOTAS, REFORMA_OPCOES_CBS } from './motor/reforma.js';
-import { exportarCSV } from './exportarCsv';
+import { exportarCSV, exportarCSVReforma } from './exportarCsv';
 import {
   aplicarPerdaBT,
   cipManualNoMunicipio,
@@ -25,6 +26,11 @@ const CAMPOS_BANDEIRA = [
   { bandeira: 'bandeira_mes2', dias: 'dias_bandeira2' },
   { bandeira: 'bandeira_mes3', dias: 'dias_bandeira3' },
 ] as const;
+
+// "Tarifa" que existe só na tela: o cálculo é o do B1 residencial, mostrando
+// apenas a fatura com CBS/IBS (como a aba "Modelo Reforma" da planilha).
+const TARIFA_REFORMA = 'B1C_REFORMA';
+const categoriaDoMotor = (categoria: string) => (categoria === TARIFA_REFORMA ? 'B1C' : categoria);
 
 export default function ContaTeste() {
   const [form, setForm] = useState<FormularioContaTeste>({
@@ -71,6 +77,9 @@ export default function ContaTeste() {
   const [geradoras, setGeradoras] = useState<{ consumo: string, percentual: string, modalidade: string }[]>(
     [{ consumo: '', percentual: '100', modalidade: 'GD1' }]
   );
+
+  const somenteReforma = REFORMA_DISPONIVEL && form.categoria === TARIFA_REFORMA;
+  const simulaReforma = somenteReforma || (REFORMA_DISPONIVEL && compararReforma);
 
   const brOuTb = form.categoria.startsWith('B1BR') || form.categoria.endsWith('_TB');
 
@@ -124,7 +133,7 @@ export default function ContaTeste() {
         + (parseFloat(String(form.consumo_intermediario).replace(',', '.')) || 0)) * constMedidor
       : aplicarPerdaBT((parseFloat(String(form.consumo_kwh).replace(',', '.')) || 0) * constMedidor, descontoBT);
 
-    const cip = calcular_cip_municipio(municipioCip, form.categoria, consumo, dataAnt, dataAtu);
+    const cip = calcular_cip_municipio(municipioCip, categoriaDoMotor(form.categoria), consumo, dataAnt, dataAtu);
     if (cip !== null) {
       // Intencional: o campo de CIP é um input normal que esta sugestão
       // preenche; o usuário pode sobrescrever e só é recalculada na próxima
@@ -184,6 +193,7 @@ export default function ContaTeste() {
 
       const payload = {
         ...form,
+        categoria: categoriaDoMotor(form.categoria),
         consumo_kwh: aplicaBT(rawKwh),
         consumo_reservado: aplicaBT(rawReservado),
         consumo_ponta: aplicaBT(rawPonta),
@@ -197,8 +207,8 @@ export default function ContaTeste() {
         // Só vai quando algum dia foi digitado; sem isso o motor usa a ordem das datas.
         bandeiras_dias: usaDiasDaFatura ? diasDaFatura : undefined,
         sudene: sudeneAtivo,
-        comparar_reforma: REFORMA_DISPONIVEL && compararReforma ? true : undefined,
-        reforma_cbs: REFORMA_DISPONIVEL && compararReforma ? Number(cbsReforma) : undefined,
+        comparar_reforma: simulaReforma ? true : undefined,
+        reforma_cbs: simulaReforma ? Number(cbsReforma) : undefined,
         gd_ativo: gdAtivo,
         gd_papel: gdPapel,
         geradoras: gdAtivo && gdPapel === 'receptor'
@@ -231,6 +241,12 @@ export default function ContaTeste() {
 
   const baixarCSV = () => {
     if (!resultado) return;
+    if (somenteReforma) {
+      if (resultado.reforma && 'linhas' in resultado.reforma) {
+        exportarCSVReforma({ reforma: resultado.reforma, form, descontoBT });
+      }
+      return;
+    }
     exportarCSV({ resultado, form, descontoBT, sudeneAtivo, bandeirasDias: usaDiasDaFatura ? diasDaFatura : undefined });
   };
 
@@ -287,6 +303,11 @@ export default function ContaTeste() {
                   <option value="B3_PPE_TB">B3 PPE Branca</option>
                   <option value="B3_CP_TB">B3CP Branca</option>
                 </optgroup>
+                {REFORMA_DISPONIVEL && (
+                  <optgroup label="Reforma 2027 (preliminar)">
+                    <option value={TARIFA_REFORMA}>Fatura B1 (Res) - Reforma 2027</option>
+                  </optgroup>
+                )}
               </select>
             </div>
           </div>
@@ -692,14 +713,18 @@ export default function ContaTeste() {
 
           {REFORMA_DISPONIVEL && (
             <div className="border-t border-slate-200 pt-3 space-y-2">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" checked={compararReforma} onChange={(e) => setCompararReforma(e.target.checked)} className="w-4 h-4 text-blue-600 rounded" />
-                <span className="text-xs font-bold text-black uppercase tracking-wide">Comparar com a Reforma 2027</span>
-              </label>
+              {!somenteReforma && (
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input type="checkbox" checked={compararReforma} onChange={(e) => setCompararReforma(e.target.checked)} className="w-4 h-4 text-blue-600 rounded" />
+                  <span className="text-xs font-bold text-black uppercase tracking-wide">Comparar com a Reforma 2027</span>
+                </label>
+              )}
               <p className="text-[11px] text-slate-500">
-                Simulação preliminar (CBS e IBS). Não aparece na produção e não muda o cálculo atual.
+                {somenteReforma
+                  ? 'Tarifa Reforma 2027: mostra só a fatura nova, com CBS e IBS. Simulação preliminar.'
+                  : 'Simulação preliminar (CBS e IBS). Não aparece na produção e não muda o cálculo atual.'}
               </p>
-              {compararReforma && (
+              {simulaReforma && (
                 <div>
                   <label htmlFor="reforma-cbs" className="block text-xs font-semibold text-black mb-1">Alíquota da CBS</label>
                   <select id="reforma-cbs" value={cbsReforma} onChange={(e) => setCbsReforma(e.target.value)} className="w-full">
@@ -724,12 +749,15 @@ export default function ContaTeste() {
 
       {/* Resultados */}
       <div className="w-full flex-1">
-        {resultado?.reforma && (
+        {somenteReforma && resultado?.reforma && (
+          <FaturaReforma reforma={resultado.reforma} instalacao={form.instalacao} aoExportar={baixarCSV} />
+        )}
+        {!somenteReforma && resultado?.reforma && (
           <div className="mb-8">
             <ResultadoReforma reforma={resultado.reforma} />
           </div>
         )}
-        {resultado && (
+        {!somenteReforma && resultado && (
           <ResultadoFatura
             resultado={resultado}
             categoria={form.categoria}

@@ -23,7 +23,7 @@
  * ============================================================================
  */
 
-import { calcular_fatura } from './calculo.js';
+import { calcular_fatura, resolver_fio_b_tusd } from './calculo.js';
 
 /**
  * Alíquotas de 2027. A planilha da área usa CBS 11,3% (alíquota de referência
@@ -67,7 +67,8 @@ function motivos_sem_simulacao(categoria, atual) {
  * @param {Array}  dbRows    tarifas já normalizadas
  * @param {object} atual     resultado de calcular_fatura (calculado aqui se omitido)
  * @param {object} aliquotas { cbs, ibs }
- * @returns {object} { indisponivel: string[] } ou { linhas, resumo, aliquotas, observacoes }
+ * @returns {object} { indisponivel: string[] } ou
+ *          { linhas, ajustes, resumo, aliquotas, observacoes, observacoes_comparacao }
  */
 export function calcular_reforma(params, dbRows, atual = calcular_fatura(params, dbRows), aliquotas = REFORMA_ALIQUOTAS) {
     if (atual.erro) return { indisponivel: [atual.erro] };
@@ -81,6 +82,9 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
 
     let base_liquida = 0;
     let icms_sem_arredondar = 0;
+    // Totais das colunas: a planilha soma os valores sem arredondar.
+    let cbs_ibs_sem_arredondar = 0;
+    let base_icms_sem_arredondar = 0;
 
     const linhas = atual.detalhes
         .filter((l) => l.unidade === 'kWh' && !l.is_informativo && l.tarifa_base > 0)
@@ -93,6 +97,8 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
 
             base_liquida += r2(liquido);
             icms_sem_arredondar += valor_icms;
+            cbs_ibs_sem_arredondar += cbs_ibs;
+            if (icms > 0) base_icms_sem_arredondar += base_icms;
 
             return {
                 nome: l.nome,
@@ -112,10 +118,13 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
     const valor_cbs = r2(base_liquida * cbs);
     const valor_ibs = r2(base_liquida * ibs);
     const cip = atual.resumo.valor_cip;
-    const outros = r2(
-        (parseFloat(params.valor_ajuste) || 0) +
-        (Array.isArray(params.ajustes) ? params.ajustes : []).reduce((acc, a) => acc + (parseFloat(a.valor) || 0), 0)
-    );
+    // Mesmas linhas sem kWh que o motor atual soma (Juros, Multas, Taxas etc.).
+    const ajustes = (Array.isArray(params.ajustes) ? params.ajustes : [])
+        .map((a) => ({ nome: a.nome || 'Ajuste', valor: parseFloat(a.valor) || 0 }))
+        .filter((a) => a.valor !== 0);
+    const valor_ajuste_avulso = parseFloat(params.valor_ajuste) || 0;
+    if (valor_ajuste_avulso !== 0) ajustes.push({ nome: 'Ajustes / Outros Valores', valor: valor_ajuste_avulso });
+    const outros = r2(ajustes.reduce((acc, a) => acc + a.valor, 0));
     const total_fatura = r2(total_energia + cip + outros);
     const total_atual = atual.resumo.total_fatura;
     const diferenca = r2(total_fatura - total_atual);
@@ -129,6 +138,13 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
 
     const data_anterior = new Date(params.data_leitura_anterior);
     const data_atual = new Date(params.data_leitura_atual);
+    // Fio B (informativo) só quando há valor publicado, que não leva tributos.
+    // A estimativa do motor atual embute PIS/COFINS e não serve para a reforma.
+    const fio_b_publicado = resolver_fio_b_tusd(params.distribuidora?.toUpperCase() || 'ES', categoria, data_anterior, data_atual);
+    const valor_fio_b = fio_b_publicado === null ? null : r2(atual.parametros_usados.consumo_faturado * fio_b_publicado);
+
+    // O que só faz sentido quando a reforma é mostrada ao lado do cálculo atual.
+    const observacoes_comparacao = [];
     const observacoes = [
         'Simulação preliminar: alíquotas e regras ainda não validadas pela área. Não use como valor de fatura.',
         'A CIP é somada sem CBS, IBS ou ICMS.'
@@ -140,14 +156,14 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
         observacoes.push('Os ajustes foram somados sem CBS, IBS ou ICMS: a lista de itens tributáveis ainda não foi definida.');
     }
     if (data_atual < INICIO_REFORMA) {
-        observacoes.push('A leitura atual é anterior a 2027: a comparação é hipotética.');
+        observacoes.push('A leitura atual é anterior a 2027: a simulação é hipotética.');
     } else if (data_anterior < INICIO_REFORMA) {
         observacoes.push('O período cruza 2026 e 2027 e a regra de transição não está definida: CBS/IBS foram aplicados sobre a fatura inteira.');
     }
     // Os avisos de tarifa valem para os dois cálculos; os de PIS/COFINS só para o atual.
     for (const aviso of atual.avisos || []) {
         if (aviso.startsWith('PIS/COFINS')) {
-            observacoes.push('O total "Atual" usa PIS/COFINS genérico, porque o mês não está cadastrado: a diferença mostrada é só uma referência.');
+            observacoes_comparacao.push('O total "Atual" usa PIS/COFINS genérico, porque o mês não está cadastrado: a diferença mostrada é só uma referência.');
         } else {
             observacoes.push(aviso);
         }
@@ -155,8 +171,13 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
 
     return {
         linhas,
+        ajustes,
         resumo: {
             total_energia,
+            total_cbs_ibs: r2(cbs_ibs_sem_arredondar),
+            total_base_icms: r2(base_icms_sem_arredondar),
+            valor_fio_b,
+            valor_escassez: atual.resumo.valor_escassez || 0,
             base_cbs_ibs: base_liquida,
             valor_cbs,
             valor_ibs,
@@ -170,6 +191,7 @@ export function calcular_reforma(params, dbRows, atual = calcular_fatura(params,
             total_icms_sem_cbs_ibs
         },
         aliquotas: { cbs, ibs, icms },
-        observacoes
+        observacoes,
+        observacoes_comparacao
     };
 }

@@ -72,13 +72,14 @@ Abra o sistema, clique em **Conta Teste**, preencha os campos e clique em **Calc
 | CIP (R$) | Valor da iluminação pública |
 | Tributação de ICMS | Deixe em Automático, salvo caso específico |
 | Ajustes / Outros Valores | **Toda linha da fatura sem kWh:** parcelas, multas, juros, bônus, serviços de terceiros. Crédito entra negativo (ex.: -10,77) |
-| Comparar com a Reforma 2027 | Só fora da produção (parte 10) |
+| Comparar com a Reforma 2027 | Mostra a reforma ao lado do cálculo atual. Só fora da produção (parte 10) |
 
 **Como escolher a tarifa**
 
 - Fatura com mensagem de **Desconto Social** (linhas "até 120 kWh"): **B1CDE**.
 - Fatura com **Subvenção Tarifária** ou **Valor Baixa Renda**: **B1BRN MP 1300**.
 - Residencial comum: **B1 (Res)**.
+- Para ver **só a fatura nova** de 2027: **Fatura B1 (Res) - Reforma 2027** (fora da produção, parte 10).
 
 **Como ler o resultado:** os cartões mostram os totais; a tabela imita a nota fiscal; o "Resumo de Tributos" mostra as alíquotas usadas. **Fio B**, **Escassez Hídrica** e **Benefício Tarifa Social** são informativos e não somam no total. O botão **Baixar Tabela** gera o CSV.
 
@@ -191,6 +192,7 @@ Alguns ajustes acontecem **na tela, antes de chegar ao motor**: constante do med
 | `ContaTeste.tsx` | Formulário, lista de tarifas e o que é enviado ao cálculo |
 | `ResultadoFatura.tsx` | Cartões, tabela e resumo de tributos |
 | `ResultadoReforma.tsx` | Comparação com a reforma |
+| `FaturaReforma.tsx` | Tarifa "Reforma 2027": só a fatura nova |
 | `reformaDisponivel.ts` | Liga ou desliga a reforma por ambiente |
 | `exportarCsv.ts` | Arquivo CSV baixado |
 | `utilitarios.ts` | Desconto BT, constante do medidor, períodos das bandeiras |
@@ -505,7 +507,14 @@ Este projeto usa uma versão do Next.js com mudanças em relação a versões an
 
 ### 10.1 Como usar
 
-Marque **Comparar com a Reforma 2027**, escolha a alíquota da CBS e calcule. A tela mostra o total atual, o total com a reforma e a diferença. O CSV baixado traz **só o cálculo atual**.
+Há duas formas, as duas com escolha da alíquota da CBS:
+
+| Forma | Como | O que aparece | CSV |
+|---|---|---|---|
+| **Somente Reforma 2027** | Em Tarifas, escolha **Fatura B1 (Res) - Reforma 2027** | Só a fatura nova, com as colunas na ordem da aba "Modelo Reforma" (CBS/IBS no lugar de PIS/COFINS) | Da fatura nova |
+| **Comparar** | Escolha uma tarifa e marque **Comparar com a Reforma 2027** | Total atual, total com a reforma, diferença e as duas tabelas | Só do cálculo atual |
+
+A tarifa da reforma vale para ES e SP (campo Geografia) e usa as regras do B1 residencial. Ela não reproduz os quadros de composição da conta (energia, distribuição, transmissão e encargos) da planilha.
 
 ### 10.2 Regra aplicada
 
@@ -537,6 +546,8 @@ PIS e COFINS não entram. A CIP e os ajustes são somados sem CBS, IBS ou ICMS (
 | Fórmula ou base dos impostos | `motor/reforma.js`: função `calcular_reforma` |
 | Textos de aviso | `motor/reforma.js`: lista `observacoes` |
 | Tela da comparação | `ResultadoReforma.tsx` |
+| Tela da tarifa Reforma 2027 | `FaturaReforma.tsx`; CSV em `exportarCsv.ts` (`exportarCSVReforma`) |
+| Opção na lista de tarifas | `ContaTeste.tsx`: `TARIFA_REFORMA` |
 | Mostrar na produção | `reformaDisponivel.ts` (**só depois da validação**) |
 
 Depois de mudar:

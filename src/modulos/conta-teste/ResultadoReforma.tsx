@@ -15,14 +15,14 @@ export default function ResultadoReforma({ reforma }: { reforma: Reforma }) {
     );
   }
 
-  const { resumo, aliquotas, linhas, observacoes } = reforma;
+  const { resumo, aliquotas, linhas, observacoes, observacoes_comparacao } = reforma;
   const sinal = resumo.diferenca > 0 ? '+' : '';
 
   return (
     <section aria-label="Simulação da Reforma Tributária" className="space-y-4 border-b-2 border-slate-300 pb-8">
       <div role="alert" className="border border-amber-300 bg-amber-50 text-amber-900 rounded px-4 py-3 text-xs space-y-1">
         <p className="font-bold uppercase tracking-wide">Reforma 2027 - simulação preliminar</p>
-        {observacoes.map((o, i) => <p key={i}>{o}</p>)}
+        {[...observacoes, ...observacoes_comparacao].map((o, i) => <p key={i}>{o}</p>)}
       </div>
 
       <div className="flex flex-wrap items-stretch gap-y-3 border-b border-slate-200 pb-4">

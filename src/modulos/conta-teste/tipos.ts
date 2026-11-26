@@ -49,8 +49,13 @@ export type ResultadoReforma =
       aliquota_icms: number;
       valor_icms: number;
     }[];
+    ajustes: { nome: string; valor: number }[];
     resumo: {
       total_energia: number;
+      total_cbs_ibs: number;
+      total_base_icms: number;
+      valor_fio_b: number | null;
+      valor_escassez: number;
       base_cbs_ibs: number;
       valor_cbs: number;
       valor_ibs: number;
@@ -65,7 +70,11 @@ export type ResultadoReforma =
     };
     aliquotas: { cbs: number; ibs: number; icms: number };
     observacoes: string[];
+    observacoes_comparacao: string[];
   };
+
+/** A simulação quando há regra para a fatura. */
+export type ReformaCalculada = Extract<ResultadoReforma, { linhas: unknown }>;
 
 export interface ResultadoCalculo {
   detalhes: LinhaDetalhe[];

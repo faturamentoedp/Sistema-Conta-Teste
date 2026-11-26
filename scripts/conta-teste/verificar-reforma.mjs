@@ -40,6 +40,9 @@ console.log('--- Modelo ES (155 kWh, amarela em 6 de 29 dias)');
     conferir('CBS', r.valor_cbs, 13.89);
     conferir('IBS', r.valor_ibs, 0.12);
     conferir('ICMS', r.total_icms, 28.05);
+    conferir('Linha TOTAL: coluna CBS/IBS', r.total_cbs_ibs, 14.02);
+    conferir('Linha TOTAL: coluna Base do ICMS', r.total_base_icms, 165.02);
+    conferir('Fio B (informativo)', r.valor_fio_b, 31.59);
     conferir('Total com CIP', r.total_fatura, 178.53);
     conferir('Total se CBS/IBS ficassem fora do ICMS (quadro "Fatura B1": 162,15 + CIP)', r.total_icms_sem_cbs_ibs, 175.66);
 }
@@ -61,6 +64,9 @@ console.log('--- Modelo SP (232 kWh, amarela no período todo, taxa de -10,77)')
     conferir('CBS', r.valor_cbs, 21.12);
     conferir('IBS', r.valor_ibs, 0.19);
     conferir('ICMS', r.total_icms, 45.70);
+    conferir('Linha TOTAL: coluna CBS/IBS', r.total_cbs_ibs, 21.31);
+    conferir('Linha TOTAL: coluna Base do ICMS', r.total_base_icms, 253.89);
+    conferir('Linha de ajuste', reforma.ajustes.map((a) => `${a.nome} ${a.valor}`).join(), 'Taxas -10.77');
     conferir('Total', r.total_fatura, 243.13);
 }
 

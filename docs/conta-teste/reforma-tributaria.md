@@ -9,6 +9,8 @@
 
 ## Como foi construído
 
+- Na tela há a tarifa **Fatura B1 (Res) - Reforma 2027** (só a fatura nova, colunas da planilha) e a caixa **Comparar com a Reforma 2027**. A tarifa existe só na tela: o cálculo recebe `B1C`.
+- Na linha TOTAL, as colunas CBS/IBS e Base do ICMS somam os valores sem arredondar, como a planilha (ES: 14,02 e 165,02).
 - `motor/reforma.js` chama o motor atual e usa, de cada linha de consumo e bandeira, a quantidade e a tarifa sem impostos. `calculo.js` não foi alterado.
 - A rota só calcula a reforma quando recebe `comparar_reforma` e o ambiente não é produção. O resultado vai no campo `reforma`.
 - `npm run verificar-reforma` reproduz os exemplos: ES R$ 178,53 e SP R$ 243,13. No exemplo do ES, o total atual do sistema (R$ 167,04) também é igual ao da planilha.

@@ -1,5 +1,5 @@
 import { formatBRL, formatNum } from './formatadores';
-import type { FormularioContaTeste, LinhaDetalhe, ResultadoCalculo } from './tipos';
+import type { FormularioContaTeste, LinhaDetalhe, ReformaCalculada, ResultadoCalculo } from './tipos';
 
 /**
  * Base e alíquota de ICMS mostradas para uma linha. Quando o motor não manda
@@ -73,13 +73,59 @@ export function exportarCSV({ resultado, form, descontoBT, sudeneAtivo, bandeira
     csv += `"Contribuição de Ilum. Pública - Lei Municipal";"";"1,0000";"${formatNum(resultado.resumo.valor_cip, 8)}";"${formatBRL(resultado.resumo.valor_cip)}";"-";"0,00";"0,000";"-";"0,00000000"\n`;
   }
 
+  baixarArquivo(csv, `simulacao_fatura_${form.instalacao || 'registro'}_${form.categoria}.csv`);
+}
+
+function baixarArquivo(csv: string, nome: string) {
   const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.setAttribute("href", url);
-  const fileName = `simulacao_fatura_${form.instalacao || 'registro'}_${form.categoria}.csv`;
-  link.setAttribute("download", fileName);
+  link.setAttribute("download", nome);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+/** Quadro de tributos da fatura da reforma (usado na tela e no CSV). */
+export function linhasDeTributosReforma({ resumo, aliquotas }: ReformaCalculada) {
+  const pct = (v: number) => `${(v * 100).toFixed(1).replace('.', ',')}%`;
+  return [
+    { nome: 'CBS', base: resumo.base_cbs_ibs, aliquota: pct(aliquotas.cbs), valor: resumo.valor_cbs },
+    { nome: 'IBS', base: resumo.base_cbs_ibs, aliquota: pct(aliquotas.ibs), valor: resumo.valor_ibs },
+  ];
+}
+
+/** CSV da tarifa "Reforma 2027": só a fatura nova, nas colunas da planilha da área. */
+export function exportarCSVReforma({ reforma, form, descontoBT }: { reforma: ReformaCalculada; form: FormularioContaTeste; descontoBT: boolean }) {
+  const { resumo, linhas, ajustes, observacoes } = reforma;
+  let csv = "\uFEFF"; // UTF-8 BOM
+
+  csv += "=== REFORMA 2027 - SIMULAÇÃO PRELIMINAR ===\n";
+  observacoes.forEach((o) => { csv += `"${o}"\n`; });
+  csv += `Instalação;${form.instalacao || 'Não informada'}\n`;
+  csv += `Documento de Impressão;${form.documento_impressao || 'Não informado'}\n`;
+  csv += `Geografia;EDP ${form.distribuidora}\n`;
+  csv += "Tarifas;B1 Residencial - Reforma 2027\n";
+  csv += `Período de Leitura;${form.data_leitura_anterior} a ${form.data_leitura_atual}\n`;
+  csv += `Desconto BT (-1.5% kWh);${descontoBT ? 'SIM (Ativado)' : 'NÃO'}\n\n`;
+
+  csv += "Descrição;Unidade;Quantidade;Preço Unit (R$) com tributos;Valor Total (R$);CBS/IBS (R$);Base de Cálculo ICMS (R$);Alíquota ICMS (%);ICMS (R$);Preço Unit (R$)\n";
+  linhas.forEach((l) => {
+    csv += `"${l.nome}";"kWh";"${formatNum(l.quantidade, 4)}";"${formatNum(l.preco_unit, 8)}";"${formatBRL(l.valor_total)}";"${formatBRL(l.valor_cbs_ibs)}";"${formatBRL(l.base_icms)}";"${formatNum(l.aliquota_icms, 3)}";"${formatBRL(l.valor_icms)}";"${formatNum(l.tarifa_base, 8)}"\n`;
+  });
+  const semKwh = [...ajustes, ...(resumo.valor_cip > 0 ? [{ nome: 'CIP', valor: resumo.valor_cip }] : [])];
+  semKwh.forEach((a) => {
+    csv += `"${a.nome}";"";"";"";"${formatBRL(a.valor)}";"";"";"";"";""\n`;
+  });
+  csv += `"TOTAL";"";"";"";"${formatBRL(resumo.total_fatura)}";"${formatBRL(resumo.total_cbs_ibs)}";"${formatBRL(resumo.total_base_icms)}";"";"${formatBRL(resumo.total_icms)}";""\n\n`;
+
+  csv += "Tributos;Base de Cálc (R$);Alíquota;Valor (R$)\n";
+  linhasDeTributosReforma(reforma).forEach((t) => {
+    csv += `${t.nome};${formatBRL(t.base)};${t.aliquota};${formatBRL(t.valor)}\n`;
+  });
+  if (resumo.valor_fio_b !== null) csv += `\nFio B (Informativo);${formatBRL(resumo.valor_fio_b)}\n`;
+  if (resumo.valor_escassez) csv += `Escassez Hídrica (Informativo);${formatBRL(resumo.valor_escassez)}\n`;
+
+  baixarArquivo(csv, `simulacao_reforma2027_${form.instalacao || 'registro'}.csv`);
 }
