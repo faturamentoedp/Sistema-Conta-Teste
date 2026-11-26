@@ -656,7 +656,7 @@ Veja o que mudou:
 git status
 ```
 
-Confira se não há planilhas temporárias, faturas ou arquivos `.env`. Depois:
+Confira se não há planilhas temporárias, faturas ou arquivos `.env`. **Nunca coloque no repositório fatura de cliente nem dado pessoal** (nome, CPF, endereço). Depois:
 
 ```bash
 git add -A
@@ -668,20 +668,36 @@ git commit -m "PIS/COFINS de 12/2026 (ES e SP)"
 git push -u origin HEAD
 ```
 
+> **Atenção:** se você estiver na `main`, esse envio **publica no link oficial** (11.5).
+
 ### 11.5 Publicar
 
-| Ambiente | Comando | Link |
-|---|---|---|
-| Teste | `npm run publicar:teste` | `sistema-conta-teste-teste.vercel.app` |
-| Produção | `npm run publicar` | `sistema-conta-teste-psi.vercel.app` |
+**O projeto na Vercel está ligado ao GitHub** (confirmado em 26/11/2026). Enviar ao GitHub já publica:
 
-Para ensaiar sem publicar:
+| O que você faz | O que acontece |
+|---|---|
+| Enviar a `main` (`git push origin main`) | **Publica no link oficial**, sozinho e sem pedir confirmação |
+| Enviar qualquer outra branch | Cria uma **prévia** (teste) em outro endereço. O link oficial não muda |
+
+**Link oficial:** `https://edp-sistemaunificado.vercel.app`. O endereço antigo, `sistema-conta-teste-psi.vercel.app`, redireciona para ele.
+
+**Antes de enviar a `main`,** confira que tudo foi validado e rode os testes (11.1). No envio direto, nada testa por você.
+
+**Para mostrar algo sem mexer no oficial,** envie o seu trabalho para uma branch de prévia:
+
+```bash
+git push origin HEAD:previa-nome-curto
+```
+
+O endereço da prévia aparece no painel da Vercel, em **Deployments**. Em 26/11/2026, uma prévia testada **pedia login da Vercel**. Para outra pessoa abrir, use a opção de compartilhar da publicação (se disponível), dê acesso a ela ou ajuste **Settings → Deployment Protection**.
+
+Na prévia aparecem a faixa "Ambiente de teste" e a Reforma 2027. No link oficial, não.
+
+**Pela linha de comando (alternativa):** `npm run publicar:teste` e `npm run publicar` exigem `npx vercel login` e publicam no projeto ligado à pasta. O de produção só roda a partir da `main`, sem alteração pendente e com os testes passando, e pede para digitar `PRODUCAO`. Essas travas **não valem** para o envio pelo Git. O endereço fixo de teste antigo (`sistema-conta-teste-teste.vercel.app`) não estava ativo em 26/11/2026. Para ensaiar sem publicar:
 
 ```bash
 npm run publicar:teste -- --dry-run
 ```
-
-A produção só publica a partir da `main`, sem alteração pendente e com os testes passando, e pede para digitar `PRODUCAO`.
 
 **Levar para a produção o que foi validado:** vá para a `main` e traga **só os commits validados**:
 
@@ -696,7 +712,7 @@ Use `git merge nome-da-branch` apenas se **tudo** naquela branch foi validado.
 
 > Publicar atualiza o link que o time usa. Faça só depois da validação.
 
-O link de teste pode pedir login da Vercel, conforme a configuração do projeto. Os botões de `ferramentas/Painel Conta Teste.xlsx` executam os mesmos comandos. Mais detalhes em `docs/plataforma/publicacao.md`.
+Os botões de `ferramentas/Painel Conta Teste.xlsx` executam os mesmos comandos. Mais detalhes em `docs/plataforma/publicacao.md`.
 
 **Senha de acesso (opcional):** variável `APP_SENHA`, na Vercel ou no arquivo `.env.local`.
 

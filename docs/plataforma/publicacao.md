@@ -77,13 +77,15 @@ Digite a senha combinada quando ele pedir e publique de novo com `npx vercel --p
 
 ### Produção x Teste
 
+> **Atualização de 26/11/2026:** o projeto na Vercel está ligado ao GitHub. `git push origin main` **publica o link oficial sozinho**, sem as travas do `npm run publicar`. O envio de qualquer outra branch gera uma prévia, que pode pedir login da Vercel. O endereço antigo `sistema-conta-teste-psi.vercel.app` redireciona para o oficial.
+
 São dois ambientes, com dois links e duas branches do Git:
 
 | | **Produção** | **Teste** |
 |---|---|---|
 | O que tem | só o que a área **já validou** | tudo que foi adicionado, **validado ou não** |
 | Branch | `main` | `teste` |
-| Link | o de sempre, fixo (`sistema-conta-teste-psi.vercel.app`) | `sistema-conta-teste-teste.vercel.app` |
+| Link | oficial: `edp-sistemaunificado.vercel.app` | prévia gerada a cada envio de outra branch |
 | Na tela | nenhuma marcação | faixa amarela **"Ambiente de teste"** + versão (commit) |
 | Publicar | `npm run publicar` | `npm run publicar:teste` |
 
